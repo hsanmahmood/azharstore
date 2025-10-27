@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { X, Home, LogOut } from 'lucide-react';
-import { logoUrl } from '../data/site.js';
+import { logoUrl } from '../../data/site.js';
 
 const MobileAdminSidebar = ({ isOpen, onClose, user, navLinks, handleLogout }) => {
 

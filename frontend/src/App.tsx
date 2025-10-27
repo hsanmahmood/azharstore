@@ -3,7 +3,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './components/layout/AdminLayout';
 import LoginPage from './pages/LoginPage';
 import ProductsPage from './pages/admin/ProductsPage';
-import CategoriesPage from './pages-admin/CategoriesPage';
+import CategoriesPage from './pages/admin/CategoriesPage';
 
 function App() {
   return (
