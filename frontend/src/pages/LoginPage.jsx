@@ -27,7 +27,7 @@ const LoginPage = () => {
     setError(null);
     try {
       // The API service will be created next
-      const response = await api.post('/api/admin/login', data);
+      const response = await api.post('/api/login', data);
       const { token } = response.data;
       if (token) {
         login(token);
