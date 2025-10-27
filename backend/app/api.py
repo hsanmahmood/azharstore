@@ -24,7 +24,7 @@ def login_for_access_token(form_data: schemas.AdminLoginRequest):
             detail="Incorrect password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = services.create_access_token(data={"sub": "admin"})
+    access_token = services.create_access_token(data={"sub": settings.AZHAR_ADMIN_EMAIL})
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/products", response_model=List[schemas.Product], tags=["Products"])
