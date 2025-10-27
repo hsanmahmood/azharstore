@@ -28,9 +28,9 @@ const LoginPage = () => {
     try {
       // The API service will be created next
       const response = await api.post('/api/login', data);
-      const { token } = response.data;
-      if (token) {
-        login(token);
+      const { access_token } = response.data;
+      if (access_token) {
+        login(access_token);
         navigate('/admin');
       } else {
         setError('Login failed: No token received.');
