@@ -1,6 +1,6 @@
-import React from 'react';
+import type { FC } from 'react';
 
-const LoadingScreen = () => {
+const LoadingScreen: FC = () => {
   return (
     <div className="flex items-center justify-center h-full">
       <p className="text-brand-primary">Loading...</p>

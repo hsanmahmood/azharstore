@@ -1,20 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '../ui/Modal';
 import apiService from '../../services/productsApi';
 import categoriesApiService from '../../services/categoriesApi';
 
-const AddEditProductModal = ({ isOpen, onClose, onSave, item }) => {
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  stock_quantity: number;
+  category_id: number;
+}
+
+interface Category {
+  id: number;
+  name: string;
+}
+
+interface AddEditProductModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: () => void;
+  item: Product | null;
+}
+
+const AddEditProductModal: FC<AddEditProductModalProps> = ({ isOpen, onClose, onSave, item }) => {
   const { t } = useTranslation();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState(0);
   const [stockQuantity, setStockQuantity] = useState(0);
-  const [categoryId, setCategoryId] = useState('');
-  const [categories, setCategories] = useState([]);
+  const [categoryId, setCategoryId] = useState<number | ''>('');
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    categoriesApiService.getAll().then(setCategories);
+    categoriesApiService.getAll().then(response => setCategories(response.data));
   }, []);
 
   useEffect(() => {
@@ -33,7 +55,7 @@ const AddEditProductModal = ({ isOpen, onClose, onSave, item }) => {
     }
   }, [item]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const productData = { name, description, price, stock_quantity: stockQuantity, category_id: categoryId };
@@ -102,7 +124,7 @@ const AddEditProductModal = ({ isOpen, onClose, onSave, item }) => {
           <select
             id="category"
             value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
+            onChange={(e) => setCategoryId(parseInt(e.target.value, 10))}
             className="w-full bg-brand-background border border-brand-border rounded-lg px-3 py-2 text-brand-primary"
             required
           >

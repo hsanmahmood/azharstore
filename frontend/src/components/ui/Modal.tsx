@@ -1,7 +1,15 @@
-import React from 'react';
+import type { FC, ReactNode } from 'react';
 import { X } from 'lucide-react';
 
-const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-3xl' }) => {
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  children: ReactNode;
+  maxWidth?: string;
+}
+
+const Modal: FC<ModalProps> = ({ isOpen, onClose, title, children, maxWidth = 'max-w-3xl' }) => {
   if (!isOpen) return null;
 
   return (

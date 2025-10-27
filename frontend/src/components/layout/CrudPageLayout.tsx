@@ -1,18 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
 import Section from '../ui/Section';
 import LoadingScreen from '../ui/LoadingScreen';
 import ConfirmationModal from '../ui/ConfirmationModal';
 
-const CrudPageLayout = ({ title, apiService, CardComponent, ModalComponent }) => {
+interface ApiService {
+  getAll: () => Promise<any[]>;
+  delete: (id: number) => Promise<void>;
+}
+
+interface Item {
+  id: number;
+  [key: string]: any;
+}
+
+interface CrudPageLayoutProps {
+  title: string;
+  apiService: ApiService;
+  CardComponent: FC<{ item: Item; onEdit: (item: Item) => void; onDelete: (id: number) => void }>;
+  ModalComponent: FC<{ isOpen: boolean; onClose: () => void; onSave: () => void; item: Item | null }>;
+}
+
+const CrudPageLayout: FC<CrudPageLayoutProps> = ({ title, apiService, CardComponent, ModalComponent }) => {
   const { t } = useTranslation();
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [deletingItemId, setDeletingItemId] = useState(null);
+  const [deletingItemId, setDeletingItemId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchItems();
@@ -30,7 +48,7 @@ const CrudPageLayout = ({ title, apiService, CardComponent, ModalComponent }) =>
     }
   };
 
-  const handleOpenModal = (item = null) => {
+  const handleOpenModal = (item: Item | null = null) => {
     setEditingItem(item);
     setIsModalOpen(true);
   };
@@ -45,7 +63,7 @@ const CrudPageLayout = ({ title, apiService, CardComponent, ModalComponent }) =>
     handleCloseModal();
   };
 
-  const openDeleteConfirm = (id) => {
+  const openDeleteConfirm = (id: number) => {
     setDeletingItemId(id);
     setIsConfirmModalOpen(true);
   };
@@ -56,6 +74,7 @@ const CrudPageLayout = ({ title, apiService, CardComponent, ModalComponent }) =>
   };
 
   const handleDelete = async () => {
+    if (deletingItemId === null) return;
     try {
       await apiService.delete(deletingItemId);
       fetchItems();
@@ -71,7 +90,7 @@ const CrudPageLayout = ({ title, apiService, CardComponent, ModalComponent }) =>
   }
 
   return (
-    <Section>
+    <Section title={title}>
       <header className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
         <h1 className="text-3xl font-bold text-brand-primary">{title}</h1>
         <button

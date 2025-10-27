@@ -1,9 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '../ui/Modal';
 import apiService from '../../services/categoriesApi';
 
-const AddEditCategoryModal = ({ isOpen, onClose, onSave, item }) => {
+interface Category {
+  id: number;
+  name: string;
+}
+
+interface AddEditCategoryModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: () => void;
+  item: Category | null;
+}
+
+const AddEditCategoryModal: FC<AddEditCategoryModalProps> = ({ isOpen, onClose, onSave, item }) => {
   const { t } = useTranslation();
   const [name, setName] = useState('');
 
@@ -15,7 +28,7 @@ const AddEditCategoryModal = ({ isOpen, onClose, onSave, item }) => {
     }
   }, [item]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (item) {

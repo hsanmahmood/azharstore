@@ -1,6 +1,13 @@
-import React from 'react'
+import type { FC, ReactNode } from 'react';
 
-export default function Section({ id, title, children, subtitle }) {
+interface SectionProps {
+  id?: string;
+  title?: string;
+  subtitle?: string;
+  children: ReactNode;
+}
+
+const Section: FC<SectionProps> = ({ id, title, children, subtitle }) => {
   return (
     <section id={id} className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 py-12 sm:py-16">
       <div className="rounded-20 border border-brand-gray/30 bg-black/40 shadow-card shadow-black/60 backdrop-blur-[2px]">
@@ -15,5 +22,7 @@ export default function Section({ id, title, children, subtitle }) {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
+
+export default Section;

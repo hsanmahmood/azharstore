@@ -1,10 +1,21 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import type { FC } from 'react';
 import { Edit, Trash2 } from 'lucide-react';
 
-const ProductCard = ({ item, onEdit, onDelete }) => {
-  const { t } = useTranslation();
+interface Product {
+  id: number;
+  name: string;
+  category?: {
+    name: string;
+  };
+}
 
+interface ProductCardProps {
+  item: Product;
+  onEdit: (item: Product) => void;
+  onDelete: (id: number) => void;
+}
+
+const ProductCard: FC<ProductCardProps> = ({ item, onEdit, onDelete }) => {
   return (
     <div className="bg-black/20 border border-brand-border rounded-2xl p-4 flex flex-col justify-between transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1">
       <div className="flex justify-between items-start gap-2">
