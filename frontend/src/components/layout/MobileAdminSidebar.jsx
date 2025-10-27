@@ -1,9 +1,11 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { X, Home, LogOut } from 'lucide-react';
 import { logoUrl } from '../../data/site.js';
 
 const MobileAdminSidebar = ({ isOpen, onClose, user, navLinks, handleLogout }) => {
+  const { t } = useTranslation();
 
   const handleLinkClick = () => {
     onClose();
@@ -43,7 +45,7 @@ const MobileAdminSidebar = ({ isOpen, onClose, user, navLinks, handleLogout }) =
                   onClick={handleLinkClick}
                 >
                   <Home className="h-5 w-5 ml-3" />
-                  <span>Home</span>
+                  <span>{t('admin.nav.home')}</span>
                 </Link>
               </li>
               {navLinks.map((link) => (
@@ -75,7 +77,7 @@ const MobileAdminSidebar = ({ isOpen, onClose, user, navLinks, handleLogout }) =
                 className="flex items-center w-full px-4 py-2.5 text-sm font-medium text-brand-secondary hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg transition-colors duration-200"
               >
                 <LogOut className="h-5 w-5 ml-3" />
-                <span>Logout</span>
+                <span>{t('Logout')}</span>
               </button>
             </div>
           </div>

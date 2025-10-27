@@ -10,19 +10,19 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-3xl' }) => 
       onClick={onClose}
     >
       <div
-        className={`bg-gray-800 border border-white/10 rounded-2xl shadow-lg w-full ${maxWidth} m-auto flex flex-col max-h-[90vh]`}
+        className={`bg-brand-background border border-brand-border rounded-20 shadow-card w-full ${maxWidth} m-auto flex flex-col max-h-[90vh] animate-modal-in`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex-shrink-0 flex justify-between items-center p-6 border-b border-white/10">
-          <h2 className="text-xl font-bold text-white">{title}</h2>
+        <div className="flex-shrink-0 flex justify-between items-center p-6 border-b border-brand-border">
+          <h2 className="text-xl font-bold text-brand-primary">{title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-brand-secondary hover:text-brand-primary transition-colors"
           >
             <X size={24} />
           </button>
         </div>
-        <div className="p-6 overflow-y-auto flex-grow text-gray-300">
+        <div className="p-6 overflow-y-auto flex-grow text-white">
           {children}
         </div>
       </div>
