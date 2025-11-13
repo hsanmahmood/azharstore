@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import LogRocket from 'logrocket';
 
 export const AuthContext = createContext(null);
 
@@ -10,9 +11,13 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      // In a real app, you'd fetch user data here based on the token
-      // For this simplified version, we'll just set a placeholder user
-      setUser({ name: 'Admin' });
+      const adminUser = { name: 'Admin', email: 'admin@azhar.store' };
+      setUser(adminUser);
+      LogRocket.identify('admin_user', {
+        name: adminUser.name,
+        email: adminUser.email,
+        subscriptionType: 'pro',
+      });
     } else {
       delete axios.defaults.headers.common['Authorization'];
       setUser(null);
