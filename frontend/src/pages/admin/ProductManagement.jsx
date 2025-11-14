@@ -29,6 +29,7 @@ const ProductManagement = () => {
   };
   const [formData, setFormData] = useState(initialFormState);
   const [selectedImages, setSelectedImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
@@ -60,10 +61,12 @@ const ProductManagement = () => {
         description: product.description || '',
         price: product.price,
         category_id: product.category_id || '',
-        stock: product.stock || 0,
+        stock: product.stock_quantity || 0,
       });
+      setImagePreviews(product.product_images.map(img => img.image_url));
     } else {
       setFormData(initialFormState);
+      setImagePreviews([]);
     }
     setSelectedImages([]);
     setIsModalOpen(true);
@@ -83,7 +86,19 @@ const ProductManagement = () => {
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files);
     setSelectedImages(files);
+
+    const previews = files.map(file => URL.createObjectURL(file));
+    setImagePreviews(previews);
   };
+
+  const removeImage = (index) => {
+    const newImages = [...selectedImages];
+    const newPreviews = [...imagePreviews];
+    newImages.splice(index, 1);
+    newPreviews.splice(index, 1);
+    setSelectedImages(newImages);
+    setImagePreviews(newPreviews);
+  }
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -279,13 +294,23 @@ const ProductManagement = () => {
             <label className="block text-sm font-medium text-brand-secondary mb-2">
               {t('productManagement.form.images')}
             </label>
-            <label className="flex justify-center items-center w-full h-32 px-6 border-2 border-brand-border border-dashed rounded-lg cursor-pointer hover:border-brand-primary/50 transition-colors">
+            <div className="grid grid-cols-3 gap-4">
+              {imagePreviews.map((preview, index) => (
+                <div key={index} className="relative">
+                  <img src={preview} alt={`Preview ${index}`} className="w-full h-24 object-cover rounded-lg" />
+                  <button type="button" onClick={() => removeImage(index)} className="absolute top-1 right-1 bg-black/50 rounded-full p-1 text-white">
+                    <X size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <label className="mt-4 flex justify-center items-center w-full h-32 px-6 border-2 border-brand-border border-dashed rounded-lg cursor-pointer hover:border-brand-primary/50 transition-colors">
               <div className="space-y-1 text-center">
                 <Upload className="mx-auto h-10 w-10 text-brand-secondary" />
                 <p className="text-sm text-brand-secondary">
                   {selectedImages.length > 0
-                    ? `${selectedImages.length} صور محددة`
-                    : 'انقر لرفع الصور'}
+                    ? `${selectedImages.length} images selected`
+                    : 'Click to upload images'}
                 </p>
               </div>
               <input

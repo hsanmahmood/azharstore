@@ -19,7 +19,7 @@ const App = () => {
   }, [location, t]);
 
   return (
-    <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col font-arabic">
+    <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={token ? <Navigate to="/admin/products" /> : <Login />} />

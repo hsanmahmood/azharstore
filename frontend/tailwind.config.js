@@ -5,7 +5,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        arabic: ["system-ui", "sans-serif"],
+        sans: ['Tajawal', 'sans-serif'],
+        arabic: ['Tajawal', 'sans-serif'],
       },
       colors: {
         brand: {
