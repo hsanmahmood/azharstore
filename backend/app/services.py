@@ -69,7 +69,9 @@ def create_product(product: schemas.ProductCreate, supabase: Client = Depends(ge
 
 def update_product(product_id: int, product: schemas.ProductUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Product | None:
     response = supabase.table("products").update(product.model_dump(exclude_unset=True)).eq("id", product_id).execute()
-    return response.data[0] if response.data else None
+    if not response.data:
+        return None
+    return get_product(product_id=product_id, supabase=supabase)
 
 def delete_product(product_id: int, supabase: Client = Depends(get_supabase_client)) -> bool:
     response = supabase.table("products").delete().eq("id", product_id).execute()
