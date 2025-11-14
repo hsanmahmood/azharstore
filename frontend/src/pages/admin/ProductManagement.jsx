@@ -12,8 +12,6 @@ const ProductManagement = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -31,18 +29,16 @@ const ProductManagement = () => {
   };
   const [formData, setFormData] = useState(initialFormState);
   const [selectedImages, setSelectedImages] = useState([]);
-  const [imagePreviews, setImagePreviews] = useState([]);
 
-  const fetchProducts = useCallback(async (pageNum = 1) => {
+  const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     try {
-      const productsRes = await productService.getAllProducts(pageNum);
-      setProducts(prev => pageNum === 1 ? productsRes.data : [...prev, ...productsRes.data]);
-      setHasMore(productsRes.data.length > 0);
-      if (pageNum === 1) {
-        const categoriesRes = await categoryService.getAllCategories();
-        setCategories(categoriesRes);
-      }
+      const [productsRes, categoriesRes] = await Promise.all([
+        productService.getAllProducts(),
+        categoryService.getAllCategories(),
+      ]);
+      setProducts(productsRes.data);
+      setCategories(categoriesRes);
       setError('');
     } catch (err) {
       setError(t('productManagement.errors.fetch'));
@@ -51,12 +47,6 @@ const ProductManagement = () => {
       setIsLoading(false);
     }
   }, [t]);
-
-  const loadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchProducts(nextPage);
-  };
 
   useEffect(() => {
     fetchProducts();
@@ -70,12 +60,10 @@ const ProductManagement = () => {
         description: product.description || '',
         price: product.price,
         category_id: product.category_id || '',
-        stock: product.stock_quantity || 0,
+        stock: product.stock || 0,
       });
-      setImagePreviews(product.product_images.map(img => img.image_url));
     } else {
       setFormData(initialFormState);
-      setImagePreviews([]);
     }
     setSelectedImages([]);
     setIsModalOpen(true);
@@ -95,19 +83,7 @@ const ProductManagement = () => {
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files);
     setSelectedImages(files);
-
-    const previews = files.map(file => URL.createObjectURL(file));
-    setImagePreviews(previews);
   };
-
-  const removeImage = (index) => {
-    const newImages = [...selectedImages];
-    const newPreviews = [...imagePreviews];
-    newImages.splice(index, 1);
-    newPreviews.splice(index, 1);
-    setSelectedImages(newImages);
-    setImagePreviews(newPreviews);
-  }
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -118,10 +94,9 @@ const ProductManagement = () => {
       const payload = {
         ...formData,
         price: parseFloat(formData.price),
-        stock_quantity: parseInt(formData.stock) || 0,
+        stock: parseInt(formData.stock) || 0,
         category_id: formData.category_id ? parseInt(formData.category_id) : null,
       };
-      delete payload.stock;
 
       let productResponse;
       if (editingProduct) {
@@ -207,18 +182,6 @@ const ProductManagement = () => {
           />
         ))}
       </div>
-
-      {hasMore && (
-        <div className="flex justify-center mt-8">
-          <button
-            onClick={loadMore}
-            className="bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200"
-            disabled={isLoading}
-          >
-            {isLoading ? t('common.loading') : t('common.loadMore')}
-          </button>
-        </div>
-      )}
 
       <Modal
         isOpen={isModalOpen}
@@ -316,23 +279,13 @@ const ProductManagement = () => {
             <label className="block text-sm font-medium text-brand-secondary mb-2">
               {t('productManagement.form.images')}
             </label>
-            <div className="grid grid-cols-3 gap-4">
-              {imagePreviews.map((preview, index) => (
-                <div key={index} className="relative">
-                  <img src={preview} alt={`Preview ${index}`} className="w-full h-24 object-cover rounded-lg" />
-                  <button type="button" onClick={() => removeImage(index)} className="absolute top-1 right-1 bg-black/50 rounded-full p-1 text-white">
-                    <X size={16} />
-                  </button>
-                </div>
-              ))}
-            </div>
-            <label className="mt-4 flex justify-center items-center w-full h-32 px-6 border-2 border-brand-border border-dashed rounded-lg cursor-pointer hover:border-brand-primary/50 transition-colors">
+            <label className="flex justify-center items-center w-full h-32 px-6 border-2 border-brand-border border-dashed rounded-lg cursor-pointer hover:border-brand-primary/50 transition-colors">
               <div className="space-y-1 text-center">
                 <Upload className="mx-auto h-10 w-10 text-brand-secondary" />
                 <p className="text-sm text-brand-secondary">
                   {selectedImages.length > 0
-                    ? `${selectedImages.length} images selected`
-                    : 'Click to upload images'}
+                    ? `${selectedImages.length} صور محددة`
+                    : 'انقر لرفع الصور'}
                 </p>
               </div>
               <input

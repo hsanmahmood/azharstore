@@ -33,7 +33,7 @@ api.interceptors.response.use(
 
 // Product services
 export const productService = {
-  getAllProducts: (page = 1, limit = 20) => api.get(`/products?skip=${(page - 1) * limit}&limit=${limit}`),
+  getAllProducts: () => api.get('/products'),
   getProduct: (id) => api.get(`/products/${id}`),
   createProduct: (data) => api.post('/admin/products', data),
   updateProduct: (id, data) => api.patch(`/admin/products/${id}`, data),
@@ -50,29 +50,12 @@ export const productService = {
 };
 
 // Category services
-let cachedCategories = null;
 export const categoryService = {
-  getAllCategories: async () => {
-    if (cachedCategories) {
-      return cachedCategories;
-    }
-    const res = await api.get('/categories');
-    cachedCategories = res.data;
-    return cachedCategories;
-  },
+  getAllCategories: () => api.get('/categories').then(res => res.data),
   getCategory: (id) => api.get(`/categories/${id}`),
-  createCategory: (data) => api.post('/admin/categories', data).then(res => {
-    cachedCategories = null; // Invalidate cache
-    return res.data;
-  }),
-  updateCategory: (id, data) => api.patch(`/admin/categories/${id}`, data).then(res => {
-    cachedCategories = null; // Invalidate cache
-    return res.data;
-  }),
-  deleteCategory: (id) => api.delete(`/admin/categories/${id}`).then(res => {
-    cachedCategories = null; // Invalidate cache
-    return res.data;
-  }),
+  createCategory: (data) => api.post('/admin/categories', data),
+  updateCategory: (id, data) => api.patch(`/admin/categories/${id}`, data),
+  deleteCategory: (id) => api.delete(`/admin/categories/${id}`),
 };
 
 // Auth services

@@ -55,8 +55,8 @@ def delete_category(category_id: int, supabase: Client = Depends(get_supabase_cl
     response = supabase.table("categories").delete().eq("id", category_id).execute()
     return bool(response.data)
 
-def get_products(supabase: Client = Depends(get_supabase_client), skip: int = 0, limit: int = 100) -> list[schemas.Product]:
-    response = supabase.table("products").select("*, category:categories(*), product_images(*), product_variants(*)").range(skip, skip + limit - 1).execute()
+def get_products(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Product]:
+    response = supabase.table("products").select("*, category:categories(*), product_images!inner(*)").eq("product_images.is_primary", True).execute()
     return response.data
 
 def get_product(product_id: int, supabase: Client = Depends(get_supabase_client)) -> schemas.Product | None:
