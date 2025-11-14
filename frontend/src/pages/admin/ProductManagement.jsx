@@ -116,7 +116,11 @@ const ProductManagement = () => {
         setUploadingImages(false);
       }
 
-      await fetchProducts();
+      if (editingProduct) {
+        setProducts(products.map(p => p.id === editingProduct.id ? productResponse.data : p));
+      } else {
+        setProducts([productResponse.data, ...products]);
+      }
       closeModal();
     } catch (err) {
       setError(t(editingProduct ? 'productManagement.errors.update' : 'productManagement.errors.add'));
