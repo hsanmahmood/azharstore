@@ -1,0 +1,206 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { categoryService } from '../../services/api';
+import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
+import Modal from '../../components/Modal';
+import LoadingScreen from '../../components/LoadingScreen';
+import ConfirmationModal from '../../components/ConfirmationModal';
+
+const CategoryManagement = () => {
+  const { t } = useTranslation();
+  const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [deletingCategoryId, setDeletingCategoryId] = useState(null);
+  const [formData, setFormData] = useState({ name: '' });
+
+  const fetchCategories = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await categoryService.getAllCategories();
+      setCategories(data);
+      setError('');
+    } catch (err) {
+      setError(t('categoryManagement.errors.fetch'));
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [t]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  const openModal = (category = null) => {
+    setEditingCategory(category);
+    setFormData(category ? { name: category.name } : { name: '' });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingCategory(null);
+  };
+
+  const handleFormChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.name.trim()) return;
+
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      if (editingCategory) {
+        await categoryService.updateCategory(editingCategory.id, formData);
+      } else {
+        await categoryService.createCategory(formData);
+      }
+      await fetchCategories();
+      closeModal();
+    } catch (err) {
+      setError(t(editingCategory ? 'categoryManagement.errors.update' : 'categoryManagement.errors.add'));
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const openDeleteConfirm = (id) => {
+    setDeletingCategoryId(id);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingCategoryId) return;
+    setIsConfirmModalOpen(false);
+
+    setCategories(prev => prev.map(c => c.id === deletingCategoryId ? { ...c, deleting: true } : c));
+
+    setTimeout(async () => {
+      try {
+        await categoryService.deleteCategory(deletingCategoryId);
+        setCategories(prev => prev.filter(c => c.id !== deletingCategoryId));
+      } catch (err) {
+        setError(t('categoryManagement.errors.delete'));
+        console.error(err);
+        await fetchCategories();
+      } finally {
+        setDeletingCategoryId(null);
+      }
+    }, 300);
+  };
+
+  if (isLoading) return <LoadingScreen fullScreen={false} />;
+
+  return (
+    <>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-brand-primary">{t('categoryManagement.title')}</h1>
+        <button
+          onClick={() => openModal()}
+          className="flex items-center gap-2 bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
+        >
+          <Plus size={20} /> {t('categoryManagement.addCategory')}
+        </button>
+      </div>
+
+      {error && !isModalOpen && (
+        <div className="bg-red-900/20 border border-red-500/30 text-red-300 p-4 rounded-lg mb-6">
+          {error}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {categories.map((category) => (
+          <div
+            key={category.id}
+            className={`bg-black/20 border border-brand-border rounded-20 p-5 flex justify-between items-center transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1 ${category.deleting ? 'animate-fade-out' : ''}`}
+          >
+            <span className="text-lg font-semibold">{category.name}</span>
+            <div className="flex gap-3">
+              <button
+                onClick={() => openModal(category)}
+                className="text-brand-secondary hover:text-brand-primary transition-colors"
+              >
+                <Edit size={20} />
+              </button>
+              <button
+                onClick={() => openDeleteConfirm(category.id)}
+                className="text-brand-secondary hover:text-red-500 transition-colors"
+              >
+                <Trash2 size={20} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title={editingCategory ? t('categoryManagement.editCategory') : t('categoryManagement.addCategory')}
+        maxWidth="max-w-md"
+      >
+        <form onSubmit={handleFormSubmit} className="space-y-4">
+          {error && (
+            <div className="bg-red-900/20 border border-red-500/30 text-red-300 p-3 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-brand-secondary mb-2">
+              {t('categoryManagement.form.name')}
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleFormChange}
+              required
+              className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+            />
+          </div>
+
+          <div className="flex justify-end gap-4 pt-4">
+            {!isSubmitting && (
+              <button
+                type="button"
+                onClick={closeModal}
+                className="bg-brand-border/10 hover:bg-brand-border/20 text-brand-primary font-bold py-2.5 px-5 rounded-lg transition-colors"
+              >
+                {t('common.cancel')}
+              </button>
+            )}
+            <button
+              type="submit"
+              className="bg-brand-primary hover:bg-opacity-90 text-brand-background font-bold py-2.5 px-5 rounded-lg transition-colors transform active:scale-95 flex items-center justify-center w-24"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? <Loader2 className="animate-spin" /> : t('common.save')}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title={t('common.delete')}
+        message={t('categoryManagement.confirmDelete')}
+      />
+    </>
+  );
+};
+
+export default CategoryManagement;

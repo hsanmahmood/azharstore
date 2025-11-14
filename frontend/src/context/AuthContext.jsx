@@ -1,46 +1,37 @@
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
-import LogRocket from 'logrocket';
+import { authService } from '../services/api';
 
-export const AuthContext = createContext(null);
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('authToken'));
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Validate token on mount
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      const adminUser = { name: 'Admin', email: 'admin@azhar.store' };
-      setUser(adminUser);
-      LogRocket.identify('admin_user', {
-        name: adminUser.name,
-        email: adminUser.email,
-        subscriptionType: 'pro',
-      });
+      setIsLoading(false);
     } else {
-      delete axios.defaults.headers.common['Authorization'];
-      setUser(null);
+      setIsLoading(false);
     }
   }, [token]);
 
-  const login = (newToken) => {
-    localStorage.setItem('authToken', newToken);
+  const login = async (password) => {
+    const response = await authService.login(password);
+    const newToken = response.data.access_token;
+    localStorage.setItem('token', newToken);
     setToken(newToken);
+    return response;
   };
 
   const logout = () => {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('token');
     setToken(null);
   };
 
-  const value = {
-    user,
-    token,
-    isAuthenticated: !!token,
-    login,
-    logout,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ token, login, logout, isLoading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };

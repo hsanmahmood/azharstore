@@ -1,46 +1,48 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+  darkMode: "class",
   theme: {
     extend: {
+      fontFamily: {
+        arabic: ["system-ui", "sans-serif"],
+      },
       colors: {
         brand: {
-          background: '#1a1a1a',
-          border: '#333333',
-          primary: '#ffffff',
-          secondary: '#b3b3b3',
-          gray: '#808080',
+          background: "#1a1a1a",
+          gray: "#6e6c6f",
+          white: "#ffffff",
+          black: "#000000",
+          primary: "#ffffff",
+          secondary: "#a0a0a0",
+          border: "rgba(255, 255, 255, 0.1)",
         },
       },
       borderRadius: {
-        '20': '20px',
+        20: "20px",
       },
       boxShadow: {
-        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-      },
-      animation: {
-        'modal-in': 'modal-in 0.3s ease-out forwards',
-        'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
-        'fade-out': 'fade-out 0.3s ease-in forwards',
+        card: "0 8px 24px rgba(0,0,0,0.4)",
       },
       keyframes: {
-        'modal-in': {
-          '0%': { opacity: 0, transform: 'scale(0.95) translateY(10px)' },
-          '100%': { opacity: 1, transform: 'scale(1) translateY(0)' },
+        modalIn: {
+          "0%": { opacity: 0, transform: "translateY(20px) scale(0.98)" },
+          "100%": { opacity: 1, transform: "translateY(0) scale(1)" },
         },
-        'fade-in-up': {
-          '0%': { opacity: 0, transform: 'translateY(20px)' },
-          '100%': { opacity: 1, transform: 'translateY(0)' },
+        fadeOut: {
+          "100%": { opacity: 0, transform: "scale(0.95)" },
         },
-        'fade-out': {
-          '0%': { opacity: 1, transform: 'scale(1)' },
-          '100%': { opacity: 0, transform: 'scale(0.95)' },
+        fadeInUp: {
+          "0%": { opacity: 0, transform: "translateY(20px)" },
+          "100%": { opacity: 1, transform: "translateY(0)" },
         },
+      },
+      animation: {
+        "modal-in": "modalIn 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        "fade-out": "fadeOut 300ms ease-out forwards",
+        "fade-in-up": "fadeInUp 400ms ease-out forwards",
       },
     },
   },
   plugins: [],
-}
+};

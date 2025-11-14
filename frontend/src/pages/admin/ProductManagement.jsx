@@ -1,0 +1,340 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { productService, categoryService } from '../../services/api';
+import { Plus, Loader2, Upload, X, Image as ImageIcon, ChevronDown } from 'lucide-react';
+import Modal from '../../components/Modal';
+import ProductCard from './ProductCard';
+import LoadingScreen from '../../components/LoadingScreen';
+import ConfirmationModal from '../../components/ConfirmationModal';
+
+const ProductManagement = () => {
+  const { t } = useTranslation();
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [deletingProductId, setDeletingProductId] = useState(null);
+  const [uploadingImages, setUploadingImages] = useState(false);
+
+  const initialFormState = {
+    name: '',
+    description: '',
+    price: '',
+    category_id: '',
+    stock: '',
+  };
+  const [formData, setFormData] = useState(initialFormState);
+  const [selectedImages, setSelectedImages] = useState([]);
+
+  const fetchProducts = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const [productsRes, categoriesRes] = await Promise.all([
+        productService.getAllProducts(),
+        categoryService.getAllCategories(),
+      ]);
+      setProducts(productsRes.data);
+      setCategories(categoriesRes);
+      setError('');
+    } catch (err) {
+      setError(t('productManagement.errors.fetch'));
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [t]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  const openModal = (product = null) => {
+    setEditingProduct(product);
+    if (product) {
+      setFormData({
+        name: product.name,
+        description: product.description || '',
+        price: product.price,
+        category_id: product.category_id || '',
+        stock: product.stock || 0,
+      });
+    } else {
+      setFormData(initialFormState);
+    }
+    setSelectedImages([]);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingProduct(null);
+    setSelectedImages([]);
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleImageSelect = (e) => {
+    const files = Array.from(e.target.files);
+    setSelectedImages(files);
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const payload = {
+        ...formData,
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock) || 0,
+        category_id: formData.category_id ? parseInt(formData.category_id) : null,
+      };
+
+      let productResponse;
+      if (editingProduct) {
+        productResponse = await productService.updateProduct(editingProduct.id, payload);
+      } else {
+        productResponse = await productService.createProduct(payload);
+      }
+
+      const productId = productResponse.data.id;
+
+      // Upload images if any selected
+      if (selectedImages.length > 0) {
+        setUploadingImages(true);
+        for (const image of selectedImages) {
+          await productService.uploadImage(productId, image);
+        }
+        setUploadingImages(false);
+      }
+
+      await fetchProducts();
+      closeModal();
+    } catch (err) {
+      setError(t(editingProduct ? 'productManagement.errors.update' : 'productManagement.errors.add'));
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+      setUploadingImages(false);
+    }
+  };
+
+  const openDeleteConfirm = (id) => {
+    setDeletingProductId(id);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingProductId) return;
+    setIsConfirmModalOpen(false);
+
+    setProducts(prev => prev.map(p => p.id === deletingProductId ? { ...p, deleting: true } : p));
+
+    setTimeout(async () => {
+      try {
+        await productService.deleteProduct(deletingProductId);
+        setProducts(prev => prev.filter(p => p.id !== deletingProductId));
+      } catch (err) {
+        setError(t('productManagement.errors.delete'));
+        console.error(err);
+        await fetchProducts();
+      } finally {
+        setDeletingProductId(null);
+      }
+    }, 300);
+  };
+
+  if (isLoading) return <LoadingScreen fullScreen={false} />;
+
+  return (
+    <>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-brand-primary">{t('productManagement.title')}</h1>
+        <button
+          onClick={() => openModal()}
+          className="flex items-center gap-2 bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
+        >
+          <Plus size={20} /> {t('productManagement.addProduct')}
+        </button>
+      </div>
+
+      {error && !isModalOpen && (
+        <div className="bg-red-900/20 border border-red-500/30 text-red-300 p-4 rounded-lg mb-6">
+          {error}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            onEdit={openModal}
+            onDelete={openDeleteConfirm}
+          />
+        ))}
+      </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title={editingProduct ? t('productManagement.editProduct') : t('productManagement.addProduct')}
+        maxWidth="max-w-2xl"
+      >
+        <form onSubmit={handleFormSubmit} className="space-y-6">
+          {error && (
+            <div className="bg-red-900/20 border border-red-500/30 text-red-300 p-3 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-brand-secondary mb-2">
+                {t('productManagement.form.name')}
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleFormChange}
+                required
+                className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+              />
+            </div>
+
+            <div className="relative">
+              <label className="block text-sm font-medium text-brand-secondary mb-2">
+                {t('productManagement.form.category')}
+              </label>
+              <select
+                name="category_id"
+                value={formData.category_id}
+                onChange={handleFormChange}
+                className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50 appearance-none"
+              >
+                <option value="">{t('productManagement.form.selectCategory')}</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute bottom-0 left-0 flex items-center px-3 pb-3">
+                <ChevronDown className="h-5 w-5 text-brand-secondary" />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-brand-secondary mb-2">
+              {t('productManagement.form.description')}
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleFormChange}
+              rows="3"
+              className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-brand-secondary mb-2">
+                {t('productManagement.form.price')}
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                name="price"
+                value={formData.price}
+                onChange={handleFormChange}
+                required
+                className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-brand-secondary mb-2">
+                {t('productManagement.form.stock')}
+              </label>
+              <input
+                type="number"
+                name="stock"
+                value={formData.stock}
+                onChange={handleFormChange}
+                className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-brand-secondary mb-2">
+              {t('productManagement.form.images')}
+            </label>
+            <label className="flex justify-center items-center w-full h-32 px-6 border-2 border-brand-border border-dashed rounded-lg cursor-pointer hover:border-brand-primary/50 transition-colors">
+              <div className="space-y-1 text-center">
+                <Upload className="mx-auto h-10 w-10 text-brand-secondary" />
+                <p className="text-sm text-brand-secondary">
+                  {selectedImages.length > 0
+                    ? `${selectedImages.length} صور محددة`
+                    : 'انقر لرفع الصور'}
+                </p>
+              </div>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="sr-only"
+              />
+            </label>
+          </div>
+
+          <div className="flex justify-end gap-4 pt-4">
+            {!isSubmitting && (
+              <button
+                type="button"
+                onClick={closeModal}
+                className="bg-brand-border/10 hover:bg-brand-border/20 text-brand-primary font-bold py-2.5 px-5 rounded-lg transition-colors"
+              >
+                {t('common.cancel')}
+              </button>
+            )}
+            <button
+              type="submit"
+              className="bg-brand-primary hover:bg-opacity-90 text-brand-background font-bold py-2.5 px-5 rounded-lg transition-colors transform active:scale-95 flex items-center justify-center min-w-[120px]"
+              disabled={isSubmitting || uploadingImages}
+            >
+              {isSubmitting || uploadingImages ? (
+                <>
+                  <Loader2 className="animate-spin ml-2" />
+                  <span>{uploadingImages ? 'جاري رفع الصور...' : 'جاري الحفظ...'}</span>
+                </>
+              ) : (
+                t('common.save')
+              )}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title={t('common.delete')}
+        message={t('productManagement.confirmDelete')}
+      />
+    </>
+  );
+};
+
+export default ProductManagement;
