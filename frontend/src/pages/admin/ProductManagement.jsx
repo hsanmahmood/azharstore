@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { productService, categoryService } from '../../services/api';
 import { Plus, Loader2, Upload, X, Image as ImageIcon, ChevronDown } from 'lucide-react';
-import Modal from '../../components/Modal';
 import ProductCard from './ProductCard';
 import LoadingScreen from '../../components/LoadingScreen';
-import ConfirmationModal from '../../components/ConfirmationModal';
+
+const Modal = lazy(() => import('../../components/Modal'));
+const ConfirmationModal = lazy(() => import('../../components/ConfirmationModal'));
 
 const ProductManagement = () => {
   const { t } = useTranslation();
@@ -29,6 +30,7 @@ const ProductManagement = () => {
   };
   const [formData, setFormData] = useState(initialFormState);
   const [selectedImages, setSelectedImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
@@ -73,6 +75,7 @@ const ProductManagement = () => {
     setIsModalOpen(false);
     setEditingProduct(null);
     setSelectedImages([]);
+    setImagePreviews([]);
   };
 
   const handleFormChange = (e) => {
@@ -83,7 +86,19 @@ const ProductManagement = () => {
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files);
     setSelectedImages(files);
+
+    const previews = files.map(file => URL.createObjectURL(file));
+    setImagePreviews(previews);
   };
+
+  const removeImage = (index) => {
+    const newImages = [...selectedImages];
+    const newPreviews = [...imagePreviews];
+    newImages.splice(index, 1);
+    newPreviews.splice(index, 1);
+    setSelectedImages(newImages);
+    setImagePreviews(newPreviews);
+  }
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -97,6 +112,23 @@ const ProductManagement = () => {
         stock: parseInt(formData.stock) || 0,
         category_id: formData.category_id ? parseInt(formData.category_id) : null,
       };
+
+      // Optimistic UI update
+      const tempId = `temp-${Date.now()}`;
+      const newProduct = {
+        ...payload,
+        id: tempId,
+        product_images: imagePreviews.map(url => ({ image_url: url, is_primary: false })),
+        category: categories.find(c => c.id === payload.category_id),
+        optimistic: true,
+      };
+
+      if (!editingProduct) {
+        setProducts(prev => [newProduct, ...prev]);
+      } else {
+        setProducts(prev => prev.map(p => p.id === editingProduct.id ? { ...p, ...payload } : p));
+      }
+      closeModal();
 
       let productResponse;
       if (editingProduct) {
@@ -116,8 +148,18 @@ const ProductManagement = () => {
         setUploadingImages(false);
       }
 
-      await fetchProducts();
-      closeModal();
+      // Replace optimistic product with actual product
+      setProducts(prev => {
+        const newProducts = [...prev];
+        const index = newProducts.findIndex(p => p.id === tempId);
+        if (index !== -1) {
+          newProducts[index] = { ...productResponse.data, optimistic: false };
+        }
+        return newProducts;
+      });
+
+      // Optionally, refetch everything to be sure
+      // await fetchProducts();
     } catch (err) {
       setError(t(editingProduct ? 'productManagement.errors.update' : 'productManagement.errors.add'));
       console.error(err);
@@ -179,17 +221,20 @@ const ProductManagement = () => {
             product={product}
             onEdit={openModal}
             onDelete={openDeleteConfirm}
+            optimistic={product.optimistic}
           />
         ))}
       </div>
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        title={editingProduct ? t('productManagement.editProduct') : t('productManagement.addProduct')}
-        maxWidth="max-w-2xl"
-      >
-        <form onSubmit={handleFormSubmit} className="space-y-6">
+      <Suspense fallback={<div>Loading...</div>}>
+        {isModalOpen && (
+          <Modal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            title={editingProduct ? t('productManagement.editProduct') : t('productManagement.addProduct')}
+            maxWidth="max-w-2xl"
+          >
+            <form onSubmit={handleFormSubmit} className="space-y-6">
           {error && (
             <div className="bg-red-900/20 border border-red-500/30 text-red-300 p-3 rounded-lg text-sm">
               {error}
@@ -279,13 +324,23 @@ const ProductManagement = () => {
             <label className="block text-sm font-medium text-brand-secondary mb-2">
               {t('productManagement.form.images')}
             </label>
-            <label className="flex justify-center items-center w-full h-32 px-6 border-2 border-brand-border border-dashed rounded-lg cursor-pointer hover:border-brand-primary/50 transition-colors">
+            <div className="grid grid-cols-3 gap-4">
+              {imagePreviews.map((preview, index) => (
+                <div key={index} className="relative">
+                  <img src={preview} alt={`Preview ${index}`} className="w-full h-24 object-cover rounded-lg" />
+                  <button type="button" onClick={() => removeImage(index)} className="absolute top-1 right-1 bg-black/50 rounded-full p-1 text-white">
+                    <X size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <label className="mt-4 flex justify-center items-center w-full h-32 px-6 border-2 border-brand-border border-dashed rounded-lg cursor-pointer hover:border-brand-primary/50 transition-colors">
               <div className="space-y-1 text-center">
                 <Upload className="mx-auto h-10 w-10 text-brand-secondary" />
                 <p className="text-sm text-brand-secondary">
                   {selectedImages.length > 0
-                    ? `${selectedImages.length} صور محددة`
-                    : 'انقر لرفع الصور'}
+                    ? `${selectedImages.length} images selected`
+                    : 'Click to upload images'}
                 </p>
               </div>
               <input
@@ -324,15 +379,18 @@ const ProductManagement = () => {
             </button>
           </div>
         </form>
-      </Modal>
-
-      <ConfirmationModal
-        isOpen={isConfirmModalOpen}
-        onClose={() => setIsConfirmModalOpen(false)}
-        onConfirm={handleConfirmDelete}
-        title={t('common.delete')}
-        message={t('productManagement.confirmDelete')}
-      />
+          </Modal>
+        )}
+        {isConfirmModalOpen && (
+          <ConfirmationModal
+            isOpen={isConfirmModalOpen}
+            onClose={() => setIsConfirmModalOpen(false)}
+            onConfirm={handleConfirmDelete}
+            title={t('common.delete')}
+            message={t('productManagement.confirmDelete')}
+          />
+        )}
+      </Suspense>
     </>
   );
 };

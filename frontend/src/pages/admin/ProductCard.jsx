@@ -1,13 +1,18 @@
 import React from 'react';
 import { Edit, Trash2, DollarSign, Package } from 'lucide-react';
 
-const ProductCard = ({ product, onEdit, onDelete }) => {
+const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
+  const cardClasses = `
+    bg-black/20 border border-brand-border rounded-2xl p-4 flex flex-col justify-between
+    transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1
+    ${optimistic ? 'opacity-50 animate-pulse' : ''}
+  `;
   return (
-    <div className="bg-black/20 border border-brand-border rounded-2xl p-4 flex flex-col justify-between transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1">
+    <div className={cardClasses}>
       <div>
-        {product.images?.[0] && (
+        {product.product_images?.[0] && (
           <img
-            src={product.images[0].url}
+            src={product.product_images[0].image_url}
             alt={product.name}
             className="w-full h-48 object-cover rounded-lg mb-3"
           />
@@ -31,7 +36,7 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
           </div>
           <div className="flex items-center gap-2 text-brand-secondary">
             <Package size={14} />
-            <span>المخزون: {product.stock}</span>
+            <span>المخزون: {product.stock_quantity}</span>
           </div>
         </div>
       </div>

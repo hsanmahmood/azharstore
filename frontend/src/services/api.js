@@ -50,12 +50,29 @@ export const productService = {
 };
 
 // Category services
+let cachedCategories = null;
 export const categoryService = {
-  getAllCategories: () => api.get('/categories').then(res => res.data),
+  getAllCategories: async () => {
+    if (cachedCategories) {
+      return cachedCategories;
+    }
+    const res = await api.get('/categories');
+    cachedCategories = res.data;
+    return cachedCategories;
+  },
   getCategory: (id) => api.get(`/categories/${id}`),
-  createCategory: (data) => api.post('/admin/categories', data),
-  updateCategory: (id, data) => api.patch(`/admin/categories/${id}`, data),
-  deleteCategory: (id) => api.delete(`/admin/categories/${id}`),
+  createCategory: (data) => api.post('/admin/categories', data).then(res => {
+    cachedCategories = null; // Invalidate cache
+    return res.data;
+  }),
+  updateCategory: (id, data) => api.patch(`/admin/categories/${id}`, data).then(res => {
+    cachedCategories = null; // Invalidate cache
+    return res.data;
+  }),
+  deleteCategory: (id) => api.delete(`/admin/categories/${id}`).then(res => {
+    cachedCategories = null; // Invalidate cache
+    return res.data;
+  }),
 };
 
 // Auth services
