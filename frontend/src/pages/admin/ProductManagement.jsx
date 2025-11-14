@@ -12,6 +12,8 @@ const ProductManagement = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -31,15 +33,16 @@ const ProductManagement = () => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
 
-  const fetchProducts = useCallback(async () => {
+  const fetchProducts = useCallback(async (pageNum = 1) => {
     setIsLoading(true);
     try {
-      const [productsRes, categoriesRes] = await Promise.all([
-        productService.getAllProducts(),
-        categoryService.getAllCategories(),
-      ]);
-      setProducts(productsRes.data);
-      setCategories(categoriesRes);
+      const productsRes = await productService.getAllProducts(pageNum);
+      setProducts(prev => pageNum === 1 ? productsRes.data : [...prev, ...productsRes.data]);
+      setHasMore(productsRes.data.length > 0);
+      if (pageNum === 1) {
+        const categoriesRes = await categoryService.getAllCategories();
+        setCategories(categoriesRes);
+      }
       setError('');
     } catch (err) {
       setError(t('productManagement.errors.fetch'));
@@ -48,6 +51,12 @@ const ProductManagement = () => {
       setIsLoading(false);
     }
   }, [t]);
+
+  const loadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchProducts(nextPage);
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -109,9 +118,10 @@ const ProductManagement = () => {
       const payload = {
         ...formData,
         price: parseFloat(formData.price),
-        stock: parseInt(formData.stock) || 0,
+        stock_quantity: parseInt(formData.stock) || 0,
         category_id: formData.category_id ? parseInt(formData.category_id) : null,
       };
+      delete payload.stock;
 
       let productResponse;
       if (editingProduct) {
@@ -197,6 +207,18 @@ const ProductManagement = () => {
           />
         ))}
       </div>
+
+      {hasMore && (
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={loadMore}
+            className="bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200"
+            disabled={isLoading}
+          >
+            {isLoading ? t('common.loading') : t('common.loadMore')}
+          </button>
+        </div>
+      )}
 
       <Modal
         isOpen={isModalOpen}

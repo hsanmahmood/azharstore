@@ -28,8 +28,8 @@ def login_for_access_token(form_data: schemas.AdminLoginRequest):
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/products", response_model=List[schemas.Product], tags=["Products"])
-def list_products(supabase: Client = Depends(get_supabase_client)):
-    return services.get_products(supabase=supabase)
+def list_products(skip: int = 0, limit: int = 20, supabase: Client = Depends(get_supabase_client)):
+    return services.get_products(supabase=supabase, skip=skip, limit=limit)
 
 @router.get("/products/{product_id}", response_model=schemas.Product, tags=["Products"])
 def get_product(product_id: int, supabase: Client = Depends(get_supabase_client)):
@@ -72,8 +72,8 @@ def create_category(category: schemas.CategoryCreate, supabase: Client = Depends
     return services.create_category(category=category, supabase=supabase)
 
 @admin_router.get("/products", response_model=List[schemas.Product], tags=["Admin - Products"])
-def admin_list_products(supabase: Client = Depends(get_supabase_client)):
-    return services.get_products(supabase=supabase)
+def admin_list_products(skip: int = 0, limit: int = 20, supabase: Client = Depends(get_supabase_client)):
+    return services.get_products(supabase=supabase, skip=skip, limit=limit)
 
 @admin_router.get("/categories", response_model=List[schemas.Category], tags=["Admin - Categories"])
 def admin_list_categories(supabase: Client = Depends(get_supabase_client)):
