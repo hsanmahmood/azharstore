@@ -23,7 +23,7 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-3xl' }) => 
             <X size={24} />
           </button>
         </div>
-        <div className="p-6 overflow-y-auto flex-grow text-white">
+        <div className="p-6 overflow-y-auto flex-grow text-white scrollbar-hide">
           {children}
         </div>
       </div>
