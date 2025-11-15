@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
 import { productService } from '../../services/api';
-import { Plus, Loader2, Upload, X, Image as ImageIcon, ChevronDown } from 'lucide-react';
+import { Plus, Loader2, Upload, X, Image as ImageIcon, ChevronDown, Trash2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import Dropdown from '../../components/Dropdown';
 import ProductCard from './ProductCard';
@@ -19,6 +19,7 @@ const ProductManagement = () => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [deletingProductId, setDeletingProductId] = useState(null);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [activeTab, setActiveTab] = useState('details');
 
   const initialFormState = {
     name: '',
@@ -228,9 +229,48 @@ const ProductManagement = () => {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-brand-secondary mb-2">
+          <div className="border-b border-brand-border">
+            <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+              <button
+                type="button"
+                className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'details'
+                    ? 'border-brand-primary text-brand-primary'
+                    : 'border-transparent text-brand-secondary hover:text-brand-primary/80 hover:border-gray-300'
+                }`}
+                onClick={() => setActiveTab('details')}
+              >
+                {t('productManagement.tabs.details')}
+              </button>
+              <button
+                type="button"
+                className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'images'
+                    ? 'border-brand-primary text-brand-primary'
+                    : 'border-transparent text-brand-secondary hover:text-brand-primary/80 hover:border-gray-300'
+                }`}
+                onClick={() => setActiveTab('images')}
+              >
+                {t('productManagement.tabs.images')}
+              </button>
+              <button
+                type="button"
+                className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'variants'
+                    ? 'border-brand-primary text-brand-primary'
+                    : 'border-transparent text-brand-secondary hover:text-brand-primary/80 hover:border-gray-300'
+                }`}
+                onClick={() => setActiveTab('variants')}
+              >
+                {t('productManagement.tabs.variants')}
+              </button>
+            </nav>
+          </div>
+
+          <div className={activeTab === 'details' ? '' : 'hidden'}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-brand-secondary mb-2">
                 {t('productManagement.form.name')}
               </label>
               <input
@@ -299,7 +339,9 @@ const ProductManagement = () => {
               />
             </div>
           </div>
+        </div>
 
+        <div className={activeTab === 'variants' ? '' : 'hidden'}>
           <div>
             <div className="flex justify-between items-center mb-4">
               <label className="text-sm font-medium text-brand-secondary">
@@ -347,7 +389,9 @@ const ProductManagement = () => {
               </div>
             )}
           </div>
+        </div>
 
+        <div className={activeTab === 'images' ? '' : 'hidden'}>
           <div>
             <label className="block text-sm font-medium text-brand-secondary mb-2">
               {t('productManagement.form.images')}
@@ -367,8 +411,8 @@ const ProductManagement = () => {
                 <Upload className="mx-auto h-10 w-10 text-brand-secondary" />
                 <p className="text-sm text-brand-secondary">
                   {selectedImages.length > 0
-                    ? `${selectedImages.length} images selected`
-                    : 'Click to upload images'}
+                    ? t('productManagement.form.imagesSelected', { count: selectedImages.length })
+                    : t('productManagement.form.clickToUpload')}
                 </p>
               </div>
               <input
@@ -380,6 +424,7 @@ const ProductManagement = () => {
               />
             </label>
           </div>
+        </div>
 
           <div className="flex justify-end gap-4 pt-4">
             {!isSubmitting && (
@@ -399,7 +444,7 @@ const ProductManagement = () => {
               {isSubmitting || uploadingImages ? (
                 <>
                   <Loader2 className="animate-spin ml-2" />
-                  <span>{uploadingImages ? 'جاري رفع الصور...' : 'جاري الحفظ...'}</span>
+                  <span>{uploadingImages ? t('productManagement.uploadingImages') : t('productManagement.saving')}</span>
                 </>
               ) : (
                 t('common.save')

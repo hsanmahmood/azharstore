@@ -27,8 +27,21 @@
       "category": "الفئة",
       "selectCategory": "اختر فئة",
       "stock": "الكمية",
-      "images": "الصور"
+      "images": "الصور",
+      "variants": "الخيارات",
+      "addVariant": "إضافة خيار",
+      "variantName": "اسم الخيار",
+      "totalStock": "إجمالي المخزون",
+      "imagesSelected": "{{count}} صور مختارة",
+      "clickToUpload": "انقر لتحميل الصور"
     },
+    "tabs": {
+      "details": "التفاصيل",
+      "images": "الصور",
+      "variants": "الخيارات"
+    },
+    "saving": "جاري الحفظ...",
+    "uploadingImages": "جاري رفع الصور...",
     "errors": {
       "fetch": "فشل في تحميل المنتجات",
       "add": "فشل في إضافة المنتج",
