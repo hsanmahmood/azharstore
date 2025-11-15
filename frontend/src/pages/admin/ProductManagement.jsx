@@ -4,6 +4,7 @@ import { DataContext } from '../../context/DataContext';
 import { productService } from '../../services/api';
 import { Plus, Loader2, Upload, X, Image as ImageIcon, ChevronDown } from 'lucide-react';
 import Modal from '../../components/Modal';
+import Dropdown from '../../components/Dropdown';
 import ProductCard from './ProductCard';
 import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
@@ -208,20 +209,12 @@ const ProductManagement = () => {
               <label className="block text-sm font-medium text-brand-secondary mb-2">
                 {t('productManagement.form.category')}
               </label>
-              <select
-                name="category_id"
+              <Dropdown
+                options={categories.map((cat) => ({ value: cat.id, label: cat.name }))}
                 value={formData.category_id}
-                onChange={handleFormChange}
-                className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50 appearance-none"
-              >
-                <option value="">{t('productManagement.form.selectCategory')}</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute bottom-0 left-0 flex items-center px-3 pb-3">
-                <ChevronDown className="h-5 w-5 text-brand-secondary" />
-              </div>
+                onChange={(option) => handleFormChange({ target: { name: 'category_id', value: option.value } })}
+                placeholder={t('productManagement.form.selectCategory')}
+              />
             </div>
           </div>
 
