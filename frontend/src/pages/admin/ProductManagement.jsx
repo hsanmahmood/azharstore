@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { productService, categoryService } from '../../services/api';
+import { DataContext } from '../../context/DataContext';
+import { productService } from '../../services/api';
 import { Plus, Loader2, Upload, X, Image as ImageIcon, ChevronDown } from 'lucide-react';
 import Modal from '../../components/Modal';
 import ProductCard from './ProductCard';
@@ -9,9 +10,7 @@ import ConfirmationModal from '../../components/ConfirmationModal';
 
 const ProductManagement = () => {
   const { t } = useTranslation();
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { products, setProducts, categories, isLoading, error: dataError, refreshData } = useContext(DataContext);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -30,28 +29,6 @@ const ProductManagement = () => {
   const [formData, setFormData] = useState(initialFormState);
   const [selectedImages, setSelectedImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
-
-  const fetchProducts = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const [productsRes, categoriesRes] = await Promise.all([
-        productService.getAllProducts(),
-        categoryService.getAllCategories(),
-      ]);
-      setProducts(productsRes.data);
-      setCategories(categoriesRes);
-      setError('');
-    } catch (err) {
-      setError(t('productManagement.errors.fetch'));
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [t]);
-
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
 
   const openModal = (product = null) => {
     setEditingProduct(product);
@@ -161,7 +138,7 @@ const ProductManagement = () => {
       } catch (err) {
         setError(t('productManagement.errors.delete'));
         console.error(err);
-        await fetchProducts();
+        await refreshData();
       } finally {
         setDeletingProductId(null);
       }
@@ -182,9 +159,9 @@ const ProductManagement = () => {
         </button>
       </div>
 
-      {error && !isModalOpen && (
+      {dataError && !isModalOpen && (
         <div className="bg-red-900/20 border border-red-500/30 text-red-300 p-4 rounded-lg mb-6">
-          {error}
+          {dataError}
         </div>
       )}
 
