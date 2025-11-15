@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DataContext } from '../../context/DataContext';
 import { categoryService } from '../../services/api';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import Modal from '../../components/Modal';
@@ -8,8 +9,7 @@ import ConfirmationModal from '../../components/ConfirmationModal';
 
 const CategoryManagement = () => {
   const { t } = useTranslation();
-  const [categories, setCategories] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { categories, setCategories, isLoading, error: dataError, refreshData } = useContext(DataContext);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
@@ -17,24 +17,6 @@ const CategoryManagement = () => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [deletingCategoryId, setDeletingCategoryId] = useState(null);
   const [formData, setFormData] = useState({ name: '' });
-
-  const fetchCategories = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await categoryService.getAllCategories();
-      setCategories(data);
-      setError('');
-    } catch (err) {
-      setError(t('categoryManagement.errors.fetch'));
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [t]);
-
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
 
   const openModal = (category = null) => {
     setEditingCategory(category);
@@ -64,7 +46,7 @@ const CategoryManagement = () => {
       } else {
         await categoryService.createCategory(formData);
       }
-      await fetchCategories();
+      await refreshData();
       closeModal();
     } catch (err) {
       setError(t(editingCategory ? 'categoryManagement.errors.update' : 'categoryManagement.errors.add'));
@@ -92,7 +74,7 @@ const CategoryManagement = () => {
       } catch (err) {
         setError(t('categoryManagement.errors.delete'));
         console.error(err);
-        await fetchCategories();
+        await refreshData();
       } finally {
         setDeletingCategoryId(null);
       }
@@ -113,9 +95,9 @@ const CategoryManagement = () => {
         </button>
       </div>
 
-      {error && !isModalOpen && (
+      {dataError && !isModalOpen && (
         <div className="bg-red-900/20 border border-red-500/30 text-red-300 p-4 rounded-lg mb-6">
-          {error}
+          {dataError}
         </div>
       )}
 
