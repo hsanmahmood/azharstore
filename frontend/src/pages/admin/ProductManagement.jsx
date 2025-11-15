@@ -148,11 +148,7 @@ const ProductManagement = () => {
         setUploadingImages(false);
       }
 
-      if (editingProduct) {
-        setProducts(products.map(p => p.id === editingProduct.id ? productResponse.data : p));
-      } else {
-        setProducts([productResponse.data, ...products]);
-      }
+      await refreshData();
       closeModal();
     } catch (err) {
       setError(t(editingProduct ? 'productManagement.errors.update' : 'productManagement.errors.add'));
