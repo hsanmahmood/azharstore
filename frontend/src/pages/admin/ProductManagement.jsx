@@ -25,7 +25,7 @@ const ProductManagement = () => {
     description: '',
     price: '',
     category_id: '',
-    stock: '',
+    stock_quantity: '',
   };
   const [formData, setFormData] = useState(initialFormState);
   const [selectedImages, setSelectedImages] = useState([]);
@@ -53,18 +53,17 @@ const ProductManagement = () => {
     fetchProducts();
   }, [fetchProducts]);
 
-  const openModal = async (product = null) => {
+  const openModal = (product = null) => {
     setEditingProduct(product);
     if (product) {
-      const { data: fullProduct } = await productService.getProduct(product.id);
       setFormData({
-        name: fullProduct.name,
-        description: fullProduct.description || '',
-        price: fullProduct.price,
-        category_id: fullProduct.category_id || '',
-        stock: fullProduct.stock_quantity || 0,
+        name: product.name,
+        description: product.description || '',
+        price: product.price,
+        category_id: product.category_id || '',
+        stock_quantity: product.stock_quantity || 0,
       });
-      setImagePreviews(fullProduct.product_images.map(img => img.image_url));
+      setImagePreviews(product.product_images.map(img => img.image_url));
     } else {
       setFormData(initialFormState);
       setImagePreviews([]);
@@ -107,7 +106,7 @@ const ProductManagement = () => {
       const payload = {
         ...formData,
         price: parseFloat(formData.price),
-        stock: parseInt(formData.stock) || 0,
+        stock_quantity: parseInt(formData.stock_quantity) || 0,
         category_id: formData.category_id ? parseInt(formData.category_id) : null,
       };
 
@@ -284,8 +283,8 @@ const ProductManagement = () => {
               </label>
               <input
                 type="number"
-                name="stock"
-                value={formData.stock}
+                name="stock_quantity"
+                value={formData.stock_quantity}
                 onChange={handleFormChange}
                 className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
               />

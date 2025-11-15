@@ -56,7 +56,7 @@ def delete_category(category_id: int, supabase: Client = Depends(get_supabase_cl
     return bool(response.data)
 
 def get_products(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Product]:
-    response = supabase.table("products").select("*, category:categories(*), product_images!inner(*)").eq("product_images.is_primary", True).execute()
+    response = supabase.table("products").select("*, category:categories(*), product_images(*)").execute()
     return response.data
 
 def get_product(product_id: int, supabase: Client = Depends(get_supabase_client)) -> schemas.Product | None:

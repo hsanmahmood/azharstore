@@ -9,6 +9,7 @@ export default {
         arabic: ['Tajawal', 'sans-serif'],
       },
       colors: {
+        "background-dark": "#161617",
         brand: {
           background: "#1a1a1a",
           gray: "#6e6c6f",
