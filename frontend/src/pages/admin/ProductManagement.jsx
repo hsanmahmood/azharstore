@@ -11,7 +11,16 @@ import ConfirmationModal from '../../components/ConfirmationModal';
 
 const ProductManagement = () => {
   const { t } = useTranslation();
-  const { products, setProducts, categories, isLoading, error: dataError, refreshData } = useContext(DataContext);
+  const {
+    products,
+    categories,
+    isLoading,
+    error: dataError,
+    addProduct,
+    updateProduct,
+    removeProduct,
+    setProducts // Keep for error recovery on delete
+  } = useContext(DataContext);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -143,13 +152,21 @@ const ProductManagement = () => {
       // Upload images if any selected
       if (selectedImages.length > 0) {
         setUploadingImages(true);
-        for (const image of selectedImages) {
-          await productService.uploadImage(productId, image);
-        }
+        await Promise.all(selectedImages.map(image => productService.uploadImage(productId, image)));
         setUploadingImages(false);
       }
 
-      await refreshData();
+      // After all API calls, fetch the final state of the product from the backend
+      // This ensures the UI has the most up-to-date data, including image URLs, variants, etc.
+      const finalProductResponse = await productService.getProductById(productId);
+      const finalProduct = finalProductResponse.data;
+
+      if (editingProduct) {
+        updateProduct(finalProduct);
+      } else {
+        addProduct(finalProduct);
+      }
+
       closeModal();
     } catch (err) {
       setError(t(editingProduct ? 'productManagement.errors.update' : 'productManagement.errors.add'));
@@ -167,22 +184,24 @@ const ProductManagement = () => {
 
   const handleConfirmDelete = async () => {
     if (!deletingProductId) return;
+
+    const originalProducts = [...products];
+    const productToDelete = products.find(p => p.id === deletingProductId);
+
+    // Optimistically remove the product from the UI
+    removeProduct(deletingProductId);
     setIsConfirmModalOpen(false);
 
-    setProducts(prev => prev.map(p => p.id === deletingProductId ? { ...p, deleting: true } : p));
-
-    setTimeout(async () => {
-      try {
-        await productService.deleteProduct(deletingProductId);
-        setProducts(prev => prev.filter(p => p.id !== deletingProductId));
-      } catch (err) {
-        setError(t('productManagement.errors.delete'));
-        console.error(err);
-        await refreshData();
-      } finally {
-        setDeletingProductId(null);
-      }
-    }, 300);
+    try {
+      await productService.deleteProduct(deletingProductId);
+    } catch (err) {
+      setError(t('productManagement.errors.delete'));
+      console.error(err);
+      // If the delete fails, revert the state
+      setProducts(originalProducts);
+    } finally {
+      setDeletingProductId(null);
+    }
   };
 
   if (isLoading) return <LoadingScreen fullScreen={false} />;
