@@ -1,6 +1,6 @@
 import os
 import httpx
-from supabase import create_client, Client
+from supabase import create_client, Client, ClientOptions
 from .config import settings
 from httpx import Limits, Timeout
 
@@ -25,8 +25,9 @@ def get_supabase_client() -> Client:
     httpx client that includes retry logic and longer timeouts.
     """
     supabase_url = os.getenv("SUPABASE_URL", settings.SUPABASE_URL)
+    options = ClientOptions(http_client=http_client)
     return create_client(
         supabase_url,
         settings.SUPABASE_KEY,
-        options={"http_client": http_client}
+        options=options
     )
