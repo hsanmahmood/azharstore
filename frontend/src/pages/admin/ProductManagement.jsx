@@ -30,6 +30,23 @@ const ProductManagement = () => {
   const [formData, setFormData] = useState(initialFormState);
   const [selectedImages, setSelectedImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [variants, setVariants] = useState([]);
+
+  const handleVariantChange = (index, field, value) => {
+    const newVariants = [...variants];
+    newVariants[index][field] = value;
+    setVariants(newVariants);
+  };
+
+  const addVariant = () => {
+    setVariants([...variants, { name: '', stock_quantity: 0 }]);
+  };
+
+  const removeVariant = (index) => {
+    const newVariants = [...variants];
+    newVariants.splice(index, 1);
+    setVariants(newVariants);
+  };
 
   const openModal = (product = null) => {
     setEditingProduct(product);
@@ -42,9 +59,11 @@ const ProductManagement = () => {
         stock_quantity: product.stock_quantity || 0,
       });
       setImagePreviews(product.product_images.map(img => img.image_url));
+      setVariants(product.product_variants || []);
     } else {
       setFormData(initialFormState);
       setImagePreviews([]);
+      setVariants([]);
     }
     setSelectedImages([]);
     setIsModalOpen(true);
@@ -96,6 +115,29 @@ const ProductManagement = () => {
       }
 
       const productId = productResponse.data.id;
+
+      // Handle variants
+      const existingVariants = editingProduct ? editingProduct.product_variants : [];
+      const variantPromises = variants.map(variant => {
+        if (variant.id) {
+          // Update existing variant
+          const originalVariant = existingVariants.find(v => v.id === variant.id);
+          if (originalVariant.name !== variant.name || originalVariant.stock_quantity !== variant.stock_quantity) {
+            return productService.updateVariant(variant.id, { name: variant.name, stock_quantity: variant.stock_quantity });
+          }
+        } else {
+          // Create new variant
+          return productService.createVariant(productId, { name: variant.name, stock_quantity: variant.stock_quantity });
+        }
+        return Promise.resolve();
+      });
+
+      // Handle deleted variants
+      const deletedVariantPromises = existingVariants
+        .filter(ev => !variants.some(v => v.id === ev.id))
+        .map(ev => productService.deleteVariant(ev.id));
+
+      await Promise.all([...variantPromises, ...deletedVariantPromises]);
 
       // Upload images if any selected
       if (selectedImages.length > 0) {
@@ -257,8 +299,57 @@ const ProductManagement = () => {
                 value={formData.stock_quantity}
                 onChange={handleFormChange}
                 className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                disabled={variants.length > 0}
               />
             </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <label className="text-sm font-medium text-brand-secondary">
+                {t('productManagement.form.variants')}
+              </label>
+              <button
+                type="button"
+                onClick={addVariant}
+                className="flex items-center gap-2 text-sm text-brand-primary hover:text-brand-primary/80"
+              >
+                <Plus size={16} /> {t('productManagement.form.addVariant')}
+              </button>
+            </div>
+            <div className="space-y-4">
+              {variants.map((variant, index) => (
+                <div key={index} className="flex items-center gap-4">
+                  <input
+                    type="text"
+                    placeholder={t('productManagement.form.variantName')}
+                    value={variant.name}
+                    onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
+                    className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                  />
+                  <input
+                    type="number"
+                    placeholder={t('productManagement.form.stock')}
+                    value={variant.stock_quantity}
+                    onChange={(e) => handleVariantChange(index, 'stock_quantity', parseInt(e.target.value))}
+                    className="w-40 bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                  />
+                  <button type="button" onClick={() => removeVariant(index)} className="text-red-500 hover:text-red-400">
+                    <Trash2 size={20} />
+                  </button>
+                </div>
+              ))}
+            </div>
+            {variants.length > 0 && (
+              <div className="mt-4 text-right">
+                <span className="text-sm font-medium text-brand-secondary">
+                  {t('productManagement.form.totalStock')}:{' '}
+                </span>
+                <span className="font-bold text-brand-primary">
+                  {variants.reduce((acc, v) => acc + (v.stock_quantity || 0), 0)}
+                </span>
+              </div>
+            )}
           </div>
 
           <div>

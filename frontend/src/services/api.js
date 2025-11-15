@@ -47,6 +47,9 @@ export const productService = {
   },
   deleteImage: (imageId) => api.delete(`/admin/products/images/${imageId}`),
   setPrimaryImage: (imageId) => api.post(`/admin/products/images/${imageId}/set-primary`),
+  createVariant: (productId, data) => api.post(`/admin/products/${productId}/variants`, data),
+  updateVariant: (variantId, data) => api.patch(`/admin/products/variants/${variantId}`, data),
+  deleteVariant: (variantId) => api.delete(`/admin/products/variants/${variantId}`),
 };
 
 // Category services
