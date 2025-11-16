@@ -31,7 +31,6 @@ const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
         <p className="text-sm text-brand-secondary mt-2 line-clamp-2">{product.description}</p>
         <div className="mt-3 space-y-2 text-sm">
           <div className="flex items-center gap-2 text-brand-secondary">
-            <DollarSign size={14} />
             <span>{product.price} د.ب</span>
           </div>
           <div className="flex items-center gap-2 text-brand-secondary">

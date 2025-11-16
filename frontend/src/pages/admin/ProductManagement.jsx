@@ -456,15 +456,20 @@ const ProductManagement = () => {
               <label className="block text-sm font-medium text-brand-secondary mb-2">
                 {t('productManagement.form.price')}
               </label>
-              <input
-                type="number"
-                step="0.01"
-                name="price"
-                value={formData.price}
-                onChange={handleFormChange}
-                required
-                className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
-              />
+              <div className="relative">
+                <input
+                  type="number"
+                  step="0.01"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleFormChange}
+                  required
+                  className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50 pl-12"
+                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-secondary">
+                  د.ب
+                </span>
+              </div>
             </div>
 
             <div>
