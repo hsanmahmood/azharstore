@@ -110,23 +110,18 @@ const ProductManagement = () => {
       setImagePreviews([]);
       setVariants([]);
     }
-    setSelectedImages([]);
     setIsModalOpen(true);
   };
 
   const removeImage = (index) => {
-    const newImages = [...selectedImages];
     const newPreviews = [...imagePreviews];
-    newImages.splice(index, 1);
     newPreviews.splice(index, 1);
-    setSelectedImages(newImages);
     setImagePreviews(newPreviews);
   }
 
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingProduct(null);
-    setSelectedImages([]);
   };
 
   const handleFormChange = (e) => {
