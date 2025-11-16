@@ -62,6 +62,10 @@ class ProductCreate(BaseModel):
     stock_quantity: Optional[int] = None
     category_id: Optional[int] = None
 
+class ProductImageUpdate(BaseModel):
+    id: int
+    is_primary: bool
+
 class ProductUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
@@ -69,4 +73,5 @@ class ProductUpdate(BaseModel):
     stock_quantity: Optional[int] = None
     category_id: Optional[int] = None
     product_variants: Optional[list[ProductVariantUpsert]] = None
+    product_images: Optional[list[ProductImageUpdate]] = None
 

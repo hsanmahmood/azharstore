@@ -177,28 +177,14 @@ const ProductManagement = () => {
     setIsModalOpen(true);
   };
 
-  const removeImage = async (imageUrlToRemove) => {
-    try {
-      const imageToDelete = editingProduct.product_images.find(img => img.image_url === imageUrlToRemove);
-      if (!imageToDelete) {
-        console.error("Image not found for deletion");
-        setError("Could not delete image. Please try again.");
-        return;
-      }
+  const removeImage = (imageUrlToRemove) => {
+    // Gallery images state
+    setImagePreviews(imagePreviews.filter(url => url !== imageUrlToRemove));
 
-      await productService.deleteImage(imageToDelete.id);
-
-      const updatedImages = editingProduct.product_images.filter(img => img.id !== imageToDelete.id);
-      const updatedProduct = { ...editingProduct, product_images: updatedImages };
-
-      setEditingProduct(updatedProduct);
-      updateProduct(updatedProduct);
-
-      setImagePreviews(updatedImages.filter(img => !img.is_primary).map(img => img.image_url));
-
-    } catch (err) {
-      setError(t('productManagement.errors.deleteImageError', 'Failed to delete image.'));
-      console.error(err);
+    // Also update the full product state if it exists
+    if (editingProduct && editingProduct.product_images) {
+      const updatedImages = editingProduct.product_images.filter(img => img.image_url !== imageUrlToRemove);
+      setEditingProduct({ ...editingProduct, product_images: updatedImages });
     }
   };
 
@@ -245,7 +231,10 @@ const ProductManagement = () => {
       const responses = await Promise.all(uploadPromises);
       const newImages = responses.map(res => res.data);
 
-      setImagePreviews(prev => [...prev, ...newImages.map(img => img.image_url)]);
+      const updatedProduct = await productService.getProduct(currentProductId);
+      setEditingProduct(updatedProduct.data);
+
+      setImagePreviews(updatedProduct.data.product_images.filter(img => !img.is_primary).map(img => img.image_url));
     } catch (err) {
       setError(t('productManagement.errors.uploadError'));
     } finally {
@@ -279,33 +268,24 @@ const ProductManagement = () => {
     setError('');
 
     try {
+      const allImages = editingProduct ? editingProduct.product_images : [];
+      const primaryImageObject = allImages.find(img => img.image_url === primaryImage);
+
+      const imagesPayload = allImages.map(img => ({
+        id: img.id,
+        is_primary: primaryImageObject ? img.id === primaryImageObject.id : false,
+      }));
+
       const payload = {
         ...formData,
         price: parseFloat(formData.price),
         stock_quantity: parseInt(formData.stock_quantity) || 0,
         category_id: formData.category_id ? parseInt(formData.category_id) : null,
+        product_images: imagesPayload,
+        product_variants: variants.map(({ id, name, stock_quantity }) => ({ id, name, stock_quantity })),
       };
 
       await productService.updateProduct(editingProduct.id, payload);
-
-      const existingVariants = editingProduct.product_variants || [];
-      const variantPromises = variants.map(variant => {
-        if (variant.id) {
-          const originalVariant = existingVariants.find(v => v.id === variant.id);
-          if (originalVariant.name !== variant.name || originalVariant.stock_quantity !== variant.stock_quantity) {
-            return productService.updateVariant(variant.id, { name: variant.name, stock_quantity: variant.stock_quantity });
-          }
-        } else {
-          return productService.createVariant(editingProduct.id, { name: variant.name, stock_quantity: variant.stock_quantity });
-        }
-        return Promise.resolve();
-      });
-
-      const deletedVariantPromises = existingVariants
-        .filter(ev => !variants.some(v => v.id === ev.id))
-        .map(ev => productService.deleteVariant(ev.id));
-
-      await Promise.all([...variantPromises, ...deletedVariantPromises]);
 
       const finalProductResponse = await productService.getProduct(editingProduct.id);
       updateProduct(finalProductResponse.data);

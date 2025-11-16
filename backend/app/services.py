@@ -70,34 +70,68 @@ def create_product(product: schemas.ProductCreate, supabase: Client = Depends(ge
 def update_product(product_id: int, product: schemas.ProductUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Product | None:
     product_data = product.model_dump(exclude_unset=True)
 
+    # Handle product_images update
+    if "product_images" in product_data:
+        images_data = product_data.pop("product_images")
+        image_ids_from_request = {img['id'] for img in images_data}
+
+        # Fetch current images from DB
+        response = supabase.table("product_images").select("id, image_url").eq("product_id", product_id).execute()
+        current_images = response.data
+        current_image_ids = {img['id'] for img in current_images}
+
+        # Determine which images to delete
+        images_to_delete = [img for img in current_images if img['id'] not in image_ids_from_request]
+
+        if images_to_delete:
+            image_ids_to_delete = [img['id'] for img in images_to_delete]
+
+            # Extract file paths and remove from storage
+            file_paths_to_delete = ["/".join(img['image_url'].split("/")[-2:]) for img in images_to_delete]
+            if file_paths_to_delete:
+                supabase.storage.from_("products").remove(file_paths_to_delete)
+
+            # Delete from database
+            supabase.table("product_images").delete().in_("id", image_ids_to_delete).execute()
+
+        # Reset all is_primary flags for the product
+        supabase.table("product_images").update({"is_primary": False}).eq("product_id", product_id).execute()
+
+        # Set the new primary image
+        primary_image = next((img for img in images_data if img.get('is_primary')), None)
+        if primary_image:
+            supabase.table("product_images").update({"is_primary": True}).eq("id", primary_image['id']).execute()
+        else:
+            # If no primary is specified, make the first image primary
+            remaining_images_response = supabase.table("product_images").select("id").eq("product_id", product_id).order("created_at").execute()
+            if remaining_images_response.data:
+                first_image_id = remaining_images_response.data[0]['id']
+                supabase.table("product_images").update({"is_primary": True}).eq("id", first_image_id).execute()
+
+    # Handle product_variants update
     if "product_variants" in product_data:
         variants_data = product_data.pop("product_variants")
-
         response = supabase.table("product_variants").select("id").eq("product_id", product_id).execute()
         current_variant_ids = {item['id'] for item in response.data}
-
         upserted_variant_ids = set()
 
         for variant in variants_data:
             variant_id = variant.get("id")
             upsert_data = {k: v for k, v in variant.items() if k != 'id'}
-
             if variant_id:
-                # Update existing variant
                 upserted_variant_ids.add(variant_id)
                 supabase.table("product_variants").update(upsert_data).eq("id", variant_id).execute()
             else:
-                # Insert new variant
                 upsert_data["product_id"] = product_id
                 response = supabase.table("product_variants").insert(upsert_data).execute()
                 if response.data:
-                    new_variant_id = response.data[0]['id']
-                    upserted_variant_ids.add(new_variant_id)
+                    upserted_variant_ids.add(response.data[0]['id'])
 
         variants_to_delete = current_variant_ids - upserted_variant_ids
         if variants_to_delete:
             supabase.table("product_variants").delete().in_("id", list(variants_to_delete)).execute()
 
+    # Update product details
     if product_data:
         response = supabase.table("products").update(product_data).eq("id", product_id).execute()
         if not response.data:
