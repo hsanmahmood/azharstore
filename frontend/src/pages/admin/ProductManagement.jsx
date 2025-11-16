@@ -357,7 +357,7 @@ const ProductManagement = () => {
               <button
                 type="button"
                 onClick={addVariant}
-                className="flex items-center gap-2 text-sm text-brand-primary hover:text-brand-primary/80"
+                className="flex items-center gap-2 text-sm text-brand-primary hover:text-brand-primary/80 bg-brand-primary/10 hover:bg-brand-primary/20 px-3 py-2 rounded-lg"
               >
                 <Plus size={16} /> {t('productManagement.form.addVariant')}
               </button>
