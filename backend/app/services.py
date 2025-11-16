@@ -73,24 +73,28 @@ def update_product(product_id: int, product: schemas.ProductUpdate, supabase: Cl
     if "product_variants" in product_data:
         variants_data = product_data.pop("product_variants")
 
-        # Get current variants
         response = supabase.table("product_variants").select("id").eq("product_id", product_id).execute()
         current_variant_ids = {item['id'] for item in response.data}
 
-        updated_variant_ids = set()
+        upserted_variant_ids = set()
 
-        for variant_data in variants_data:
-            if variant_data.get("id"):
-                variant_id = variant_data["id"]
-                updated_variant_ids.add(variant_id)
-                supabase.table("product_variants").update(variant_data).eq("id", variant_id).execute()
+        for variant in variants_data:
+            variant_id = variant.get("id")
+            upsert_data = {k: v for k, v in variant.items() if k != 'id'}
+
+            if variant_id:
+                # Update existing variant
+                upserted_variant_ids.add(variant_id)
+                supabase.table("product_variants").update(upsert_data).eq("id", variant_id).execute()
             else:
-                variant_data["product_id"] = product_id
-                response = supabase.table("product_variants").insert(variant_data).execute()
-                updated_variant_ids.add(response.data[0]['id'])
+                # Insert new variant
+                upsert_data["product_id"] = product_id
+                response = supabase.table("product_variants").insert(upsert_data).execute()
+                if response.data:
+                    new_variant_id = response.data[0]['id']
+                    upserted_variant_ids.add(new_variant_id)
 
-        # Delete variants that are no longer in the list
-        variants_to_delete = current_variant_ids - updated_variant_ids
+        variants_to_delete = current_variant_ids - upserted_variant_ids
         if variants_to_delete:
             supabase.table("product_variants").delete().in_("id", list(variants_to_delete)).execute()
 
