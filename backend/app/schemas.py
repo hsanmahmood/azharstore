@@ -76,3 +76,28 @@ class ProductUpdate(BaseModel):
     product_variants: Optional[list[ProductVariantUpsert]] = None
     product_images: Optional[list[ProductImageUpdate]] = None
 
+class Customer(BaseModel):
+    id: int
+    name: str
+    phone_number: str
+    town: Optional[str] = None
+    address_home: Optional[str] = None
+    address_road: Optional[str] = None
+    address_block: Optional[str] = None
+    created_at: datetime
+
+class CustomerCreate(BaseModel):
+    name: str
+    phone_number: str
+    town: Optional[str] = None
+    address_home: Optional[str] = None
+    address_road: Optional[str] = None
+    address_block: Optional[str] = None
+
+class CustomerUpdate(BaseModel):
+    name: Optional[str] = None
+    phone_number: Optional[str] = None
+    town: Optional[str] = None
+    address_home: Optional[str] = None
+    address_road: Optional[str] = None
+    address_block: Optional[str] = None

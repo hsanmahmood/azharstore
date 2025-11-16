@@ -4,7 +4,7 @@ from supabase import Client
 import secrets
 import uuid
 
-from . import services, schemas
+from . import services, schemas, customer_services
 from .config import settings
 from .supabase_client import get_supabase_client
 
@@ -146,4 +146,33 @@ def delete_category(category_id: int, supabase: Client = Depends(get_supabase_cl
     success = services.delete_category(category_id=category_id, supabase=supabase)
     if not success:
         raise HTTPException(status_code=404, detail="Category not found")
+    return None
+
+@admin_router.get("/customers", response_model=List[schemas.Customer], tags=["Admin - Customers"])
+def list_customers(supabase: Client = Depends(get_supabase_client)):
+    return customer_services.get_customers(supabase=supabase)
+
+@admin_router.get("/customers/{customer_id}", response_model=schemas.Customer, tags=["Admin - Customers"])
+def get_customer(customer_id: int, supabase: Client = Depends(get_supabase_client)):
+    db_customer = customer_services.get_customer(customer_id=customer_id, supabase=supabase)
+    if db_customer is None:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    return db_customer
+
+@admin_router.post("/customers", response_model=schemas.Customer, tags=["Admin - Customers"])
+def create_customer(customer: schemas.CustomerCreate, supabase: Client = Depends(get_supabase_client)):
+    return customer_services.create_customer(customer=customer, supabase=supabase)
+
+@admin_router.patch("/customers/{customer_id}", response_model=schemas.Customer, tags=["Admin - Customers"])
+def update_customer(customer_id: int, customer: schemas.CustomerUpdate, supabase: Client = Depends(get_supabase_client)):
+    db_customer = customer_services.update_customer(customer_id=customer_id, customer=customer, supabase=supabase)
+    if db_customer is None:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    return db_customer
+
+@admin_router.delete("/customers/{customer_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Admin - Customers"])
+def delete_customer(customer_id: int, supabase: Client = Depends(get_supabase_client)):
+    success = customer_services.delete_customer(customer_id=customer_id, supabase=supabase)
+    if not success:
+        raise HTTPException(status_code=404, detail="Customer not found")
     return None

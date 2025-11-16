@@ -73,4 +73,13 @@ export const authService = {
   login: (password) => api.post('/login', { password }),
 };
 
+// Customer services
+export const customerService = {
+  getAllCustomers: () => api.get('/admin/customers'),
+  getCustomer: (id) => api.get(`/admin/customers/${id}`),
+  createCustomer: (data) => api.post('/admin/customers', data),
+  updateCustomer: (id, data) => api.patch(`/admin/customers/${id}`, data),
+  deleteCustomer: (id) => api.delete(`/admin/customers/${id}`),
+};
+
 export default api;
