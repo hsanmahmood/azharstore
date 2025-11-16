@@ -64,7 +64,7 @@ def get_product(product_id: int, supabase: Client = Depends(get_supabase_client)
     return response.data[0] if response.data else None
 
 def create_product(product: schemas.ProductCreate, supabase: Client = Depends(get_supabase_client)) -> schemas.Product:
-    response = supabase.table("products").insert(product.model_dump()).execute()
+    response = supabase.table("products").insert(product.model_dump()).select("*, category:categories(*)").execute()
     return response.data[0]
 
 def update_product(product_id: int, product: schemas.ProductUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Product | None:
