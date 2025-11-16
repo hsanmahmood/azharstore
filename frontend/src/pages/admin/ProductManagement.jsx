@@ -161,9 +161,9 @@ const ProductManagement = () => {
       setFormData({
         name: product.name,
         description: product.description || '',
-        price: product.price,
+        price: product.price || '',
         category_id: product.category_id || '',
-        stock_quantity: product.stock_quantity || 0,
+        stock_quantity: product.stock_quantity || '',
       });
       const primaryImg = product.product_images.find(img => img.is_primary);
       setPrimaryImage(primaryImg ? primaryImg.image_url : null);
@@ -394,8 +394,8 @@ const ProductManagement = () => {
             </nav>
           </div>
 
-          <div className={activeTab === 'details' ? '' : 'hidden'}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className={`${activeTab === 'details' ? '' : 'hidden'} space-y-6`}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-brand-secondary mb-2">
                 {t('productManagement.form.name')}
