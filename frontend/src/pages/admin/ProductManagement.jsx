@@ -70,9 +70,7 @@ const ProductManagement = () => {
     }
 
     try {
-      const response = await productService.uploadImage(currentProductId, file);
-      const newImage = response.data;
-      await productService.setPrimaryImage(newImage.id);
+      await productService.uploadImage(currentProductId, file);
 
       // Fetch the updated product to get all images, including the new primary one
       const updatedProductResponse = await productService.getProduct(currentProductId);
@@ -178,14 +176,24 @@ const ProductManagement = () => {
   };
 
   const removeImage = (imageUrlToRemove) => {
-    // Gallery images state
-    setImagePreviews(imagePreviews.filter(url => url !== imageUrlToRemove));
+    if (imageUrlToRemove === primaryImage) {
+      setPrimaryImage(null);
+    }
 
-    // Also update the full product state if it exists
+    let updatedImages = [];
     if (editingProduct && editingProduct.product_images) {
-      const updatedImages = editingProduct.product_images.filter(img => img.image_url !== imageUrlToRemove);
+      updatedImages = editingProduct.product_images.filter(img => img.image_url !== imageUrlToRemove);
       setEditingProduct({ ...editingProduct, product_images: updatedImages });
     }
+
+    // After removing, find the new primary image to update the UI state
+    const newPrimary = updatedImages.find(img => img.is_primary);
+    const newPrimaryUrl = newPrimary ? newPrimary.image_url : (updatedImages.length > 0 ? updatedImages[0].image_url : null);
+
+    setPrimaryImage(newPrimaryUrl);
+
+    // Update gallery previews
+    setImagePreviews(updatedImages.filter(img => img.image_url !== newPrimaryUrl).map(img => img.image_url));
   };
 
   const closeModal = () => {
@@ -234,7 +242,11 @@ const ProductManagement = () => {
       const updatedProduct = await productService.getProduct(currentProductId);
       setEditingProduct(updatedProduct.data);
 
-      setImagePreviews(updatedProduct.data.product_images.filter(img => !img.is_primary).map(img => img.image_url));
+      const updatedImages = updatedProduct.data.product_images;
+      const primaryImg = updatedImages.find(img => img.is_primary);
+
+      setPrimaryImage(primaryImg ? primaryImg.image_url : null);
+      setImagePreviews(updatedImages.filter(img => !img.is_primary).map(img => img.image_url));
     } catch (err) {
       setError(t('productManagement.errors.uploadError'));
     } finally {
