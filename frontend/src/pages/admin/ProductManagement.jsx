@@ -8,6 +8,7 @@ import Dropdown from '../../components/Dropdown';
 import ProductCard from './ProductCard';
 import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
+import ImageUploader from '../../components/ImageUploader';
 
 const ProductManagement = () => {
   const { t } = useTranslation();
@@ -37,10 +38,44 @@ const ProductManagement = () => {
     category_id: '',
     stock_quantity: '',
   };
-  const [formData, setFormData] = useState(initialFormState);
-  const [selectedImages, setSelectedImages] = useState([]);
+  const [formData, setFormData] = useState(initialFormSTate);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [primaryImage, setPrimaryImage] = useState(null);
   const [variants, setVariants] = useState([]);
+
+  const handlePrimaryImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingImages(true);
+    // ... "live" upload logic for primary image
+    setUploadingImages(false);
+  };
+
+  const handleVariantImageUpload = async (index, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const variant = variants[index];
+    if (!variant.id) {
+      // TODO: Optionally, create the variant first if it doesn't exist.
+      // For now, we'll assume variants are created before adding images.
+      setError("Please save the variant before uploading an image.");
+      return;
+    }
+
+    setUploadingImages(true);
+    try {
+      const response = await productService.uploadVariantImage(variant.id, file);
+      const newVariants = [...variants];
+      newVariants[index].image_url = response.data.image_url;
+      setVariants(newVariants);
+    } catch (err) {
+      setError(t('productManagement.errors.uploadError'));
+    } finally {
+      setUploadingImages(false);
+    }
+  };
 
   const handleVariantChange = (index, field, value) => {
     const newVariants = [...variants];
@@ -99,13 +134,68 @@ const ProductManagement = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleImageSelect = (e) => {
+  const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
-    setSelectedImages(files);
+    if (files.length === 0) return;
+
+    setUploadingImages(true);
+    setError('');
+
+    let currentProductId = editingProduct ? editingProduct.id : null;
+
+    // If it's a new product, create a draft first
+    if (!currentProductId) {
+      try {
+        const draftPayload = {
+          name: formData.name || t('productManagement.form.draftName'),
+          price: parseFloat(formData.price) || 0,
+        };
+        const productResponse = await productService.createProduct(draftPayload);
+        currentProductId = productResponse.data.id;
+        setEditingProduct(productResponse.data);
+        addProduct(productResponse.data);
+      } catch (err) {
+        setError(t('productManagement.errors.draftError'));
+        setUploadingImages(false);
+        return;
+      }
+    }
+
+    // Upload images one by one
+    try {
+      const uploadPromises = files.map(file => productService.uploadImage(currentProductId, file));
+      const responses = await Promise.all(uploadPromises);
+      const newImages = responses.map(res => res.data);
+
+      setImagePreviews(prev => [...prev, ...newImages.map(img => img.image_url)]);
+    } catch (err) {
+      setError(t('productManagement.errors.uploadError'));
+    } finally {
+      setUploadingImages(false);
+    }
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    if (!editingProduct) {
+      // If there's no editing product, it means no images have been uploaded yet.
+      // We can create the product with the text data now.
+      try {
+        const payload = {
+          ...formData,
+          price: parseFloat(formData.price),
+          stock_quantity: parseInt(formData.stock_quantity) || 0,
+          category_id: formData.category_id ? parseInt(formData.category_id) : null,
+        };
+        const productResponse = await productService.createProduct(payload);
+        addProduct(productResponse.data);
+        closeModal();
+      } catch (err) {
+        setError(t('productManagement.errors.add'));
+      }
+      return;
+    }
+
     setIsSubmitting(true);
     setError('');
 
@@ -117,63 +207,34 @@ const ProductManagement = () => {
         category_id: formData.category_id ? parseInt(formData.category_id) : null,
       };
 
-      let productResponse;
-      if (editingProduct) {
-        productResponse = await productService.updateProduct(editingProduct.id, payload);
-      } else {
-        productResponse = await productService.createProduct(payload);
-      }
+      await productService.updateProduct(editingProduct.id, payload);
 
-      const productId = productResponse.data.id;
-
-      // Handle variants
-      const existingVariants = editingProduct ? editingProduct.product_variants : [];
+      const existingVariants = editingProduct.product_variants || [];
       const variantPromises = variants.map(variant => {
         if (variant.id) {
-          // Update existing variant
           const originalVariant = existingVariants.find(v => v.id === variant.id);
           if (originalVariant.name !== variant.name || originalVariant.stock_quantity !== variant.stock_quantity) {
             return productService.updateVariant(variant.id, { name: variant.name, stock_quantity: variant.stock_quantity });
           }
         } else {
-          // Create new variant
-          return productService.createVariant(productId, { name: variant.name, stock_quantity: variant.stock_quantity });
+          return productService.createVariant(editingProduct.id, { name: variant.name, stock_quantity: variant.stock_quantity });
         }
         return Promise.resolve();
       });
 
-      // Handle deleted variants
       const deletedVariantPromises = existingVariants
         .filter(ev => !variants.some(v => v.id === ev.id))
         .map(ev => productService.deleteVariant(ev.id));
 
       await Promise.all([...variantPromises, ...deletedVariantPromises]);
 
-      // Upload images if any selected
-      if (selectedImages.length > 0) {
-        setUploadingImages(true);
-        await Promise.all(selectedImages.map(image => productService.uploadImage(productId, image)));
-        setUploadingImages(false);
-      }
-
-      // After all API calls, fetch the final state of the product from the backend
-      // This ensures the UI has the most up-to-date data, including image URLs, variants, etc.
-      const finalProductResponse = await productService.getProduct(productId);
-      const finalProduct = finalProductResponse.data;
-
-      if (editingProduct) {
-        updateProduct(finalProduct);
-      } else {
-        addProduct(finalProduct);
-      }
-
+      const finalProductResponse = await productService.getProduct(editingProduct.id);
+      updateProduct(finalProductResponse.data);
       closeModal();
     } catch (err) {
-      setError(t(editingProduct ? 'productManagement.errors.update' : 'productManagement.errors.add'));
-      console.error(err);
+      setError(t('productManagement.errors.update'));
     } finally {
       setIsSubmitting(false);
-      setUploadingImages(false);
     }
   };
 
@@ -363,6 +424,7 @@ const ProductManagement = () => {
           <div className="space-y-4">
             {/* Header */}
             <div className="variant-item header">
+              <div className="w-20">{t('productManagement.form.image')}</div>
               <div className="flex-1">{t('productManagement.form.variantName')}</div>
               <div className="w-40">{t('productManagement.form.stock')}</div>
               <div className="w-10">{t('common.actions')}</div>
@@ -371,6 +433,11 @@ const ProductManagement = () => {
             {/* Variant Rows */}
             {variants.map((variant, index) => (
               <div key={index} className="variant-item">
+                <ImageUploader
+                  onUpload={(e) => handleVariantImageUpload(index, e)}
+                  preview={variant.image_url}
+                  uploading={uploadingImages}
+                />
                 <input
                   type="text"
                   placeholder={t('productManagement.form.variantName')}
@@ -405,37 +472,37 @@ const ProductManagement = () => {
         </div>
 
         <div className={activeTab === 'images' ? '' : 'hidden'}>
-          <div>
-            <label className="block text-sm font-medium text-brand-secondary mb-2">
-              {t('productManagement.form.images')}
-            </label>
-            <div className="grid grid-cols-3 gap-4">
-              {imagePreviews.map((preview, index) => (
-                <div key={index} className="relative">
-                  <img src={preview} alt={`Preview ${index}`} className="w-full h-24 object-cover rounded-lg" />
-                  <button type="button" onClick={() => removeImage(index)} className="absolute top-1 right-1 bg-black/50 rounded-full p-1 text-white">
-                    <X size={16} />
-                  </button>
-                </div>
-              ))}
-            </div>
-            <label className="mt-4 flex justify-center items-center w-full h-32 px-6 border-2 border-brand-border border-dashed rounded-lg cursor-pointer hover:border-brand-primary/50 transition-colors">
-              <div className="space-y-1 text-center">
-                <Upload className="mx-auto h-10 w-10 text-brand-secondary" />
-                <p className="text-sm text-brand-secondary">
-                  {selectedImages.length > 0
-                    ? t('productManagement.form.imagesSelected', { count: selectedImages.length })
-                    : t('productManagement.form.clickToUpload')}
-                </p>
-              </div>
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleImageSelect}
-                className="sr-only"
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-brand-secondary mb-2">
+                {t('productManagement.form.primaryImage')}
+              </label>
+              <ImageUploader
+                onUpload={handlePrimaryImageUpload}
+                preview={primaryImage}
+                uploading={uploadingImages}
               />
-            </label>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-brand-secondary mb-2">
+                {t('productManagement.form.galleryImages')}
+              </label>
+              <div className="grid grid-cols-3 gap-4">
+                {imagePreviews.map((preview, index) => (
+                  <div key={index} className="relative">
+                    <img src={preview} alt={`Preview ${index}`} className="w-full h-24 object-cover rounded-lg" />
+                    <button type="button" onClick={() => removeImage(index)} className="absolute top-1 right-1 bg-black/50 rounded-full p-1 text-white">
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+                <ImageUploader
+                  onUpload={handleImageUpload}
+                  uploading={uploadingImages}
+                  multiple
+                />
+              </div>
+            </div>
           </div>
         </div>
 

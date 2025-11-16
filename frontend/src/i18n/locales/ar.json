@@ -13,7 +13,8 @@
     "add": "إضافة",
     "confirm": "تأكيد",
     "create": "إنشاء",
-    "saveChanges": "حفظ التغييرات"
+    "saveChanges": "حفظ التغييرات",
+    "actions": "الإجراءات"
   },
   "productManagement": {
     "title": "إدارة المنتجات",
@@ -28,12 +29,16 @@
       "selectCategory": "اختر فئة",
       "stock": "الكمية",
       "images": "الصور",
+      "primaryImage": "الصورة الأساسية",
+      "galleryImages": "صور المعرض",
+      "image": "الصورة",
       "variants": "الخيارات",
       "addVariant": "إضافة خيار",
       "variantName": "اسم الخيار",
       "totalStock": "إجمالي المخزون",
       "imagesSelected": "{{count}} صور مختارة",
-      "clickToUpload": "انقر لتحميل الصور"
+      "clickToUpload": "انقر لتحميل الصور",
+      "draftName": "منتج جديد (مسودة)"
     },
     "tabs": {
       "details": "التفاصيل",
@@ -46,7 +51,9 @@
       "fetch": "فشل في تحميل المنتجات",
       "add": "فشل في إضافة المنتج",
       "update": "فشل في تحديث المنتج",
-      "delete": "فشل في حذف المنتج"
+      "delete": "فشل في حذف المنتج",
+      "draftError": "فشل في إنشاء مسودة المنتج",
+      "uploadError": "فشل في تحميل الصور"
     }
   },
   "categoryManagement": {

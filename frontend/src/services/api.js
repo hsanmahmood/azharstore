@@ -50,6 +50,13 @@ export const productService = {
   createVariant: (productId, data) => api.post(`/admin/products/${productId}/variants`, data),
   updateVariant: (variantId, data) => api.patch(`/admin/products/variants/${variantId}`, data),
   deleteVariant: (variantId) => api.delete(`/admin/products/variants/${variantId}`),
+  uploadVariantImage: (variantId, file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post(`/admin/products/variants/${variantId}/image`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
 };
 
 // Category services
