@@ -348,54 +348,60 @@ const ProductManagement = () => {
           </div>
         </div>
 
-        <div className={activeTab === 'variants' ? '' : 'hidden'}>
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <label className="text-sm font-medium text-brand-secondary">
-                {t('productManagement.form.variants')}
-              </label>
-              <button
-                type="button"
-                onClick={addVariant}
-                className="flex items-center gap-2 text-sm text-brand-primary hover:text-brand-primary/80 bg-brand-primary/10 hover:bg-brand-primary/20 px-3 py-2 rounded-lg"
-              >
-                <Plus size={16} /> {t('productManagement.form.addVariant')}
-              </button>
-            </div>
-            <div className="space-y-4">
-              {variants.map((variant, index) => (
-                <div key={index} className="variant-item">
-                  <input
-                    type="text"
-                    placeholder={t('productManagement.form.variantName')}
-                    value={variant.name}
-                    onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
-                    className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
-                  />
-                  <input
-                    type="number"
-                    placeholder={t('productManagement.form.stock')}
-                    value={variant.stock_quantity}
-                    onChange={(e) => handleVariantChange(index, 'stock_quantity', parseInt(e.target.value))}
-                    className="w-40 bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
-                  />
-                  <button type="button" onClick={() => removeVariant(index)} className="text-red-500 hover:text-red-400">
-                    <Trash2 size={20} />
-                  </button>
-                </div>
-              ))}
-            </div>
-            {variants.length > 0 && (
-              <div className="mt-4 text-right">
-                <span className="text-sm font-medium text-brand-secondary">
-                  {t('productManagement.form.totalStock')}:{' '}
-                </span>
-                <span className="font-bold text-brand-primary">
-                  {variants.reduce((acc, v) => acc + (v.stock_quantity || 0), 0)}
-                </span>
-              </div>
-            )}
+        <div className={`${activeTab === 'variants' ? '' : 'hidden'} variants-container`}>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-brand-primary">{t('productManagement.form.variants')}</h3>
+            <button
+              type="button"
+              onClick={addVariant}
+              className="flex items-center gap-2 text-sm text-brand-primary bg-brand-primary/10 hover:bg-brand-primary/20 px-3 py-2 rounded-lg transition-colors"
+            >
+              <Plus size={16} /> {t('productManagement.form.addVariant')}
+            </button>
           </div>
+
+          <div className="space-y-4">
+            {/* Header */}
+            <div className="variant-item header">
+              <div className="flex-1">{t('productManagement.form.variantName')}</div>
+              <div className="w-40">{t('productManagement.form.stock')}</div>
+              <div className="w-10">{t('common.actions')}</div>
+            </div>
+
+            {/* Variant Rows */}
+            {variants.map((variant, index) => (
+              <div key={index} className="variant-item">
+                <input
+                  type="text"
+                  placeholder={t('productManagement.form.variantName')}
+                  value={variant.name}
+                  onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
+                  className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                />
+                <input
+                  type="number"
+                  placeholder={t('productManagement.form.stock')}
+                  value={variant.stock_quantity}
+                  onChange={(e) => handleVariantChange(index, 'stock_quantity', parseInt(e.target.value))}
+                  className="w-40 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                />
+                <button type="button" onClick={() => removeVariant(index)} className="text-red-500 hover:text-red-400">
+                  <Trash2 size={20} />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {variants.length > 0 && (
+            <div className="mt-4 text-right">
+              <span className="text-sm font-medium text-brand-secondary">
+                {t('productManagement.form.totalStock')}:{' '}
+              </span>
+              <span className="font-bold text-brand-primary">
+                {variants.reduce((acc, v) => acc + (v.stock_quantity || 0), 0)}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className={activeTab === 'images' ? '' : 'hidden'}>

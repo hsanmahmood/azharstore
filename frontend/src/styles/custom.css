@@ -17,6 +17,18 @@
   @apply bg-brand-primary/10 text-brand-primary border-brand-primary;
 }
 
+.variants-container {
+  @apply bg-black/20 border border-brand-border rounded-lg p-6;
+}
+
 .variant-item {
-  @apply flex items-center gap-4 p-4 bg-black/20 border border-brand-border rounded-lg;
+  @apply flex items-center gap-4;
+}
+
+.variant-item.header {
+  @apply font-bold text-brand-secondary text-sm px-2 pb-2 border-b border-brand-border;
+}
+
+.variant-item input {
+  height: 40px; /* Example height */
 }
