@@ -8,6 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './pages/admin/AdminLayout';
 import ProductManagement from './pages/admin/ProductManagement';
 import CategoryManagement from './pages/admin/CategoryManagement';
+import CustomerManagement from './pages/admin/CustomerManagement';
 
 const App = () => {
   const { token } = useContext(AuthContext);
@@ -29,6 +30,7 @@ const App = () => {
             <Route index element={<Navigate to="products" />} />
             <Route path="products" element={<ProductManagement />} />
             <Route path="categories" element={<CategoryManagement />} />
+            <Route path="customers" element={<CustomerManagement />} />
           </Route>
         </Route>
 

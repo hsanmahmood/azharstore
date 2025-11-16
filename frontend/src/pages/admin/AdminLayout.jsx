@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Package, Layers, LogOut, PanelLeft, Menu, Home } from 'lucide-react';
+import { Package, Layers, LogOut, PanelLeft, Menu, Home, Users } from 'lucide-react';
 import { AuthContext } from '../../context/AuthContext';
 import MobileAdminSidebar from './MobileAdminSidebar';
 
@@ -32,6 +32,7 @@ const AdminLayout = () => {
   const navLinks = [
     { to: '/admin/products', text: t('admin.nav.products'), icon: Package },
     { to: '/admin/categories', text: t('admin.nav.categories'), icon: Layers },
+    { to: '/admin/customers', text: t('admin.nav.customers'), icon: Users },
   ];
 
   const getNavLinkClasses = (isOpen) => (to) => {

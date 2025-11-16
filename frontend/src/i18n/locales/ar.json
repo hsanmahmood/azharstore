@@ -77,7 +77,32 @@
     "nav": {
       "products": "المنتجات",
       "categories": "الفئات",
+      "customers": "العملاء",
       "home": "الرئيسية"
+    }
+  },
+  "customerManagement": {
+    "title": "إدارة العملاء",
+    "addCustomer": "إضافة عميل",
+    "editCustomer": "تعديل عميل",
+    "confirmDelete": "هل أنت متأكد من حذف هذا العميل؟",
+    "table": {
+      "name": "الاسم",
+      "phone": "رقم الهاتف",
+      "town": "المدينة",
+      "address": "العنوان"
+    },
+    "form": {
+      "name": "الاسم",
+      "phone": "رقم الهاتف",
+      "town": "المدينة",
+      "addressHome": "المنزل",
+      "addressRoad": "الطريق",
+      "addressBlock": "المجمع"
+    },
+    "errors": {
+      "fetch": "فشل في تحميل العملاء",
+      "submit": "فشل في حفظ العميل"
     }
   }
 }
