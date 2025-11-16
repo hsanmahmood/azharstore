@@ -1,34 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Loader2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import CustomerForm from './CustomerForm';
-import { customerService } from '../../services/api';
+import CustomerCard from './CustomerCard';
+import { DataContext } from '../../context/DataContext';
 
 const CustomerManagement = () => {
   const { t } = useTranslation();
-  const [customers, setCustomers] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const { customers, isLoading, error: dataError, refreshData } = useContext(DataContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
-
-  useEffect(() => {
-    fetchCustomers();
-  }, []);
-
-  const fetchCustomers = async () => {
-    setIsLoading(true);
-    setError('');
-    try {
-      const response = await customerService.getAllCustomers();
-      setCustomers(response.data);
-    } catch (err) {
-      setError(t('customerManagement.errors.fetch'));
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const openModal = (customer = null) => {
     setEditingCustomer(customer);
@@ -41,7 +23,7 @@ const CustomerManagement = () => {
   };
 
   const handleSuccess = () => {
-    fetchCustomers();
+    refreshData();
     closeModal();
   };
 
@@ -58,35 +40,26 @@ const CustomerManagement = () => {
       </div>
 
       {isLoading && <Loader2 className="animate-spin" />}
-      {error && <div className="text-red-500">{error}</div>}
+      {dataError && <div className="text-red-500">{dataError}</div>}
 
-      <div className="bg-black/20 border border-brand-border rounded-lg p-6">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-brand-border">
-              <th className="p-4 text-left">{t('customerManagement.table.name')}</th>
-              <th className="p-4 text-left">{t('customerManagement.table.phone')}</th>
-              <th className="p-4 text-left">{t('customerManagement.table.town')}</th>
-              <th className="p-4 text-left">{t('customerManagement.table.address')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {customers.map((customer) => (
-              <tr key={customer.id} className="border-b border-brand-border">
-                <td className="p-4">{customer.name}</td>
-                <td className="p-4">{customer.phone_number}</td>
-                <td className="p-4">{customer.town}</td>
-                <td className="p-4">{`${customer.address_home}, ${customer.address_road}, ${customer.address_block}`}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {customers.map((customer) => (
+          <CustomerCard
+            key={customer.id}
+            customer={customer}
+            onEdit={openModal}
+            onDelete={() => {
+              // Add delete functionality here
+            }}
+          />
+        ))}
       </div>
 
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
         title={editingCustomer ? t('customerManagement.editCustomer') : t('customerManagement.addCustomer')}
+        maxWidth="max-w-2xl"
       >
         <CustomerForm customer={editingCustomer} onSuccess={handleSuccess} />
       </Modal>
