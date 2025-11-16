@@ -12,22 +12,9 @@ app = FastAPI(title="AzharStore API", version="0.1.0")
 
 app.add_exception_handler(Exception, global_exception_handler)
 
-# Define a set of essential origins that should always be allowed
-essential_origins = {
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://beta.azhar.store",
-    "https://az-rosy.vercel.app",
-    "https://azhar.store",
-}
-
-# Get additional origins from the environment variable
-additional_origins_str = os.getenv("CORS_ORIGINS", "")
-additional_origins = {origin.strip() for origin in additional_origins_str.split(",") if origin.strip()}
-
-# Combine the sets to get a unique list of all allowed origins
-allowed_origins = list(essential_origins.union(additional_origins))
-
+#  TEMPORARY DEBUGGING STEP: Allow all origins to diagnose infrastructure vs. code issue.
+#  This is insecure for production and should be removed after testing.
+allowed_origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
