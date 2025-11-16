@@ -1,0 +1,22 @@
+/* Custom styles for AzharStore */
+
+.tabs-container {
+  @apply border-b border-brand-border mb-6;
+}
+
+.tab-item {
+  @apply whitespace-nowrap py-3 px-4 rounded-t-lg font-medium text-sm transition-all duration-200;
+  @apply text-brand-secondary border-b-2 border-transparent;
+}
+
+.tab-item:hover {
+  @apply bg-brand-border/10 text-brand-primary/90;
+}
+
+.tab-item.active {
+  @apply bg-brand-primary/10 text-brand-primary border-brand-primary;
+}
+
+.variant-item {
+  @apply flex items-center gap-4 p-4 bg-black/20 border border-brand-border rounded-lg;
+}

@@ -248,37 +248,25 @@ const ProductManagement = () => {
             </div>
           )}
 
-          <div className="border-b border-brand-border">
-            <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+          <div className="tabs-container">
+            <nav className="flex space-x-4" aria-label="Tabs">
               <button
                 type="button"
-                className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'details'
-                    ? 'border-brand-primary text-brand-primary'
-                    : 'border-transparent text-brand-secondary hover:text-brand-primary/80 hover:border-gray-300'
-                }`}
+                className={`tab-item ${activeTab === 'details' ? 'active' : ''}`}
                 onClick={() => setActiveTab('details')}
               >
                 {t('productManagement.tabs.details')}
               </button>
               <button
                 type="button"
-                className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'images'
-                    ? 'border-brand-primary text-brand-primary'
-                    : 'border-transparent text-brand-secondary hover:text-brand-primary/80 hover:border-gray-300'
-                }`}
+                className={`tab-item ${activeTab === 'images' ? 'active' : ''}`}
                 onClick={() => setActiveTab('images')}
               >
                 {t('productManagement.tabs.images')}
               </button>
               <button
                 type="button"
-                className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'variants'
-                    ? 'border-brand-primary text-brand-primary'
-                    : 'border-transparent text-brand-secondary hover:text-brand-primary/80 hover:border-gray-300'
-                }`}
+                className={`tab-item ${activeTab === 'variants' ? 'active' : ''}`}
                 onClick={() => setActiveTab('variants')}
               >
                 {t('productManagement.tabs.variants')}
@@ -376,7 +364,7 @@ const ProductManagement = () => {
             </div>
             <div className="space-y-4">
               {variants.map((variant, index) => (
-                <div key={index} className="flex items-center gap-4">
+                <div key={index} className="variant-item">
                   <input
                     type="text"
                     placeholder={t('productManagement.form.variantName')}

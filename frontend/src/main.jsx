@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
 import './i18n/config';
 import './styles/index.css';
+import './styles/custom.css';
 import App from './App';
 import LogRocket from 'logrocket';
 
