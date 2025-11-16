@@ -497,6 +497,7 @@ const ProductManagement = () => {
                     onUpload={(e) => handleVariantImageUpload(index, e)}
                     preview={variant.image_url}
                     uploading={uploadingImages}
+                    size="h-12 w-12"
                   />
                 </div>
                 <input
@@ -514,7 +515,8 @@ const ProductManagement = () => {
                   className="w-32 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                 />
                 <div className="w-28 flex justify-center items-center gap-2">
-                  <button type="button" onClick={() => handleSaveVariant(index)} className="text-green-500 hover:text-green-400 bg-green-500/10 hover:bg-green-500/20 p-2 rounded-lg">
+                  <button type="button" onClick={() => handleSaveVariant(index)} className="text-green-500 hover:text-green-400 bg-green-500/10 hover:bg-green-500/20 p-2 rounded-lg relative">
+                    {variant.id && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-green-500"></span>}
                     <Save size={18} />
                   </button>
                   <button type="button" onClick={() => removeVariant(index)} className="text-red-500 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 p-2 rounded-lg">
