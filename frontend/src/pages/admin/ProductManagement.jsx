@@ -540,11 +540,9 @@ const ProductManagement = () => {
         </div>
 
         <div className={activeTab === 'images' ? '' : 'hidden'}>
-          <div className="space-y-6">
+          <div className="space-y-8">
             <div>
-              <label className="block text-sm font-medium text-brand-secondary mb-2">
-                {t('productManagement.form.primaryImage')}
-              </label>
+              <h3 className="text-lg font-medium text-brand-primary mb-4">{t('productManagement.form.primaryImage')}</h3>
               <ImageUploader
                 onUpload={handlePrimaryImageUpload}
                 preview={primaryImage}
@@ -552,15 +550,16 @@ const ProductManagement = () => {
                 size="h-40 w-40"
               />
             </div>
+
+            <hr className="border-brand-border" />
+
             <div>
-              <label className="block text-sm font-medium text-brand-secondary mb-2">
-                {t('productManagement.form.galleryImages')}
-              </label>
-              <div className="grid grid-cols-3 gap-4">
+              <h3 className="text-lg font-medium text-brand-primary mb-4">{t('productManagement.form.galleryImages')}</h3>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
                 {imagePreviews.map((preview, index) => (
                   <div key={index} className="relative w-24 h-24">
                     <img src={preview} alt={`Preview ${index}`} className="w-full h-full object-cover rounded-lg" />
-                    <button type="button" onClick={() => removeImage(index)} className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 text-white">
+                    <button type="button" onClick={() => removeImage(index)} className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 text-white shadow-lg">
                       <X size={14} />
                     </button>
                   </div>
