@@ -6,6 +6,9 @@ import { DataProvider } from './context/DataContext';
 import './i18n/config';
 import './styles/index.css';
 import App from './App';
+import LogRocket from 'logrocket';
+
+LogRocket.init('h-lizl2/h');
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
