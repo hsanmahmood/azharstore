@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
 import { productService } from '../../services/api';
-import { Plus, Loader2, Upload, X, Image as ImageIcon, ChevronDown, Trash2 } from 'lucide-react';
+import { Plus, Loader2, Upload, X, Image as ImageIcon, ChevronDown, Trash2, Save } from 'lucide-react';
 import Modal from '../../components/Modal';
 import Dropdown from '../../components/Dropdown';
 import ProductCard from './ProductCard';
@@ -483,40 +483,42 @@ const ProductManagement = () => {
           <div className="space-y-4">
             {/* Header */}
             <div className="variant-item header">
-              <div className="w-20">{t('productManagement.form.image')}</div>
-              <div className="flex-1">{t('productManagement.form.variantName')}</div>
-              <div className="w-40">{t('productManagement.form.stock')}</div>
-              <div className="w-24">{t('common.actions')}</div>
+              <div className="w-20 text-center">{t('productManagement.form.image')}</div>
+              <div className="flex-1 px-2">{t('productManagement.form.variantName')}</div>
+              <div className="w-32 px-2">{t('productManagement.form.stock')}</div>
+              <div className="w-28 text-center">{t('common.actions')}</div>
             </div>
 
             {/* Variant Rows */}
             {variants.map((variant, index) => (
               <div key={index} className="variant-item">
-                <ImageUploader
-                  onUpload={(e) => handleVariantImageUpload(index, e)}
-                  preview={variant.image_url}
-                  uploading={uploadingImages}
-                />
+                <div className="w-20 flex justify-center">
+                  <ImageUploader
+                    onUpload={(e) => handleVariantImageUpload(index, e)}
+                    preview={variant.image_url}
+                    uploading={uploadingImages}
+                  />
+                </div>
                 <input
                   type="text"
                   placeholder={t('productManagement.form.variantName')}
                   value={variant.name}
                   onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
-                  className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                  className="flex-1 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                 />
                 <input
                   type="number"
                   placeholder={t('productManagement.form.stock')}
                   value={variant.stock_quantity}
                   onChange={(e) => handleVariantChange(index, 'stock_quantity', parseInt(e.target.value))}
-                  className="w-40 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                  className="w-32 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                 />
-                <div className="flex items-center gap-2">
-                  <button type="button" onClick={() => handleSaveVariant(index)} className="text-green-500 hover:text-green-400">
-                    {t('common.save')}
+                <div className="w-28 flex justify-center items-center gap-2">
+                  <button type="button" onClick={() => handleSaveVariant(index)} className="text-green-500 hover:text-green-400 bg-green-500/10 hover:bg-green-500/20 p-2 rounded-lg">
+                    <Save size={18} />
                   </button>
-                  <button type="button" onClick={() => removeVariant(index)} className="text-red-500 hover:text-red-400">
-                    <Trash2 size={20} />
+                  <button type="button" onClick={() => removeVariant(index)} className="text-red-500 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 p-2 rounded-lg">
+                    <Trash2 size={18} />
                   </button>
                 </div>
               </div>
