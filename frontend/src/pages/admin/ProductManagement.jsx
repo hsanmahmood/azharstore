@@ -436,7 +436,7 @@ const ProductManagement = () => {
                 {t('productManagement.form.category')}
               </label>
               <Dropdown
-                options={categories.map((cat) => ({ value: cat.id, label: cat.name }))}
+                options={categories.filter(cat => cat && cat.name).map((cat) => ({ value: cat.id, label: cat.name }))}
                 value={formData.category_id}
                 onChange={(option) => handleFormChange({ target: { name: 'category_id', value: option.value } })}
                 placeholder={t('productManagement.form.selectCategory')}
