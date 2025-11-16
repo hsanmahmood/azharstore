@@ -515,7 +515,7 @@ const ProductManagement = () => {
                   type="number"
                   placeholder={t('productManagement.form.stock')}
                   value={variant.stock_quantity}
-                  onChange={(e) => handleVariantChange(index, 'stock_quantity', parseInt(e.target.value))}
+                  onChange={(e) => handleVariantChange(index, 'stock_quantity', parseInt(e.target.value) || 0)}
                   className="w-32 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                 />
                 <div className="w-28 flex justify-center items-center gap-2">
