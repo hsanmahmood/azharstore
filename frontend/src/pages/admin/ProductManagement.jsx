@@ -48,8 +48,37 @@ const ProductManagement = () => {
     if (!file) return;
 
     setUploadingImages(true);
-    // ... "live" upload logic for primary image
-    setUploadingImages(false);
+    setError('');
+
+    let currentProductId = editingProduct ? editingProduct.id : null;
+
+    if (!currentProductId) {
+      try {
+        const draftPayload = {
+          name: formData.name || t('productManagement.form.draftName'),
+          price: parseFloat(formData.price) || 0,
+        };
+        const productResponse = await productService.createProduct(draftPayload);
+        currentProductId = productResponse.data.id;
+        setEditingProduct(productResponse.data);
+        addProduct(productResponse.data);
+      } catch (err) {
+        setError(t('productManagement.errors.draftError'));
+        setUploadingImages(false);
+        return;
+      }
+    }
+
+    try {
+      const response = await productService.uploadImage(currentProductId, file);
+      const newImage = response.data;
+      await productService.setPrimaryImage(newImage.id);
+      setPrimaryImage(newImage.image_url);
+    } catch (err) {
+      setError(t('productManagement.errors.uploadError'));
+    } finally {
+      setUploadingImages(false);
+    }
   };
 
   const handleVariantImageUpload = async (index, e) => {
@@ -58,10 +87,16 @@ const ProductManagement = () => {
 
     const variant = variants[index];
     if (!variant.id) {
-      // TODO: Optionally, create the variant first if it doesn't exist.
-      // For now, we'll assume variants are created before adding images.
-      setError("Please save the variant before uploading an image.");
-      return;
+      try {
+        const variantResponse = await productService.createVariant(editingProduct.id, { name: variant.name, stock_quantity: variant.stock_quantity });
+        const newVariants = [...variants];
+        newVariants[index] = variantResponse.data;
+        setVariants(newVariants);
+        variant.id = variantResponse.data.id;
+      } catch (err) {
+        setError(t('productManagement.errors.addVariantError'));
+        return;
+      }
     }
 
     setUploadingImages(true);
