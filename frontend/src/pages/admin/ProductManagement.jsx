@@ -270,6 +270,7 @@ const ProductManagement = () => {
         closeModal();
       } catch (err) {
         setError(t('productManagement.errors.add'));
+        console.error("Failed to create product:", err.response ? err.response.data : err);
       }
       return;
     }
@@ -311,6 +312,7 @@ const ProductManagement = () => {
       closeModal();
     } catch (err) {
       setError(t('productManagement.errors.update'));
+      console.error("Failed to update product:", err.response ? err.response.data : err);
     } finally {
       setIsSubmitting(false);
     }
