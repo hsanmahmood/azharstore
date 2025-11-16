@@ -158,7 +158,7 @@ const ProductManagement = () => {
 
       // After all API calls, fetch the final state of the product from the backend
       // This ensures the UI has the most up-to-date data, including image URLs, variants, etc.
-      const finalProductResponse = await productService.getProductById(productId);
+      const finalProductResponse = await productService.getProduct(productId);
       const finalProduct = finalProductResponse.data;
 
       if (editingProduct) {
