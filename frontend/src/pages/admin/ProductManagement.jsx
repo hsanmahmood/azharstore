@@ -549,6 +549,7 @@ const ProductManagement = () => {
                 onUpload={handlePrimaryImageUpload}
                 preview={primaryImage}
                 uploading={uploadingImages}
+                size="h-40 w-40"
               />
             </div>
             <div>
@@ -557,10 +558,10 @@ const ProductManagement = () => {
               </label>
               <div className="grid grid-cols-3 gap-4">
                 {imagePreviews.map((preview, index) => (
-                  <div key={index} className="relative">
-                    <img src={preview} alt={`Preview ${index}`} className="w-full h-24 object-cover rounded-lg" />
-                    <button type="button" onClick={() => removeImage(index)} className="absolute top-1 right-1 bg-black/50 rounded-full p-1 text-white">
-                      <X size={16} />
+                  <div key={index} className="relative w-24 h-24">
+                    <img src={preview} alt={`Preview ${index}`} className="w-full h-full object-cover rounded-lg" />
+                    <button type="button" onClick={() => removeImage(index)} className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 text-white">
+                      <X size={14} />
                     </button>
                   </div>
                 ))}
@@ -568,6 +569,7 @@ const ProductManagement = () => {
                   onUpload={handleImageUpload}
                   uploading={uploadingImages}
                   multiple
+                  size="h-24 w-24"
                 />
               </div>
             </div>
