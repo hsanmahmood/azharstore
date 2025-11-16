@@ -64,8 +64,22 @@ def get_product(product_id: int, supabase: Client = Depends(get_supabase_client)
     return response.data[0] if response.data else None
 
 def create_product(product: schemas.ProductCreate, supabase: Client = Depends(get_supabase_client)) -> schemas.Product:
-    response = supabase.table("products").insert(product.model_dump()).select("*, category:categories(*)").execute()
-    return response.data[0]
+    # Insert the new product
+    insert_response = supabase.table("products").insert(product.model_dump()).execute()
+
+    # Check if the insert was successful and get the new product's ID
+    if not insert_response.data:
+        raise HTTPException(status_code=500, detail="Failed to create the product.")
+
+    new_product_id = insert_response.data[0]['id']
+
+    # Fetch the newly created product with its category relation
+    select_response = supabase.table("products").select("*, category:categories(*)").eq("id", new_product_id).execute()
+
+    if not select_response.data:
+        raise HTTPException(status_code=404, detail="Newly created product not found.")
+
+    return select_response.data[0]
 
 def update_product(product_id: int, product: schemas.ProductUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Product | None:
     product_data = product.model_dump(exclude_unset=True)
