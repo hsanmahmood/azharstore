@@ -23,7 +23,9 @@ const Dropdown = ({ options, value, onChange, placeholder }) => {
     };
   }, []);
 
-  const selectedOption = options.find((option) => option.value === value);
+  const validOptions = options.filter(Boolean);
+
+  const selectedOption = validOptions.find((option) => option.value === value);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -43,7 +45,7 @@ const Dropdown = ({ options, value, onChange, placeholder }) => {
       {isOpen && (
         <div className="absolute z-10 w-full mt-2 bg-background-dark border border-brand-border rounded-lg shadow-lg">
           <ul className="py-1">
-            {options.map((option) => (
+            {validOptions.map((option) => (
               <li
                 key={option.value}
                 className="px-4 py-2 text-brand-primary hover:bg-brand-border/20 cursor-pointer"
