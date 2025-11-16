@@ -38,7 +38,7 @@ const ProductManagement = () => {
     category_id: '',
     stock_quantity: '',
   };
-  const [formData, setFormData] = useState(initialFormSTate);
+  const [formData, setFormData] = useState(initialFormState);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [primaryImage, setPrimaryImage] = useState(null);
   const [variants, setVariants] = useState([]);
