@@ -50,6 +50,11 @@ class ProductVariantUpdate(BaseModel):
     name: Optional[str] = None
     stock_quantity: Optional[int] = None
 
+class ProductVariantUpsert(BaseModel):
+    id: Optional[int] = None
+    name: str
+    stock_quantity: int
+
 class ProductCreate(BaseModel):
     name: str
     description: Optional[str] = None
@@ -63,4 +68,5 @@ class ProductUpdate(BaseModel):
     price: Optional[float] = None
     stock_quantity: Optional[int] = None
     category_id: Optional[int] = None
+    product_variants: Optional[list[ProductVariantUpsert]] = None
 

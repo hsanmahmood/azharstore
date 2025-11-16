@@ -68,9 +68,37 @@ def create_product(product: schemas.ProductCreate, supabase: Client = Depends(ge
     return response.data[0]
 
 def update_product(product_id: int, product: schemas.ProductUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Product | None:
-    response = supabase.table("products").update(product.model_dump(exclude_unset=True)).eq("id", product_id).execute()
-    if not response.data:
-        return None
+    product_data = product.model_dump(exclude_unset=True)
+
+    if "product_variants" in product_data:
+        variants_data = product_data.pop("product_variants")
+
+        # Get current variants
+        response = supabase.table("product_variants").select("id").eq("product_id", product_id).execute()
+        current_variant_ids = {item['id'] for item in response.data}
+
+        updated_variant_ids = set()
+
+        for variant_data in variants_data:
+            if variant_data.get("id"):
+                variant_id = variant_data["id"]
+                updated_variant_ids.add(variant_id)
+                supabase.table("product_variants").update(variant_data).eq("id", variant_id).execute()
+            else:
+                variant_data["product_id"] = product_id
+                response = supabase.table("product_variants").insert(variant_data).execute()
+                updated_variant_ids.add(response.data[0]['id'])
+
+        # Delete variants that are no longer in the list
+        variants_to_delete = current_variant_ids - updated_variant_ids
+        if variants_to_delete:
+            supabase.table("product_variants").delete().in_("id", list(variants_to_delete)).execute()
+
+    if product_data:
+        response = supabase.table("products").update(product_data).eq("id", product_id).execute()
+        if not response.data:
+            return None
+
     return get_product(product_id=product_id, supabase=supabase)
 
 def delete_product(product_id: int, supabase: Client = Depends(get_supabase_client)) -> bool:
