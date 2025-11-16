@@ -177,11 +177,30 @@ const ProductManagement = () => {
     setIsModalOpen(true);
   };
 
-  const removeImage = (index) => {
-    const newPreviews = [...imagePreviews];
-    newPreviews.splice(index, 1);
-    setImagePreviews(newPreviews);
-  }
+  const removeImage = async (imageUrlToRemove) => {
+    try {
+      const imageToDelete = editingProduct.product_images.find(img => img.image_url === imageUrlToRemove);
+      if (!imageToDelete) {
+        console.error("Image not found for deletion");
+        setError("Could not delete image. Please try again.");
+        return;
+      }
+
+      await productService.deleteImage(imageToDelete.id);
+
+      const updatedImages = editingProduct.product_images.filter(img => img.id !== imageToDelete.id);
+      const updatedProduct = { ...editingProduct, product_images: updatedImages };
+
+      setEditingProduct(updatedProduct);
+      updateProduct(updatedProduct);
+
+      setImagePreviews(updatedImages.filter(img => !img.is_primary).map(img => img.image_url));
+
+    } catch (err) {
+      setError(t('productManagement.errors.deleteImageError', 'Failed to delete image.'));
+      console.error(err);
+    }
+  };
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -559,7 +578,7 @@ const ProductManagement = () => {
                 {imagePreviews.map((preview, index) => (
                   <div key={index} className="relative w-24 h-24">
                     <img src={preview} alt={`Preview ${index}`} className="w-full h-full object-cover rounded-lg" />
-                    <button type="button" onClick={() => removeImage(index)} className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 text-white shadow-lg">
+                    <button type="button" onClick={() => removeImage(preview)} className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 text-white shadow-lg">
                       <X size={14} />
                     </button>
                   </div>
