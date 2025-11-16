@@ -288,7 +288,11 @@ const ProductManagement = () => {
       await Promise.all([...variantPromises, ...deletedVariantPromises]);
 
       const finalProductResponse = await productService.getProduct(editingProduct.id);
-      updateProduct(finalProductResponse.data);
+      const updatedProductData = {
+        ...finalProductResponse.data,
+        product_variants: variants,
+      };
+      updateProduct(updatedProductData);
       closeModal();
     } catch (err) {
       setError(t('productManagement.errors.update'));
