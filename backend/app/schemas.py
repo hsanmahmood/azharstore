@@ -54,6 +54,7 @@ class ProductVariantUpsert(BaseModel):
     id: Optional[int] = None
     name: str
     stock_quantity: int
+    image_url: Optional[str] = None
 
 class ProductCreate(BaseModel):
     name: str

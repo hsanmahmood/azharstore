@@ -41,7 +41,13 @@ const ProductManagement = () => {
   const [formData, setFormData] = useState(initialFormState);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [primaryImage, setPrimaryImage] = useState(null);
-  const [variants, setVariants] = useState([]);
+  const variants = editingProduct ? editingProduct.product_variants || [] : [];
+
+  const setVariants = (newVariants) => {
+    if (editingProduct) {
+      setEditingProduct({ ...editingProduct, product_variants: newVariants });
+    }
+  };
 
   const handlePrimaryImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -102,9 +108,8 @@ const ProductManagement = () => {
     setUploadingImages(true);
     try {
       const response = await productService.uploadVariantImage(variant.id, file);
-      const newVariants = [...variants];
-      newVariants[index].image_url = response.data.image_url;
-      setVariants(newVariants);
+      const updatedProduct = await productService.getProduct(editingProduct.id);
+      setEditingProduct(updatedProduct.data);
     } catch (err) {
       setError(t('productManagement.errors.uploadError'));
     } finally {
@@ -114,26 +119,16 @@ const ProductManagement = () => {
 
   const handleSaveVariant = async (index) => {
     const variant = variants[index];
-    if (variant.id) {
-      // Update existing variant
-      try {
-        const response = await productService.updateVariant(variant.id, { name: variant.name, stock_quantity: variant.stock_quantity });
-        const newVariants = [...variants];
-        newVariants[index] = response.data;
-        setVariants(newVariants);
-      } catch (err) {
-        setError(t('productManagement.errors.updateVariantError'));
+    try {
+      if (variant.id) {
+        await productService.updateVariant(variant.id, { name: variant.name, stock_quantity: variant.stock_quantity });
+      } else {
+        await productService.createVariant(editingProduct.id, { name: variant.name, stock_quantity: variant.stock_quantity });
       }
-    } else {
-      // Create new variant
-      try {
-        const response = await productService.createVariant(editingProduct.id, { name: variant.name, stock_quantity: variant.stock_quantity });
-        const newVariants = [...variants];
-        newVariants[index] = response.data;
-        setVariants(newVariants);
-      } catch (err) {
-        setError(t('productManagement.errors.addVariantError'));
-      }
+      const updatedProduct = await productService.getProduct(editingProduct.id);
+      setEditingProduct(updatedProduct.data);
+    } catch (err) {
+      setError(t('productManagement.errors.updateVariantError'));
     }
   };
 
@@ -166,11 +161,10 @@ const ProductManagement = () => {
       const primaryImg = product.product_images.find(img => img.is_primary);
       setPrimaryImage(primaryImg ? primaryImg.image_url : null);
       setImagePreviews(product.product_images.filter(img => !img.is_primary).map(img => img.image_url));
-      setVariants(product.product_variants || []);
     } else {
+      setEditingProduct({ product_variants: [] }); // Initialize with empty variants
       setFormData(initialFormState);
       setImagePreviews([]);
-      setVariants([]);
     }
     setIsModalOpen(true);
   };
@@ -256,57 +250,65 @@ const ProductManagement = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!editingProduct) {
-      // If there's no editing product, it means no images have been uploaded yet.
-      // We can create the product with the text data now.
-      try {
-        const payload = {
-          ...formData,
-          price: parseFloat(formData.price),
-          stock_quantity: parseInt(formData.stock_quantity) || 0,
-          category_id: formData.category_id ? parseInt(formData.category_id) : null,
-        };
-        const productResponse = await productService.createProduct(payload);
-        addProduct(productResponse.data);
-        closeModal();
-      } catch (err) {
-        setError(t('productManagement.errors.add'));
-        console.error("Failed to create product:", err.response ? err.response.data : err);
-      }
-      return;
+    if (!editingProduct || !editingProduct.id) {
+        try {
+            const payload = {
+                ...formData,
+                price: parseFloat(formData.price),
+                stock_quantity: parseInt(formData.stock_quantity) || 0,
+                category_id: formData.category_id ? parseInt(formData.category_id) : null,
+            };
+            const productResponse = await productService.createProduct(payload);
+
+            const newProductId = productResponse.data.id;
+            const variantPromises = variants.map(variant =>
+                productService.createVariant(newProductId, { name: variant.name, stock_quantity: variant.stock_quantity })
+            );
+            await Promise.all(variantPromises);
+
+            const finalProduct = await productService.getProduct(newProductId);
+            addProduct(finalProduct.data);
+            closeModal();
+        } catch (err) {
+            setError(t('productManagement.errors.add'));
+            console.error("Failed to create product:", err.response ? err.response.data : err);
+        }
+        return;
     }
 
     setIsSubmitting(true);
     setError('');
 
     try {
-      const allImages = editingProduct ? editingProduct.product_images : [];
-      const primaryImageObject = allImages.find(img => img.image_url === primaryImage);
+        const allImages = editingProduct.product_images || [];
+        const primaryImageObject = allImages.find(img => img.image_url === primaryImage);
+        const imagesPayload = allImages.map(img => ({
+            id: img.id,
+            is_primary: primaryImageObject ? img.id === primaryImageObject.id : false,
+        }));
 
-      const imagesPayload = allImages.map(img => ({
-        id: img.id,
-        is_primary: primaryImageObject ? img.id === primaryImageObject.id : false,
-      }));
+        const payload = {
+            ...formData,
+            price: parseFloat(formData.price),
+            stock_quantity: parseInt(formData.stock_quantity) || 0,
+            category_id: formData.category_id ? parseInt(formData.category_id) : null,
+            product_images: imagesPayload,
+            product_variants: variants.map(({ id, name, stock_quantity, image_url }) => ({
+                id,
+                name,
+                stock_quantity,
+                image_url,
+            })),
+        };
 
-      const payload = {
-        ...formData,
-        price: parseFloat(formData.price),
-        stock_quantity: parseInt(formData.stock_quantity) || 0,
-        category_id: formData.category_id ? parseInt(formData.category_id) : null,
-        product_images: imagesPayload,
-        product_variants: variants.map(({ id, name, stock_quantity }) => ({ id, name, stock_quantity })),
-      };
-
-      await productService.updateProduct(editingProduct.id, payload);
-
-      const finalProductResponse = await productService.getProduct(editingProduct.id);
-      updateProduct(finalProductResponse.data);
-      closeModal();
+        const updatedProduct = await productService.updateProduct(editingProduct.id, payload);
+        updateProduct(updatedProduct.data);
+        closeModal();
     } catch (err) {
-      setError(t('productManagement.errors.update'));
-      console.error("Failed to update product:", err.response ? err.response.data : err);
+        setError(t('productManagement.errors.update'));
+        console.error("Failed to update product:", err.response ? err.response.data : err);
     } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
   };
 

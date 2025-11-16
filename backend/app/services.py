@@ -131,6 +131,7 @@ def update_product(product_id: int, product: schemas.ProductUpdate, supabase: Cl
 
         for variant in variants_data:
             variant_id = variant.get("id")
+            # Ensure image_url is included in the upsert data if it exists
             upsert_data = {k: v for k, v in variant.items() if k != 'id'}
             if variant_id:
                 upserted_variant_ids.add(variant_id)
