@@ -54,7 +54,8 @@
       "delete": "فشل في حذف المنتج",
       "draftError": "فشل في إنشاء مسودة المنتج",
       "uploadError": "فشل في تحميل الصور",
-      "addVariantError": "فشل في إضافة الخيار"
+      "addVariantError": "فشل في إضافة الخيار",
+      "updateVariantError": "فشل في تحديث الخيار"
     }
   },
   "categoryManagement": {

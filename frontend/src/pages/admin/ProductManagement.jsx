@@ -73,7 +73,17 @@ const ProductManagement = () => {
       const response = await productService.uploadImage(currentProductId, file);
       const newImage = response.data;
       await productService.setPrimaryImage(newImage.id);
-      setPrimaryImage(newImage.image_url);
+
+      // Fetch the updated product to get all images, including the new primary one
+      const updatedProductResponse = await productService.getProduct(currentProductId);
+      const updatedImages = updatedProductResponse.data.product_images;
+
+      const primaryImg = updatedImages.find(img => img.is_primary);
+      setPrimaryImage(primaryImg ? primaryImg.image_url : null);
+
+      // Update the gallery previews as well
+      setImagePreviews(updatedImages.filter(img => !img.is_primary).map(img => img.image_url));
+
     } catch (err) {
       setError(t('productManagement.errors.uploadError'));
     } finally {
@@ -87,16 +97,8 @@ const ProductManagement = () => {
 
     const variant = variants[index];
     if (!variant.id) {
-      try {
-        const variantResponse = await productService.createVariant(editingProduct.id, { name: variant.name, stock_quantity: variant.stock_quantity });
-        const newVariants = [...variants];
-        newVariants[index] = variantResponse.data;
-        setVariants(newVariants);
-        variant.id = variantResponse.data.id;
-      } catch (err) {
-        setError(t('productManagement.errors.addVariantError'));
-        return;
-      }
+      setError("Please save the variant before uploading an image.");
+      return;
     }
 
     setUploadingImages(true);
@@ -109,6 +111,31 @@ const ProductManagement = () => {
       setError(t('productManagement.errors.uploadError'));
     } finally {
       setUploadingImages(false);
+    }
+  };
+
+  const handleSaveVariant = async (index) => {
+    const variant = variants[index];
+    if (variant.id) {
+      // Update existing variant
+      try {
+        const response = await productService.updateVariant(variant.id, { name: variant.name, stock_quantity: variant.stock_quantity });
+        const newVariants = [...variants];
+        newVariants[index] = response.data;
+        setVariants(newVariants);
+      } catch (err) {
+        setError(t('productManagement.errors.updateVariantError'));
+      }
+    } else {
+      // Create new variant
+      try {
+        const response = await productService.createVariant(editingProduct.id, { name: variant.name, stock_quantity: variant.stock_quantity });
+        const newVariants = [...variants];
+        newVariants[index] = response.data;
+        setVariants(newVariants);
+      } catch (err) {
+        setError(t('productManagement.errors.addVariantError'));
+      }
     }
   };
 
@@ -138,7 +165,9 @@ const ProductManagement = () => {
         category_id: product.category_id || '',
         stock_quantity: product.stock_quantity || 0,
       });
-      setImagePreviews(product.product_images.map(img => img.image_url));
+      const primaryImg = product.product_images.find(img => img.is_primary);
+      setPrimaryImage(primaryImg ? primaryImg.image_url : null);
+      setImagePreviews(product.product_images.filter(img => !img.is_primary).map(img => img.image_url));
       setVariants(product.product_variants || []);
     } else {
       setFormData(initialFormState);
@@ -457,7 +486,7 @@ const ProductManagement = () => {
               <div className="w-20">{t('productManagement.form.image')}</div>
               <div className="flex-1">{t('productManagement.form.variantName')}</div>
               <div className="w-40">{t('productManagement.form.stock')}</div>
-              <div className="w-10">{t('common.actions')}</div>
+              <div className="w-24">{t('common.actions')}</div>
             </div>
 
             {/* Variant Rows */}
@@ -482,9 +511,14 @@ const ProductManagement = () => {
                   onChange={(e) => handleVariantChange(index, 'stock_quantity', parseInt(e.target.value))}
                   className="w-40 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                 />
-                <button type="button" onClick={() => removeVariant(index)} className="text-red-500 hover:text-red-400">
-                  <Trash2 size={20} />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button type="button" onClick={() => handleSaveVariant(index)} className="text-green-500 hover:text-green-400">
+                    {t('common.save')}
+                  </button>
+                  <button type="button" onClick={() => removeVariant(index)} className="text-red-500 hover:text-red-400">
+                    <Trash2 size={20} />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
