@@ -5,9 +5,20 @@ const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
   const getTransformedImageUrl = (url) => {
     if (!url) return '';
     try {
-      if (!url.includes('/object/public/')) return url;
-      const transformedUrl = url.replace('/object/public/', '/render/image/public/');
-      return `${transformedUrl}?width=1080&height=1080&resize=cover`;
+      const urlObject = new URL(url);
+      if (urlObject.hostname.endsWith('supabase.co') && urlObject.pathname.includes('/storage/v1/')) {
+        if (urlObject.pathname.includes('/render/image/')) {
+          return url;
+        }
+        if (urlObject.pathname.includes('/object/public/')) {
+          urlObject.pathname = urlObject.pathname.replace('/object/public/', '/render/image/public/');
+          urlObject.searchParams.set('width', '1080');
+          urlObject.searchParams.set('height', '1080');
+          urlObject.searchParams.set('resize', 'cover');
+          return urlObject.toString();
+        }
+      }
+      return url;
     } catch (error) {
       console.error("Failed to transform image URL:", error);
       return url;
