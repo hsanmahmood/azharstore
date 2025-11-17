@@ -1,4 +1,3 @@
-import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -11,18 +10,5 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
-    CORS_ORIGINS: str = ""
 
 settings = Settings()
-
-# Centralized CORS origins configuration
-essential_origins = {
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://beta.azhar.store",
-    "https://az-rosy.vercel.app",
-    "https://azhar.store",
-}
-
-additional_origins = {origin.strip() for origin in settings.CORS_ORIGINS.split(",") if origin.strip()}
-allowed_origins = list(essential_origins.union(additional_origins))

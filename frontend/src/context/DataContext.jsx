@@ -1,11 +1,9 @@
-import React, { createContext, useState, useEffect, useCallback, useContext } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { productService, categoryService, customerService } from '../services/api';
-import { AuthContext } from './AuthContext';
 
 export const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
-  const { token } = useContext(AuthContext);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -15,32 +13,30 @@ export const DataProvider = ({ children }) => {
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const publicDataPromises = [
+      const [productsRes, categoriesRes] = await Promise.all([
         productService.getAllProducts(),
         categoryService.getAllCategories(),
-      ];
-
-      const [productsRes, categoriesRes] = await Promise.all(publicDataPromises);
+      ]);
       setProducts(productsRes.data);
       setCategories(categoriesRes);
-
-      if (token) {
-        const customersRes = await customerService.getAllCustomers();
-        setCustomers(customersRes.data);
-      } else {
-        setCustomers([]);
-      }
-
       setError('');
     } catch (err) {
-      if (err.response && err.response.status !== 401) {
-        setError('Failed to fetch data');
-      }
+      setError('Failed to fetch data');
       console.error(err);
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, []);
+
+  const fetchCustomers = useCallback(async () => {
+    try {
+      const customersRes = await customerService.getAllCustomers();
+      setCustomers(customersRes.data);
+    } catch (err) {
+      setError('Failed to fetch customers');
+      console.error(err);
+    }
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -80,6 +76,7 @@ export const DataProvider = ({ children }) => {
     isLoading,
     error,
     refreshData: fetchData,
+    fetchCustomers,
     addProduct,
     updateProduct,
     removeProduct,

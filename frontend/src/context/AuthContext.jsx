@@ -10,24 +10,12 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const validateToken = () => {
-      if (token) {
-        try {
-          const decodedToken = jwtDecode(token);
-          const currentTime = Date.now() / 1000;
-          if (decodedToken.exp < currentTime) {
-            // Token is expired
-            logout();
-          }
-        } catch (error) {
-          // Invalid token
-          logout();
-        }
-      }
+    // Validate token on mount
+    if (token) {
       setIsLoading(false);
-    };
-
-    validateToken();
+    } else {
+      setIsLoading(false);
+    }
   }, [token]);
 
   const login = async (password) => {

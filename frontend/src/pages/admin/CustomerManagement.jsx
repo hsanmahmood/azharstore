@@ -1,17 +1,20 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import CustomerForm from './CustomerForm';
 import CustomerCard from './CustomerCard';
 import { DataContext } from '../../context/DataContext';
-import LoadingScreen from '../../components/LoadingScreen';
 
 const CustomerManagement = () => {
   const { t } = useTranslation();
-  const { customers, isLoading, error: dataError, refreshData } = useContext(DataContext);
+  const { customers, isLoading, error: dataError, fetchCustomers } = useContext(DataContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
+
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
 
   const openModal = (customer = null) => {
     setEditingCustomer(customer);
@@ -24,11 +27,9 @@ const CustomerManagement = () => {
   };
 
   const handleSuccess = () => {
-    refreshData();
+    fetchCustomers();
     closeModal();
   };
-
-  if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
     <>
@@ -42,6 +43,7 @@ const CustomerManagement = () => {
         </button>
       </div>
 
+      {isLoading && <Loader2 className="animate-spin" />}
       {dataError && <div className="text-red-500">{dataError}</div>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
