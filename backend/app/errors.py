@@ -4,25 +4,9 @@ from fastapi.exceptions import RequestValidationError
 import structlog
 import traceback
 import sys
-import os
+from .config import allowed_origins
 
 logger = structlog.get_logger(__name__)
-
-# Define a set of essential origins that should always be allowed
-essential_origins = {
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://beta.azhar.store",
-    "https://az-rosy.vercel.app",
-    "https://azhar.store",
-}
-
-# Get additional origins from the environment variable
-additional_origins_str = os.getenv("CORS_ORIGINS", "")
-additional_origins = {origin.strip() for origin in additional_origins_str.split(",") if origin.strip()}
-
-# Combine the sets to get a unique list of all allowed origins
-allowed_origins = list(essential_origins.union(additional_origins))
 
 def add_cors_headers(response: JSONResponse, request: Request) -> JSONResponse:
     origin = request.headers.get("origin")
