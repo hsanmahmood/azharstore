@@ -9,6 +9,7 @@ import AdminLayout from './pages/admin/AdminLayout';
 import ProductManagement from './pages/admin/ProductManagement';
 import CategoryManagement from './pages/admin/CategoryManagement';
 import CustomerManagement from './pages/admin/CustomerManagement';
+import OrderManagement from './pages/admin/OrderManagement';
 
 const App = () => {
   const { token } = useContext(AuthContext);
@@ -31,6 +32,7 @@ const App = () => {
             <Route path="products" element={<ProductManagement />} />
             <Route path="categories" element={<CategoryManagement />} />
             <Route path="customers" element={<CustomerManagement />} />
+            <Route path="orders" element={<OrderManagement />} />
           </Route>
         </Route>
 

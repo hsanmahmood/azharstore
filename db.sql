@@ -1,10 +1,10 @@
-CREATE TABLE public.categories (
+CREATE TABLE IF NOT EXISTS public.categories (
   id integer NOT NULL DEFAULT nextval('categories_id_seq'::regclass),
   name character varying NOT NULL,
   CONSTRAINT categories_pkey PRIMARY KEY (id)
 );
 
-CREATE TABLE public.customers (
+CREATE TABLE IF NOT EXISTS public.customers (
   id integer NOT NULL DEFAULT nextval('customers_id_seq'::regclass),
   name character varying NOT NULL,
   phone_number character varying NOT NULL CHECK (char_length(phone_number::text) = 8),
@@ -16,7 +16,7 @@ CREATE TABLE public.customers (
   CONSTRAINT customers_pkey PRIMARY KEY (id)
 );
 
-CREATE TABLE public.products (
+CREATE TABLE IF NOT EXISTS public.products (
   id integer NOT NULL DEFAULT nextval('products_id_seq'::regclass),
   name character varying NOT NULL,
   description text,
@@ -27,7 +27,7 @@ CREATE TABLE public.products (
   CONSTRAINT products_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.categories(id)
 );
 
-CREATE TABLE public.product_images (
+CREATE TABLE IF NOT EXISTS public.product_images (
   id integer NOT NULL DEFAULT nextval('product_images_id_seq'::regclass),
   product_id integer NOT NULL,
   image_url text NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE public.product_images (
   CONSTRAINT product_images_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id)
 );
 
-CREATE TABLE public.product_variants (
+CREATE TABLE IF NOT EXISTS public.product_variants (
   id integer NOT NULL DEFAULT nextval('product_variants_id_seq'::regclass),
   product_id integer NOT NULL,
   name text NOT NULL,
@@ -48,10 +48,19 @@ CREATE TABLE public.product_variants (
   CONSTRAINT product_variants_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id)
 );
 
-CREATE TYPE order_status AS ENUM ('processing', 'ready', 'delivered', 'shipped');
-CREATE TYPE shipping_method AS ENUM ('delivery', 'pick_up');
+DO $$ BEGIN
+    CREATE TYPE order_status AS ENUM ('processing', 'ready', 'delivered', 'shipped');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TABLE public.orders (
+DO $$ BEGIN
+    CREATE TYPE shipping_method AS ENUM ('delivery', 'pick_up');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+CREATE TABLE IF NOT EXISTS public.orders (
     id SERIAL PRIMARY KEY,
     customer_id integer NOT NULL,
     status order_status NOT NULL DEFAULT 'processing',
@@ -61,7 +70,7 @@ CREATE TABLE public.orders (
     CONSTRAINT orders_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(id)
 );
 
-CREATE TABLE public.order_items (
+CREATE TABLE IF NOT EXISTS public.order_items (
     id SERIAL PRIMARY KEY,
     order_id integer NOT NULL,
     product_variant_id integer NOT NULL,

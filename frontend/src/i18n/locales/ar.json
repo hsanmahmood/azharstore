@@ -107,5 +107,45 @@
       "fetch": "فشل في تحميل العملاء",
       "submit": "فشل في حفظ العميل"
     }
+  },
+  "orderManagement": {
+    "title": "إدارة الطلبات",
+    "addOrder": "إضافة طلب",
+    "editOrder": "تعديل طلب",
+    "confirmDelete": "هل أنت متأكد من حذف هذا الطلب؟",
+    "table": {
+      "orderId": "رقم الطلب",
+      "customer": "العميل",
+      "status": "الحالة",
+      "shippingMethod": "طريقة الشحن",
+      "total": "المجموع",
+      "date": "التاريخ"
+    },
+    "form": {
+      "customer": "العميل",
+      "selectCustomer": "اختر عميل",
+      "products": "المنتجات",
+      "addProduct": "إضافة منتج",
+      "shippingMethod": "طريقة الشحن",
+      "selectShippingMethod": "اختر طريقة الشحن",
+      "status": "الحالة",
+      "selectStatus": "اختر الحالة",
+      "comments": "ملاحظات",
+      "orderItems": "عناصر الطلب"
+    },
+    "status": {
+      "processing": "قيد المعالجة",
+      "ready": "جاهز",
+      "delivered": "تم التوصيل",
+      "shipped": "تم الشحن"
+    },
+    "shipping": {
+      "delivery": "توصيل",
+      "pick_up": "استلام"
+    },
+    "errors": {
+      "fetch": "فشل في تحميل الطلبات",
+      "submit": "فشل في حفظ الطلب"
+    }
   }
 }

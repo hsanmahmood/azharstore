@@ -82,4 +82,11 @@ export const customerService = {
   deleteCustomer: (id) => api.delete(`/admin/customers/${id}`),
 };
 
+export const orderService = {
+  getAllOrders: () => api.get('/admin/orders'),
+  getOrder: (id) => api.get(`/admin/orders/${id}`),
+  createOrder: (data) => api.post('/admin/orders', data),
+  updateOrder: (id, data) => api.patch(`/admin/orders/${id}`, data),
+};
+
 export default api;

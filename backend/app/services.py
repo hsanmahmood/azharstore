@@ -208,3 +208,38 @@ def delete_product_variant(variant_id: int, supabase: Client = Depends(get_supab
 def update_product_variant_image(variant_id: int, image_url: str, supabase: Client = Depends(get_supabase_client)) -> schemas.ProductVariant | None:
     response = supabase.table("product_variants").update({"image_url": image_url}).eq("id", variant_id).execute()
     return response.data[0] if response.data else None
+
+def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order:
+    order_data = order.model_dump(exclude={"order_items"})
+    order_response = supabase.table("orders").insert(order_data).execute()
+    if not order_response.data:
+        raise HTTPException(status_code=500, detail="Failed to create order.")
+
+    new_order = order_response.data[0]
+
+    order_items_data = [
+        {"order_id": new_order['id'], **item.model_dump()}
+        for item in order.order_items
+    ]
+
+    items_response = supabase.table("order_items").insert(order_items_data).execute()
+    if not items_response.data:
+        # Rollback order creation if items fail
+        supabase.table("orders").delete().eq("id", new_order['id']).execute()
+        raise HTTPException(status_code=500, detail="Failed to create order items.")
+
+    return get_order(new_order['id'], supabase)
+
+def get_orders(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Order]:
+    response = supabase.table("orders").select("*, customer:customers(*), order_items(*, product_variant:product_variants(*))").execute()
+    return response.data
+
+def get_order(order_id: int, supabase: Client = Depends(get_supabase_client)) -> schemas.Order | None:
+    response = supabase.table("orders").select("*, customer:customers(*), order_items(*, product_variant:product_variants(*))").eq("id", order_id).execute()
+    return response.data[0] if response.data else None
+
+def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order | None:
+    response = supabase.table("orders").update(order.model_dump(exclude_unset=True)).eq("id", order_id).execute()
+    if not response.data:
+        return None
+    return get_order(order_id, supabase)

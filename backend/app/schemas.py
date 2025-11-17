@@ -1,5 +1,16 @@
 from pydantic import BaseModel, validator
 from typing import Optional
+from enum import Enum
+
+class OrderStatus(str, Enum):
+    processing = 'processing'
+    ready = 'ready'
+    delivered = 'delivered'
+    shipped = 'shipped'
+
+class ShippingMethod(str, Enum):
+    delivery = 'delivery'
+    pick_up = 'pick_up'
 
 class AdminLoginRequest(BaseModel):
     password: str
@@ -85,7 +96,36 @@ class Customer(BaseModel):
     address_road: Optional[str] = None
     address_block: Optional[str] = None
 
+class OrderItemCreate(BaseModel):
+    product_variant_id: int
+    quantity: int
+    price: float
+
+class OrderItem(OrderItemCreate):
+    id: int
+    order_id: int
+
+class OrderCreate(BaseModel):
+    customer_id: int
+    shipping_method: ShippingMethod
+    status: OrderStatus = OrderStatus.processing
+    comments: Optional[str] = None
+    order_items: list[OrderItemCreate]
+
+class Order(BaseModel):
+    id: int
+    customer_id: int
+    shipping_method: ShippingMethod
+    status: OrderStatus
+    comments: Optional[str] = None
     created_at: datetime
+    order_items: list[OrderItem] = []
+    customer: Customer
+
+class OrderUpdate(BaseModel):
+    status: Optional[OrderStatus] = None
+    shipping_method: Optional[ShippingMethod] = None
+    comments: Optional[str] = None
 
 class CustomerCreate(BaseModel):
     name: str
