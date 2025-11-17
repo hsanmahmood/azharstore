@@ -9,7 +9,7 @@ import LoadingScreen from '../../components/LoadingScreen';
 
 const CustomerManagement = () => {
   const { t } = useTranslation();
-  const { customers, isLoading, error: dataError, refreshData } = useContext(DataContext);
+  const { customers, isLoading, error: dataError, addCustomer, updateCustomer } = useContext(DataContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
 
@@ -23,8 +23,12 @@ const CustomerManagement = () => {
     setEditingCustomer(null);
   };
 
-  const handleSuccess = () => {
-    refreshData();
+  const handleSuccess = (customer) => {
+    if (editingCustomer) {
+      updateCustomer(customer);
+    } else {
+      addCustomer(customer);
+    }
     closeModal();
   };
 
