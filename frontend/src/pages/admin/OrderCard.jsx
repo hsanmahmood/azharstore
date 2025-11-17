@@ -1,9 +1,28 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Edit, Trash2 } from 'lucide-react';
+import Dropdown from '../../components/Dropdown';
+import { orderService } from '../../services/api';
+import { DataContext } from '../../context/DataContext';
 
 const OrderCard = ({ order, onEdit, onDelete }) => {
   const { t } = useTranslation();
+  const { updateOrder } = useContext(DataContext);
+
+  const handleStatusChange = async (option) => {
+    const newStatus = option.value;
+    const originalOrder = { ...order };
+    const updatedOrder = { ...order, status: newStatus };
+
+    updateOrder(updatedOrder);
+
+    try {
+      await orderService.updateOrder(order.id, { status: newStatus });
+    } catch (error) {
+      updateOrder(originalOrder);
+      // You might want to show an error message to the user
+    }
+  };
 
   const cardClasses = `
     bg-black/20 border border-brand-border rounded-2xl p-4 flex flex-col
@@ -33,7 +52,16 @@ const OrderCard = ({ order, onEdit, onDelete }) => {
         </p>
         <div className="mt-3 space-y-2 text-sm">
           <div className="flex items-center gap-2 text-brand-secondary">
-            <span>{t('orderManagement.table.status')}: {t(`orderManagement.status.${order.status}`)}</span>
+            <Dropdown
+              options={[
+                { value: 'processing', label: t('orderManagement.status.processing') },
+                { value: 'ready', label: t('orderManagement.status.ready') },
+                { value: 'delivered', label: t('orderManagement.status.delivered') },
+                { value: 'shipped', label: t('orderManagement.status.shipped') },
+              ]}
+              value={order.status}
+              onChange={handleStatusChange}
+            />
           </div>
           <div className="flex items-center gap-2 text-brand-secondary">
             <span>{t('orderManagement.table.shippingMethod')}: {t(`orderManagement.shipping.${order.shipping_method}`)}</span>

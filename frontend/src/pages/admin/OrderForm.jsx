@@ -82,6 +82,22 @@ const OrderForm = ({ order, onSuccess }) => {
     setIsSubmitting(true);
     setError('');
 
+    const originalOrder = order ? { ...order } : null;
+    const optimisticOrder = {
+      ...(originalOrder || {}),
+      ...formData,
+      id: originalOrder ? originalOrder.id : Date.now(),
+      customer: customers.find(c => c.id === formData.customer_id),
+      order_items: formData.order_items.map(item => ({
+        ...item,
+        product_variant: products
+          .flatMap(p => p.product_variants)
+          .find(pv => pv.id === item.product_variant_id)
+      })),
+    };
+
+    onSuccess(optimisticOrder);
+
     try {
       let response;
       if (order) {
@@ -89,8 +105,11 @@ const OrderForm = ({ order, onSuccess }) => {
       } else {
         response = await orderService.createOrder(formData);
       }
-      onSuccess(response.data);
+      // The parent component will handle the final state update
     } catch (err) {
+      if (originalOrder) {
+        onSuccess(originalOrder); // Revert on error
+      }
       setError(t('orderManagement.errors.submit'));
     } finally {
       setIsSubmitting(false);
