@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import router as api_router, admin_router
+from app.api import router as api_router, admin_router, customers_router
 from app.config import settings, allowed_origins
 from app.logging_config import setup_logging
 from app.errors import global_exception_handler, http_exception_handler
@@ -35,3 +35,4 @@ async def health_head():
 
 app.include_router(api_router)
 app.include_router(admin_router)
+app.include_router(customers_router)
