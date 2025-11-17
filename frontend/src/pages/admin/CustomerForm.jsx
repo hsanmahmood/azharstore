@@ -61,9 +61,9 @@ const CustomerForm = ({ customer, onSuccess }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <div className="text-red-500 text-sm">{error}</div>}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-medium text-brand-secondary mb-1">
+          <label className="block text-sm font-medium text-brand-secondary mb-1">
             {t('customerManagement.form.name')}
           </label>
           <input
@@ -72,11 +72,11 @@ const CustomerForm = ({ customer, onSuccess }) => {
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
+            className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-secondary mb-1">
+          <label className="block text-sm font-medium text-brand-secondary mb-1">
             {t('customerManagement.form.phone')}
           </label>
           <input
@@ -85,9 +85,11 @@ const CustomerForm = ({ customer, onSuccess }) => {
             value={formData.phone_number}
             onChange={handleChange}
             required
-            className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
+            className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
           />
         </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label className="block text-xs font-medium text-brand-secondary mb-1">
             {t('customerManagement.form.town')}
@@ -100,7 +102,6 @@ const CustomerForm = ({ customer, onSuccess }) => {
             className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
           />
         </div>
-      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label className="block text-xs font-medium text-brand-secondary mb-1">

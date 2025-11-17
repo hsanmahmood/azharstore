@@ -1,10 +1,11 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Modal from '../../components/Modal';
 import CustomerForm from './CustomerForm';
 import CustomerCard from './CustomerCard';
 import { DataContext } from '../../context/DataContext';
+import LoadingScreen from '../../components/LoadingScreen';
 
 const CustomerManagement = () => {
   const { t } = useTranslation();
@@ -27,6 +28,8 @@ const CustomerManagement = () => {
     closeModal();
   };
 
+  if (isLoading) return <LoadingScreen fullScreen={false} />;
+
   return (
     <>
       <div className="flex justify-between items-center mb-8">
@@ -39,7 +42,6 @@ const CustomerManagement = () => {
         </button>
       </div>
 
-      {isLoading && <Loader2 className="animate-spin" />}
       {dataError && <div className="text-red-500">{dataError}</div>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -59,7 +61,7 @@ const CustomerManagement = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         title={editingCustomer ? t('customerManagement.editCustomer') : t('customerManagement.addCustomer')}
-        maxWidth="max-w-lg"
+        maxWidth="max-w-2xl"
       >
         <CustomerForm customer={editingCustomer} onSuccess={handleSuccess} />
       </Modal>

@@ -3,16 +3,15 @@ import { Edit, Trash2, DollarSign, Package } from 'lucide-react';
 
 const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
   const cardClasses = `
-    bg-black/20 border border-brand-border rounded-2xl p-4 flex flex-col justify-between
+    bg-black/20 border border-brand-border rounded-2xl p-4 flex flex-col
     transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1
-    aspect-square
     ${optimistic ? 'opacity-50 animate-pulse' : ''}
   `;
   return (
     <div className={cardClasses}>
       <div className="flex flex-col h-full">
         {product.product_images?.[0] && (
-          <div className="w-full h-2/3 flex-shrink-0">
+          <div className="w-full aspect-square flex-shrink-0">
             <img
               src={product.product_images[0].image_url}
               alt={product.name}
@@ -20,7 +19,7 @@ const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
             />
           </div>
         )}
-        <div className="flex justify-between items-start gap-2">
+        <div className="flex justify-between items-start gap-2 mt-3">
           <h3 className="text-lg font-bold text-brand-primary flex-1 break-words">{product.name}</h3>
           <div className="flex items-center gap-3 flex-shrink-0">
             <button onClick={() => onEdit(product)} className="text-brand-secondary hover:text-brand-primary transition-colors">
