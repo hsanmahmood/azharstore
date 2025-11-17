@@ -180,12 +180,6 @@ def delete_product_image(image_id: int, supabase: Client = Depends(get_supabase_
 
     response = supabase.table("product_images").delete().eq("id", image_id).execute()
 
-    if was_primary:
-        remaining_images = supabase.table("product_images").select("id").eq("product_id", product_id).order("created_at").execute()
-        if remaining_images.data:
-            new_primary_id = remaining_images.data[0]["id"]
-            supabase.table("product_images").update({"is_primary": True}).eq("id", new_primary_id).execute()
-
     return bool(response.data)
 
 def set_primary_image(image_id: int, supabase: Client = Depends(get_supabase_client)) -> schemas.ProductImage | None:

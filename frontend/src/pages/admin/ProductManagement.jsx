@@ -185,12 +185,7 @@ const ProductManagement = () => {
       }
 
       setEditingProduct({ ...editingProduct, product_images: updatedImages });
-
-      const newPrimary = updatedImages.find(img => img.is_primary);
-      const newPrimaryUrl = newPrimary ? newPrimary.image_url : (updatedImages.length > 0 ? updatedImages[0].image_url : null);
-
-      setPrimaryImage(newPrimaryUrl);
-      setImagePreviews(updatedImages.filter(img => img.image_url !== newPrimaryUrl).map(img => img.image_url));
+      setImagePreviews(updatedImages.filter(img => !img.is_primary).map(img => img.image_url));
 
     } catch (err) {
       setError(t('productManagement.errors.deleteImageError'));
