@@ -2,6 +2,13 @@ import React from 'react';
 import { Edit, Trash2, DollarSign, Package } from 'lucide-react';
 
 const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
+  const getTransformedImageUrl = (url) => {
+    if (!url) return '';
+    // Assuming the URL is a Supabase Storage URL
+    const transformOptions = 'width=1080,height=1080,resize=cover';
+    return `${url}?transform=${encodeURIComponent(transformOptions)}`;
+  };
+
   const cardClasses = `
     bg-black/20 border border-brand-border rounded-2xl p-4 flex flex-col
     transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1
@@ -13,7 +20,7 @@ const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
         {product.product_images?.[0] && (
           <div className="w-full aspect-square flex-shrink-0">
             <img
-              src={product.product_images[0].image_url}
+              src={getTransformedImageUrl(product.product_images[0].image_url)}
               alt={product.name}
               className="w-full h-full object-cover rounded-lg"
             />

@@ -98,7 +98,8 @@
       "town": "المدينة",
       "addressHome": "المنزل",
       "addressRoad": "الطريق",
-      "addressBlock": "المجمع"
+      "addressBlock": "المجمع",
+      "address": "العنوان"
     },
     "errors": {
       "fetch": "فشل في تحميل العملاء",
