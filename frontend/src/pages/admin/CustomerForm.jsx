@@ -59,39 +59,80 @@ const CustomerForm = ({ customer, onSuccess }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {error && <div className="text-red-500 text-sm">{error}</div>}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-brand-secondary mb-1">
-            {t('customerManagement.form.name')}
-          </label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-brand-secondary mb-1">
-            {t('customerManagement.form.phone')}
-          </label>
-          <input
-            type="text"
-            name="phone_number"
-            value={formData.phone_number}
-            onChange={handleChange}
-            required
-            className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
-          />
-        </div>
+    <form onSubmit={handleSubmit} className="space-y-6 p-4" dir="rtl">
+      {error && <div className="text-red-500 text-sm text-center mb-4">{error}</div>}
+
+      <div className="flex flex-col items-end">
+        <label className="block text-sm font-medium text-brand-secondary mb-2">
+          {t('customerManagement.form.name')}
+        </label>
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+        />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label className="block text-xs font-medium text-brand-secondary mb-1">
+
+      <div className="flex flex-col items-end">
+        <label className="block text-sm font-medium text-brand-secondary mb-2">
+          {t('customerManagement.form.phone')}
+        </label>
+        <input
+          type="text"
+          name="phone_number"
+          value={formData.phone_number}
+          onChange={handleChange}
+          required
+          className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+        />
+      </div>
+
+      <div className="text-center my-4">
+        <span className="text-lg font-semibold text-brand-primary">{t('customerManagement.form.address')}</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-x-4 gap-y-6">
+        <div className="flex flex-col items-end">
+          <label className="block text-xs font-medium text-brand-secondary mb-2">
+            {t('customerManagement.form.addressRoad')}
+          </label>
+          <input
+            type="text"
+            name="address_road"
+            value={formData.address_road}
+            onChange={handleChange}
+            className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
+          />
+        </div>
+        <div className="flex flex-col items-end">
+          <label className="block text-xs font-medium text-brand-secondary mb-2">
+            {t('customerManagement.form.addressHome')}
+          </label>
+          <input
+            type="text"
+            name="address_home"
+            value={formData.address_home}
+            onChange={handleChange}
+            className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
+          />
+        </div>
+        <div className="flex flex-col items-end">
+          <label className="block text-xs font-medium text-brand-secondary mb-2">
+            {t('customerManagement.form.addressBlock')}
+          </label>
+          <input
+            type="text"
+            name="address_block"
+            value={formData.address_block}
+            onChange={handleChange}
+            className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
+          />
+        </div>
+        <div className="flex flex-col items-end">
+          <label className="block text-xs font-medium text-brand-secondary mb-2">
             {t('customerManagement.form.town')}
           </label>
           <input
@@ -103,45 +144,8 @@ const CustomerForm = ({ customer, onSuccess }) => {
           />
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label className="block text-xs font-medium text-brand-secondary mb-1">
-            {t('customerManagement.form.addressHome')}
-          </label>
-          <input
-            type="text"
-            name="address_home"
-            value={formData.address_home}
-            onChange={handleChange}
-            className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-brand-secondary mb-1">
-            {t('customerManagement.form.addressRoad')}
-          </label>
-          <input
-            type="text"
-            name="address_road"
-            value={formData.address_road}
-            onChange={handleChange}
-            className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-brand-secondary mb-1">
-            {t('customerManagement.form.addressBlock')}
-          </label>
-          <input
-            type="text"
-            name="address_block"
-            value={formData.address_block}
-            onChange={handleChange}
-            className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
-          />
-        </div>
-      </div>
-      <div className="flex justify-end gap-4 pt-2">
+
+      <div className="flex justify-end gap-4 pt-4">
         <button
           type="submit"
           className="bg-brand-primary hover:bg-opacity-90 text-brand-background font-bold py-2 px-4 rounded-md transition-colors transform active:scale-95 flex items-center justify-center min-w-[100px]"

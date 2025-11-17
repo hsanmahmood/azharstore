@@ -15,7 +15,7 @@ const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
             <img
               src={product.product_images[0].image_url}
               alt={product.name}
-              className="w-full h-full object-cover rounded-lg mb-3"
+              className="w-full h-full object-cover rounded-lg"
             />
           </div>
         )}
