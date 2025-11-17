@@ -5,11 +5,9 @@ const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
   const getTransformedImageUrl = (url) => {
     if (!url) return '';
     try {
-      const urlParts = url.split('/products/');
-      if (urlParts.length !== 2) return url;
-      const baseUrl = urlParts[0];
-      const imagePath = `/products/${urlParts[1]}`;
-      return `${baseUrl}/render/image/public${imagePath}?width=1080&height=1080&resize=cover`;
+      if (!url.includes('/object/public/')) return url;
+      const transformedUrl = url.replace('/object/public/', '/render/image/public/');
+      return `${transformedUrl}?width=1080&height=1080&resize=cover`;
     } catch (error) {
       console.error("Failed to transform image URL:", error);
       return url;
