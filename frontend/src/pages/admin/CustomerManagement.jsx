@@ -59,7 +59,7 @@ const CustomerManagement = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         title={editingCustomer ? t('customerManagement.editCustomer') : t('customerManagement.addCustomer')}
-        maxWidth="max-w-2xl"
+        maxWidth="max-w-lg"
       >
         <CustomerForm customer={editingCustomer} onSuccess={handleSuccess} />
       </Modal>
