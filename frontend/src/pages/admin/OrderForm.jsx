@@ -61,7 +61,9 @@ const OrderForm = ({ order, onSuccess }) => {
 
   const getProductVariants = (productId) => {
     const product = products.find((p) => p.id === productId);
-    if (!product) return [];
+    if (!product || !product.product_variants || product.product_variants.length === 0) {
+      return [{ value: null, label: t('orderManagement.form.noVariants') }];
+    }
     return product.product_variants.map((v) => ({ value: v.id, label: v.name }));
   };
 
@@ -153,7 +155,7 @@ const OrderForm = ({ order, onSuccess }) => {
                   value={item.product_variant_id}
                   onChange={(option) => handleItemChange(index, 'product_variant_id', option.value)}
                   placeholder={t('orderManagement.form.selectVariant')}
-                  disabled={!item.product_id}
+                  disabled={!item.product_id || getProductVariants(item.product_id).length === 1}
                 />
               </div>
               <input

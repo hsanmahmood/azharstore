@@ -131,7 +131,10 @@
       "status": "الحالة",
       "selectStatus": "اختر الحالة",
       "comments": "ملاحظات",
-      "orderItems": "عناصر الطلب"
+      "orderItems": "عناصر الطلب",
+      "noVariants": "لا توجد خيارات",
+      "selectProduct": "اختر منتج",
+      "selectVariant": "اختر خيار"
     },
     "status": {
       "processing": "قيد المعالجة",

@@ -5,6 +5,7 @@ import Modal from '../../components/Modal';
 import { DataContext } from '../../context/DataContext';
 import LoadingScreen from '../../components/LoadingScreen';
 import OrderForm from './OrderForm';
+import OrderCard from './OrderCard';
 
 const OrderManagement = () => {
   const { t } = useTranslation();
@@ -47,7 +48,18 @@ const OrderManagement = () => {
 
       {dataError && <div className="text-red-500">{dataError}</div>}
 
-      {/* Orders list will be implemented here */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {orders.map((order) => (
+          <OrderCard
+            key={order.id}
+            order={order}
+            onEdit={openModal}
+            onDelete={() => {
+              // Add delete functionality here
+            }}
+          />
+        ))}
+      </div>
 
       <Modal
         isOpen={isModalOpen}
