@@ -1,30 +1,8 @@
 import React from 'react';
 import { Edit, Trash2, DollarSign, Package, ImageIcon } from 'lucide-react';
+import TransformedImage from '../../components/TransformedImage';
 
 const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
-  const getTransformedImageUrl = (url) => {
-    if (!url) return '';
-    try {
-      const urlObject = new URL(url);
-      if (urlObject.hostname.endsWith('supabase.co') && urlObject.pathname.includes('/storage/v1/')) {
-        if (urlObject.pathname.includes('/render/image/')) {
-          return url;
-        }
-        if (urlObject.pathname.includes('/object/public/')) {
-          urlObject.pathname = urlObject.pathname.replace('/object/public/', '/render/image/public/');
-          urlObject.searchParams.set('width', '1080');
-          urlObject.searchParams.set('height', '1080');
-          urlObject.searchParams.set('resize', 'cover');
-          return urlObject.toString();
-        }
-      }
-      return url;
-    } catch (error) {
-      console.error("Failed to transform image URL:", error);
-      return url;
-    }
-  };
-
   const cardClasses = `
     bg-black/20 border border-brand-border rounded-2xl p-4 flex flex-col
     transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1
@@ -34,8 +12,8 @@ const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
     <div className={cardClasses}>
       <div className="flex flex-col h-full">
         {product.product_images?.[0] ? (
-          <img
-            src={getTransformedImageUrl(product.product_images[0].image_url)}
+          <TransformedImage
+            url={product.product_images[0].image_url}
             alt={product.name}
             className="w-full aspect-square object-cover rounded-lg"
           />
