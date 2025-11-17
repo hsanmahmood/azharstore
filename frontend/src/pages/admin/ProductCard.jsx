@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit, Trash2, DollarSign, Package } from 'lucide-react';
+import { Edit, Trash2, DollarSign, Package, ImageIcon } from 'lucide-react';
 
 const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
   const getTransformedImageUrl = (url) => {

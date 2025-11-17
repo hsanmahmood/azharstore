@@ -92,7 +92,7 @@ const CustomerForm = ({ customer, onSuccess }) => {
         />
       </div>
 
-      <div className="text-center my-4">
+      <div className="text-right my-4">
         <span className="text-lg font-semibold text-brand-primary">{t('customerManagement.form.address')}</span>
       </div>
 
