@@ -73,6 +73,7 @@ const CustomerForm = ({ customer, onSuccess }) => {
           onChange={handleChange}
           required
           className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+          dir="rtl"
         />
       </div>
 
@@ -87,6 +88,7 @@ const CustomerForm = ({ customer, onSuccess }) => {
           onChange={handleChange}
           required
           className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+          dir="rtl"
         />
       </div>
 
@@ -105,6 +107,7 @@ const CustomerForm = ({ customer, onSuccess }) => {
             value={formData.address_road}
             onChange={handleChange}
             className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
+            dir="rtl"
           />
         </div>
         <div className="flex flex-col items-end">
@@ -117,6 +120,7 @@ const CustomerForm = ({ customer, onSuccess }) => {
             value={formData.address_home}
             onChange={handleChange}
             className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
+            dir="rtl"
           />
         </div>
         <div className="flex flex-col items-end">
@@ -129,6 +133,7 @@ const CustomerForm = ({ customer, onSuccess }) => {
             value={formData.address_block}
             onChange={handleChange}
             className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
+            dir="rtl"
           />
         </div>
         <div className="flex flex-col items-end">
@@ -141,6 +146,7 @@ const CustomerForm = ({ customer, onSuccess }) => {
             value={formData.town}
             onChange={handleChange}
             className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
+            dir="rtl"
           />
         </div>
       </div>

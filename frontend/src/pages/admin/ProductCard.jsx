@@ -5,7 +5,7 @@ const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
   const getTransformedImageUrl = (url) => {
     if (!url) return '';
     // Assuming the URL is a Supabase Storage URL
-    const transformOptions = 'width=1080,height=1080,resize=cover';
+    const transformOptions = 'width=1080,height=1080,resize=fill,quality=100';
     return `${url}?transform=${encodeURIComponent(transformOptions)}`;
   };
 
