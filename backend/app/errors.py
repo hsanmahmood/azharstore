@@ -1,5 +1,6 @@
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 import structlog
 import traceback
 import sys
@@ -8,6 +9,17 @@ logger = structlog.get_logger(__name__)
 
 
 async def global_exception_handler(request: Request, exc: Exception):
+    if isinstance(exc, RequestValidationError):
+        logger.error(
+            "validation_error",
+            errors=exc.errors(),
+            request_method=request.method,
+            request_url=str(request.url),
+        )
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content={"detail": exc.errors()},
+        )
     try:
         logger.error(
             "unhandled_exception",

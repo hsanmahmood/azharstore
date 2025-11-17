@@ -13,14 +13,14 @@ export const DataProvider = ({ children }) => {
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [productsRes, categoriesRes] = await Promise.all([
+      const [productsRes, categoriesRes, customersRes] = await Promise.all([
         productService.getAllProducts(),
         categoryService.getAllCategories(),
-        // customerService.getAllCustomers(), // Temporarily disabled to fix login loop
+        customerService.getAllCustomers(),
       ]);
       setProducts(productsRes.data);
       setCategories(categoriesRes);
-      // setCustomers(customersRes.data); // Temporarily disabled
+      setCustomers(customersRes.data);
       setError('');
     } catch (err) {
       setError('Failed to fetch data');
