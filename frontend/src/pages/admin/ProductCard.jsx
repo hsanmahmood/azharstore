@@ -4,9 +4,16 @@ import { Edit, Trash2, DollarSign, Package } from 'lucide-react';
 const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
   const getTransformedImageUrl = (url) => {
     if (!url) return '';
-    // Assuming the URL is a Supabase Storage URL
-    const transformOptions = 'width=1080,height=1080,resize=fill,quality=100';
-    return `${url}?transform=${encodeURIComponent(transformOptions)}`;
+    try {
+      const urlParts = url.split('/products/');
+      if (urlParts.length !== 2) return url;
+      const baseUrl = urlParts[0];
+      const imagePath = `/products/${urlParts[1]}`;
+      return `${baseUrl}/render/image/public${imagePath}?width=1080&height=1080&resize=cover`;
+    } catch (error) {
+      console.error("Failed to transform image URL:", error);
+      return url;
+    }
   };
 
   const cardClasses = `
@@ -17,13 +24,15 @@ const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
   return (
     <div className={cardClasses}>
       <div className="flex flex-col h-full">
-        {product.product_images?.[0] && (
-          <div className="w-full aspect-square flex-shrink-0">
-            <img
-              src={getTransformedImageUrl(product.product_images[0].image_url)}
-              alt={product.name}
-              className="w-full h-full object-cover rounded-lg"
-            />
+        {product.product_images?.[0] ? (
+          <img
+            src={getTransformedImageUrl(product.product_images[0].image_url)}
+            alt={product.name}
+            className="w-full aspect-square object-cover rounded-lg"
+          />
+        ) : (
+          <div className="w-full aspect-square bg-black/30 rounded-lg flex items-center justify-center">
+            <ImageIcon className="text-brand-secondary" size={48} />
           </div>
         )}
         <div className="flex justify-between items-start gap-2 mt-3">
