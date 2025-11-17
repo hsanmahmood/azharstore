@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import Optional
 
 class AdminLoginRequest(BaseModel):
@@ -84,6 +84,7 @@ class Customer(BaseModel):
     address_home: Optional[str] = None
     address_road: Optional[str] = None
     address_block: Optional[str] = None
+
     created_at: datetime
 
 class CustomerCreate(BaseModel):
@@ -94,6 +95,12 @@ class CustomerCreate(BaseModel):
     address_road: Optional[str] = None
     address_block: Optional[str] = None
 
+    @validator('phone_number')
+    def validate_phone_number(cls, v):
+        if not v.isdigit() or len(v) != 8:
+            raise ValueError('Phone number must be 8 digits')
+        return v
+
 class CustomerUpdate(BaseModel):
     name: Optional[str] = None
     phone_number: Optional[str] = None
@@ -101,3 +108,9 @@ class CustomerUpdate(BaseModel):
     address_home: Optional[str] = None
     address_road: Optional[str] = None
     address_block: Optional[str] = None
+
+    @validator('phone_number')
+    def validate_phone_number(cls, v):
+        if v is not None and (not v.isdigit() or len(v) != 8):
+            raise ValueError('Phone number must be 8 digits')
+        return v
