@@ -102,6 +102,7 @@ const CustomerForm = ({ customer, onSuccess }) => {
             className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
           />
         </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label className="block text-xs font-medium text-brand-secondary mb-1">
