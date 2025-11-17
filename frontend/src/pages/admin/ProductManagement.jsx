@@ -571,7 +571,7 @@ const ProductManagement = () => {
           <div className="space-y-8">
             <div>
               <h3 className="text-lg font-medium text-brand-primary mb-4">{t('productManagement.form.primaryImage')}</h3>
-              <div className="flex items-center gap-4">
+              <div className="relative w-40 h-40">
                 <ImageUploader
                   onUpload={handlePrimaryImageUpload}
                   preview={primaryImage}
@@ -582,9 +582,10 @@ const ProductManagement = () => {
                   <button
                     type="button"
                     onClick={() => removeImage(primaryImage, true)}
-                    className="flex items-center gap-2 text-sm text-red-500 bg-red-500/10 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors"
+                    className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 text-white shadow-lg"
+                    aria-label={t('common.remove')}
                   >
-                    <Trash2 size={16} /> {t('common.remove')}
+                    <X size={14} />
                   </button>
                 )}
               </div>
