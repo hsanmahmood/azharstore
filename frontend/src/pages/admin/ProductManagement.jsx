@@ -169,25 +169,33 @@ const ProductManagement = () => {
     setIsModalOpen(true);
   };
 
-  const removeImage = (imageUrlToRemove) => {
-    if (imageUrlToRemove === primaryImage) {
-      setPrimaryImage(null);
-    }
+  const removeImage = async (imageUrlToRemove, isPrimary = false) => {
+    if (!editingProduct || !editingProduct.product_images) return;
 
-    let updatedImages = [];
-    if (editingProduct && editingProduct.product_images) {
-      updatedImages = editingProduct.product_images.filter(img => img.image_url !== imageUrlToRemove);
+    const imageToRemove = editingProduct.product_images.find(img => img.image_url === imageUrlToRemove);
+    if (!imageToRemove) return;
+
+    try {
+      await productService.deleteProductImage(imageToRemove.id);
+
+      const updatedImages = editingProduct.product_images.filter(img => img.id !== imageToRemove.id);
+
+      if (isPrimary) {
+        setPrimaryImage(null);
+      }
+
       setEditingProduct({ ...editingProduct, product_images: updatedImages });
+
+      const newPrimary = updatedImages.find(img => img.is_primary);
+      const newPrimaryUrl = newPrimary ? newPrimary.image_url : (updatedImages.length > 0 ? updatedImages[0].image_url : null);
+
+      setPrimaryImage(newPrimaryUrl);
+      setImagePreviews(updatedImages.filter(img => img.image_url !== newPrimaryUrl).map(img => img.image_url));
+
+    } catch (err) {
+      setError(t('productManagement.errors.deleteImageError'));
+      console.error("Failed to delete image:", err);
     }
-
-    // After removing, find the new primary image to update the UI state
-    const newPrimary = updatedImages.find(img => img.is_primary);
-    const newPrimaryUrl = newPrimary ? newPrimary.image_url : (updatedImages.length > 0 ? updatedImages[0].image_url : null);
-
-    setPrimaryImage(newPrimaryUrl);
-
-    // Update gallery previews
-    setImagePreviews(updatedImages.filter(img => img.image_url !== newPrimaryUrl).map(img => img.image_url));
   };
 
   const closeModal = () => {
@@ -563,12 +571,23 @@ const ProductManagement = () => {
           <div className="space-y-8">
             <div>
               <h3 className="text-lg font-medium text-brand-primary mb-4">{t('productManagement.form.primaryImage')}</h3>
-              <ImageUploader
-                onUpload={handlePrimaryImageUpload}
-                preview={primaryImage}
-                uploading={uploadingImages}
-                size="h-40 w-40"
-              />
+              <div className="flex items-center gap-4">
+                <ImageUploader
+                  onUpload={handlePrimaryImageUpload}
+                  preview={primaryImage}
+                  uploading={uploadingImages}
+                  size="h-40 w-40"
+                />
+                {primaryImage && (
+                  <button
+                    type="button"
+                    onClick={() => removeImage(primaryImage, true)}
+                    className="flex items-center gap-2 text-sm text-red-500 bg-red-500/10 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors"
+                  >
+                    <Trash2 size={16} /> {t('common.remove')}
+                  </button>
+                )}
+              </div>
             </div>
 
             <hr className="border-brand-border" />
