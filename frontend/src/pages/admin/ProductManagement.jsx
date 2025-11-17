@@ -176,7 +176,7 @@ const ProductManagement = () => {
     if (!imageToRemove) return;
 
     try {
-      await productService.deleteProductImage(imageToRemove.id);
+      await productService.deleteImage(imageToRemove.id);
 
       const updatedImages = editingProduct.product_images.filter(img => img.id !== imageToRemove.id);
 
