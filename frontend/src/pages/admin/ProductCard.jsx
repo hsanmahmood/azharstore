@@ -1,23 +1,28 @@
 import React from 'react';
-import { Edit, Trash2, DollarSign, Package } from 'lucide-react';
+import { Edit, Trash2, DollarSign, Package, ImageIcon } from 'lucide-react';
+import TransformedImage from '../../components/TransformedImage';
 
 const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
   const cardClasses = `
-    bg-black/20 border border-brand-border rounded-2xl p-4 flex flex-col justify-between
+    bg-black/20 border border-brand-border rounded-2xl p-4 flex flex-col
     transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1
     ${optimistic ? 'opacity-50 animate-pulse' : ''}
   `;
   return (
     <div className={cardClasses}>
-      <div>
-        {product.product_images?.[0] && (
-          <img
-            src={product.product_images[0].image_url}
+      <div className="flex flex-col h-full">
+        {product.product_images?.[0] ? (
+          <TransformedImage
+            url={product.product_images[0].image_url}
             alt={product.name}
-            className="w-full h-48 object-cover rounded-lg mb-3"
+            className="w-full aspect-square object-cover rounded-lg"
           />
+        ) : (
+          <div className="w-full aspect-square bg-black/30 rounded-lg flex items-center justify-center">
+            <ImageIcon className="text-brand-secondary" size={48} />
+          </div>
         )}
-        <div className="flex justify-between items-start gap-2">
+        <div className="flex justify-between items-start gap-2 mt-3">
           <h3 className="text-lg font-bold text-brand-primary flex-1 break-words">{product.name}</h3>
           <div className="flex items-center gap-3 flex-shrink-0">
             <button onClick={() => onEdit(product)} className="text-brand-secondary hover:text-brand-primary transition-colors">
