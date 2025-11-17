@@ -4,10 +4,11 @@ import { Plus } from 'lucide-react';
 import Modal from '../../components/Modal';
 import { DataContext } from '../../context/DataContext';
 import LoadingScreen from '../../components/LoadingScreen';
+import OrderForm from './OrderForm';
 
 const OrderManagement = () => {
   const { t } = useTranslation();
-  const { orders, isLoading, error: dataError } = useContext(DataContext);
+  const { orders, isLoading, error: dataError, addOrder, updateOrder } = useContext(DataContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState(null);
 
@@ -21,8 +22,12 @@ const OrderManagement = () => {
     setEditingOrder(null);
   };
 
-  const handleSuccess = () => {
-    // Will be implemented later
+  const handleSuccess = (order) => {
+    if (editingOrder) {
+      updateOrder(order);
+    } else {
+      addOrder(order);
+    }
     closeModal();
   };
 
@@ -50,7 +55,7 @@ const OrderManagement = () => {
         title={editingOrder ? t('orderManagement.editOrder') : t('orderManagement.addOrder')}
         maxWidth="max-w-4xl"
       >
-        {/* Order form will be implemented here */}
+        <OrderForm order={editingOrder} onSuccess={handleSuccess} />
       </Modal>
     </>
   );
