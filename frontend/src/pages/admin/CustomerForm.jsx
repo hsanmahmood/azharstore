@@ -36,6 +36,12 @@ const CustomerForm = ({ customer, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (formData.phone_number.length !== 8) {
+      setError(t('customerManagement.form.phoneValidationError'));
+      return;
+    }
+
     setIsSubmitting(true);
     setError('');
 
@@ -90,6 +96,9 @@ const CustomerForm = ({ customer, onSuccess }) => {
           className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50 text-right"
           dir="rtl"
         />
+        <p className="text-xs text-brand-secondary text-right mt-1">
+          {t('customerManagement.form.phoneHint')}
+        </p>
       </div>
 
       <div className="text-right my-4">

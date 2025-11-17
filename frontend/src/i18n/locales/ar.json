@@ -99,7 +99,9 @@
       "addressHome": "المنزل",
       "addressRoad": "الطريق",
       "addressBlock": "المجمع",
-      "address": "العنوان"
+      "address": "العنوان",
+      "phoneHint": "يجب أن يتكون رقم الهاتف من 8 أرقام",
+      "phoneValidationError": "لم يستوفِ رقم الهاتف متطلبات الطول"
     },
     "errors": {
       "fetch": "فشل في تحميل العملاء",
