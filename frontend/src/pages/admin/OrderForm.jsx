@@ -25,7 +25,10 @@ const OrderForm = ({ order, onSuccess }) => {
         shipping_method: order.shipping_method,
         status: order.status,
         comments: order.comments || '',
-        order_items: order.order_items || [],
+        order_items: order.order_items.map(item => ({
+          ...item,
+          product_id: item.product_variant ? item.product_variant.product_id : null
+        })) || [],
       });
     }
   }, [order]);
@@ -56,6 +59,13 @@ const OrderForm = ({ order, onSuccess }) => {
   const handleItemChange = (index, field, value) => {
     const newItems = [...formData.order_items];
     newItems[index][field] = value;
+
+    if (field === 'product_id') {
+      const product = products.find((p) => p.id === value);
+      newItems[index].price = product ? product.price : 0;
+      newItems[index].product_variant_id = '';
+    }
+
     setFormData((prev) => ({ ...prev, order_items: newItems }));
   };
 
