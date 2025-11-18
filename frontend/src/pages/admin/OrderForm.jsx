@@ -86,6 +86,8 @@ const OrderForm = ({ order, onSuccess }) => {
     setIsSubmitting(true);
     setError('');
 
+    console.log('Submitting order data:', formData);
+
     const originalOrder = order ? { ...order } : null;
     const optimisticOrder = {
       ...(originalOrder || {}),
@@ -114,7 +116,12 @@ const OrderForm = ({ order, onSuccess }) => {
       }
       onSuccess(response.data);
     } catch (err) {
-      setError(t('orderManagement.errors.submit'));
+      if (err.response && err.response.status === 422) {
+        const errorDetails = err.response.data.detail.map(d => `${d.loc[d.loc.length - 1]}: ${d.msg}`).join(', ');
+        setError(`${t('orderManagement.errors.validation')}: ${errorDetails}`);
+      } else {
+        setError(t('orderManagement.errors.submit'));
+      }
     } finally {
       setIsSubmitting(false);
     }
