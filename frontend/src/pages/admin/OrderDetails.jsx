@@ -35,18 +35,22 @@ const OrderDetails = ({ order }) => {
         <h3 className="text-lg font-medium text-brand-primary mb-4">{t('orderManagement.form.orderItems')}</h3>
         <div className="space-y-4">
           {order.order_items.map((item) => {
-            const displayItem = item.product_variant || (item.product_variant && item.product_variant.product) || {};
-            const imageUrl = displayItem.image_url || (displayItem.product_images && displayItem.product_images[0]?.image_url) || 'https://via.placeholder.com/80';
+            const variant = item.product_variant;
+            const product = variant ? variant.product : {};
+            const primaryImage = product.product_images?.find(img => img.is_primary);
+
+            const imageUrl = variant?.image_url || primaryImage?.image_url || 'https://via.placeholder.com/80';
+            const name = variant ? `${product.name} - ${variant.name}` : product.name;
 
             return (
               <div key={item.id} className="flex items-center gap-4 p-2 rounded-lg bg-black/30">
                 <img
                   src={imageUrl}
-                  alt={displayItem.name || 'Product Image'}
+                  alt={name || 'Product Image'}
                   className="w-20 h-20 object-cover rounded-lg"
                 />
                 <div className="flex-1">
-                  <p className="font-semibold">{displayItem.name || t('orderManagement.form.productNotFound')}</p>
+                  <p className="font-semibold">{name || t('orderManagement.form.productNotFound')}</p>
                   <p className="text-sm text-brand-secondary">{t('productManagement.form.price')}: {item.price.toFixed(2)} د.ب</p>
                 </div>
                 <div className="text-right">
