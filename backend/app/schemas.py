@@ -41,6 +41,7 @@ class ProductVariant(BaseModel):
     name: str
     stock_quantity: int
     image_url: Optional[str] = None
+    product: Optional['Product'] = None
 
 class Product(BaseModel):
     id: int
@@ -104,6 +105,7 @@ class OrderItemCreate(BaseModel):
 class OrderItem(OrderItemCreate):
     id: int
     order_id: int
+    product_variant: Optional['ProductVariant'] = None
 
 class OrderCreate(BaseModel):
     customer_id: int
