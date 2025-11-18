@@ -37,7 +37,7 @@ const OrderManagement = () => {
     setOrders(prev => [order, ...prev]);
   };
 
-  const updateOrder = (updatedOrder) => {
+  const updateOrderState = (updatedOrder) => {
     setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
   };
 
@@ -60,7 +60,7 @@ const OrderManagement = () => {
     try {
       const response = await orderService.getOrder(order.id);
       if (editingOrder) {
-        updateOrder(response.data);
+        updateOrderState(response.data);
       } else {
         addOrder(response.data);
       }
