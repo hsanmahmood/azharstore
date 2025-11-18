@@ -46,9 +46,14 @@ const OrderManagement = () => {
     setIsModalOpen(true);
   };
 
-  const openDetailsModal = (order) => {
-    setViewingOrder(order);
-    setIsDetailsModalOpen(true);
+  const openDetailsModal = async (order) => {
+    try {
+      const response = await orderService.getOrder(order.id);
+      setViewingOrder(response.data);
+      setIsDetailsModalOpen(true);
+    } catch (err) {
+      setError(t('orderManagement.errors.fetch'));
+    }
   };
 
   const closeModal = () => {
