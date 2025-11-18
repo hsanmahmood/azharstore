@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, Eye } from 'lucide-react';
 import Dropdown from '../../components/Dropdown';
 import { orderService } from '../../services/api';
 import { DataContext } from '../../context/DataContext';
 
-const OrderCard = ({ order, onEdit, onDelete }) => {
+const OrderCard = ({ order, onEdit, onDelete, onView }) => {
   const { t } = useTranslation();
   const { updateOrder } = useContext(DataContext);
 
@@ -39,6 +39,9 @@ const OrderCard = ({ order, onEdit, onDelete }) => {
             {t('orderManagement.table.orderId')}: #{order.id}
           </h3>
           <div className="flex items-center gap-3 flex-shrink-0">
+            <button onClick={() => onView(order)} className="text-brand-secondary hover:text-brand-primary transition-colors">
+              <Eye size={18} />
+            </button>
             <button onClick={() => onEdit(order)} className="text-brand-secondary hover:text-brand-primary transition-colors">
               <Edit size={18} />
             </button>

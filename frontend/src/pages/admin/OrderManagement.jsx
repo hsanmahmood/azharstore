@@ -6,16 +6,24 @@ import { DataContext } from '../../context/DataContext';
 import LoadingScreen from '../../components/LoadingScreen';
 import OrderForm from './OrderForm';
 import OrderCard from './OrderCard';
+import OrderDetails from './OrderDetails';
 
 const OrderManagement = () => {
   const { t } = useTranslation();
   const { orders, isLoading, error: dataError, addOrder, updateOrder } = useContext(DataContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState(null);
+  const [viewingOrder, setViewingOrder] = useState(null);
 
   const openModal = (order = null) => {
     setEditingOrder(order);
     setIsModalOpen(true);
+  };
+
+  const openDetailsModal = (order) => {
+    setViewingOrder(order);
+    setIsDetailsModalOpen(true);
   };
 
   const closeModal = () => {
@@ -54,6 +62,7 @@ const OrderManagement = () => {
             key={order.id}
             order={order}
             onEdit={openModal}
+            onView={openDetailsModal}
             onDelete={() => {
               // Add delete functionality here
             }}
@@ -68,6 +77,15 @@ const OrderManagement = () => {
         maxWidth="max-w-4xl"
       >
         <OrderForm order={editingOrder} onSuccess={handleSuccess} />
+      </Modal>
+
+      <Modal
+        isOpen={isDetailsModalOpen}
+        onClose={() => setIsDetailsModalOpen(false)}
+        title={`${t('orderManagement.table.orderId')} #${viewingOrder ? viewingOrder.id : ''}`}
+        maxWidth="max-w-4xl"
+      >
+        <OrderDetails order={viewingOrder} />
       </Modal>
     </>
   );

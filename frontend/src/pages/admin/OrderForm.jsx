@@ -25,13 +25,17 @@ const OrderForm = ({ order, onSuccess }) => {
         shipping_method: order.shipping_method,
         status: order.status,
         comments: order.comments || '',
-        order_items: order.order_items.map(item => ({
-          ...item,
-          product_id: item.product_variant ? item.product_variant.product_id : null
-        })) || [],
+        order_items: order.order_items ? order.order_items.map(item => {
+          const productVariant = products.flatMap(p => p.product_variants).find(pv => pv.id === item.product_variant_id);
+          const product = productVariant ? products.find(p => p.id === productVariant.product_id) : null;
+          return {
+            ...item,
+            product_id: product ? product.id : '',
+          };
+        }) : [],
       });
     }
-  }, [order]);
+  }, [order, products]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
