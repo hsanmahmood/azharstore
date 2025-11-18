@@ -35,22 +35,35 @@ const OrderDetails = ({ order }) => {
         <h3 className="text-lg font-medium text-brand-primary mb-4">{t('orderManagement.form.orderItems')}</h3>
         <div className="space-y-4">
           {order.order_items.map((item) => {
+            if (!item || !item.product_variant || !item.product_variant.product) {
+              return (
+                <div key={item.id || Math.random()} className="flex items-center gap-4 p-2 rounded-lg bg-black/30">
+                  <div className="w-20 h-20 bg-black/40 rounded-lg flex items-center justify-center">
+                    <p className="text-xs text-brand-secondary">{t('orderManagement.form.productNotFound')}</p>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-red-500">{t('orderManagement.form.productNotFound')}</p>
+                  </div>
+                </div>
+              );
+            }
+
             const variant = item.product_variant;
-            const product = variant ? variant.product : {};
+            const product = variant.product;
             const primaryImage = product.product_images?.find(img => img.is_primary);
 
-            const imageUrl = variant?.image_url || primaryImage?.image_url || 'https://via.placeholder.com/80';
-            const name = variant ? `${product.name} - ${variant.name}` : product.name;
+            const imageUrl = variant.image_url || primaryImage?.image_url || 'https://via.placeholder.com/80';
+            const name = `${product.name} - ${variant.name}`;
 
             return (
               <div key={item.id} className="flex items-center gap-4 p-2 rounded-lg bg-black/30">
                 <img
                   src={imageUrl}
-                  alt={name || 'Product Image'}
+                  alt={name}
                   className="w-20 h-20 object-cover rounded-lg"
                 />
                 <div className="flex-1">
-                  <p className="font-semibold">{name || t('orderManagement.form.productNotFound')}</p>
+                  <p className="font-semibold">{name}</p>
                   <p className="text-sm text-brand-secondary">{t('productManagement.form.price')}: {item.price.toFixed(2)} د.ب</p>
                 </div>
                 <div className="text-right">
