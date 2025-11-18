@@ -56,13 +56,19 @@ const OrderManagement = () => {
     setEditingOrder(null);
   };
 
-  const handleSuccess = (order) => {
-    if (editingOrder) {
-      updateOrder(order);
-    } else {
-      addOrder(order);
+  const handleSuccess = async (order) => {
+    try {
+      const response = await orderService.getOrder(order.id);
+      if (editingOrder) {
+        updateOrder(response.data);
+      } else {
+        addOrder(response.data);
+      }
+    } catch (error) {
+      setError(t('orderManagement.errors.fetch'));
+    } finally {
+      closeModal();
     }
-    closeModal();
   };
 
   if (isLoading) return <LoadingScreen fullScreen={false} />;
