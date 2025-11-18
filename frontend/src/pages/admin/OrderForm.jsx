@@ -67,7 +67,12 @@ const OrderForm = ({ order, onSuccess }) => {
     if (field === 'product_id') {
       const product = products.find((p) => p.id === value);
       newItems[index].price = product ? product.price : 0;
-      newItems[index].product_variant_id = '';
+      newItems[index].product_variant_id = ''; // Reset variant ID
+
+      // If product has variants, auto-select the first one
+      if (product && product.product_variants && product.product_variants.length > 0) {
+        newItems[index].product_variant_id = product.product_variants[0].id;
+      }
     }
 
     setFormData((prev) => ({ ...prev, order_items: newItems }));
@@ -183,7 +188,9 @@ const OrderForm = ({ order, onSuccess }) => {
             <div key={index} className="flex items-center gap-4 p-2 rounded-lg bg-black/20">
               <div className="flex-1">
                 <Dropdown
-                  options={products.map((p) => ({ value: p.id, label: p.name }))}
+                  options={products
+                    .filter(p => p.product_variants && p.product_variants.length > 0)
+                    .map((p) => ({ value: p.id, label: p.name }))}
                   value={item.product_id}
                   onChange={(option) => handleItemChange(index, 'product_id', option.value)}
                   placeholder={t('orderManagement.form.selectProduct')}
