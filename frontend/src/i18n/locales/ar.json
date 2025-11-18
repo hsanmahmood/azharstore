@@ -134,7 +134,8 @@
       "orderItems": "عناصر الطلب",
       "noVariants": "لا توجد خيارات",
       "selectProduct": "اختر منتج",
-      "selectVariant": "اختر خيار"
+      "selectVariant": "اختر خيار",
+      "productNotFound": "المنتج غير موجود"
     },
     "status": {
       "processing": "قيد المعالجة",
