@@ -9,7 +9,6 @@ export const DataProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [customers, setCustomers] = useState([]);
-  const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -28,11 +27,8 @@ export const DataProvider = ({ children }) => {
       if (token) {
         const customersRes = await customerService.getAllCustomers();
         setCustomers(customersRes.data);
-        const ordersRes = await orderService.getAllOrders();
-        setOrders(ordersRes.data);
       } else {
         setCustomers([]);
-        setOrders([]);
       }
 
       setError('');
@@ -74,18 +70,6 @@ export const DataProvider = ({ children }) => {
     setCustomers(prev => prev.filter(c => c.id !== customerId));
   };
 
-  const addOrder = (order) => {
-    setOrders(prev => [order, ...prev]);
-  };
-
-  const updateOrder = (updatedOrder) => {
-    setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
-  };
-
-  const removeOrder = (orderId) => {
-    setOrders(prev => prev.filter(o => o.id !== orderId));
-  };
-
   const value = {
     products,
     setProducts,
@@ -93,8 +77,6 @@ export const DataProvider = ({ children }) => {
     setCategories,
     customers,
     setCustomers,
-    orders,
-    setOrders,
     isLoading,
     error,
     refreshData: fetchData,
@@ -104,9 +86,6 @@ export const DataProvider = ({ children }) => {
     addCustomer,
     updateCustomer,
     removeCustomer,
-    addOrder,
-    updateOrder,
-    removeOrder,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

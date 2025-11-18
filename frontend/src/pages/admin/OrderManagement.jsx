@@ -1,6 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
+import { orderService } from '../../services/api';
 import Modal from '../../components/Modal';
 import { DataContext } from '../../context/DataContext';
 import LoadingScreen from '../../components/LoadingScreen';
@@ -10,11 +11,35 @@ import OrderDetails from './OrderDetails';
 
 const OrderManagement = () => {
   const { t } = useTranslation();
-  const { orders, isLoading, error: dataError, addOrder, updateOrder } = useContext(DataContext);
+  const [orders, setOrders] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState(null);
   const [viewingOrder, setViewingOrder] = useState(null);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await orderService.getAllOrders();
+        setOrders(response.data);
+      } catch (err) {
+        setError(t('orderManagement.errors.fetch'));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
+
+  const addOrder = (order) => {
+    setOrders(prev => [order, ...prev]);
+  };
+
+  const updateOrder = (updatedOrder) => {
+    setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
+  };
 
   const openModal = (order = null) => {
     setEditingOrder(order);
