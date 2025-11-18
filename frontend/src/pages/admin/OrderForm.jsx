@@ -92,12 +92,17 @@ const OrderForm = ({ order, onSuccess }) => {
       ...formData,
       id: originalOrder ? originalOrder.id : Date.now(),
       customer: customers.find(c => c.id === formData.customer_id),
-      order_items: formData.order_items.map(item => ({
-        ...item,
-        product_variant: products
-          .flatMap(p => p.product_variants)
-          .find(pv => pv.id === item.product_variant_id)
-      })),
+      order_items: formData.order_items.map(item => {
+        const productVariant = products.flatMap(p => p.product_variants).find(pv => pv.id === item.product_variant_id);
+        const product = productVariant ? products.find(p => p.id === productVariant.product_id) : null;
+        return {
+          ...item,
+          product_variant: {
+            ...productVariant,
+            product: product,
+          },
+        };
+      }),
     };
 
     onSuccess(optimisticOrder);
