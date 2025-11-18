@@ -126,6 +126,7 @@ class OrderUpdate(BaseModel):
     status: Optional[OrderStatus] = None
     shipping_method: Optional[ShippingMethod] = None
     comments: Optional[str] = None
+    order_items: Optional[list[OrderItemCreate]] = None
 
 class CustomerCreate(BaseModel):
     name: str

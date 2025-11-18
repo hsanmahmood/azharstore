@@ -105,8 +105,6 @@ const OrderForm = ({ order, onSuccess }) => {
       }),
     };
 
-    onSuccess(optimisticOrder);
-
     try {
       let response;
       if (order) {
@@ -114,11 +112,8 @@ const OrderForm = ({ order, onSuccess }) => {
       } else {
         response = await orderService.createOrder(formData);
       }
-      // The parent component will handle the final state update
+      onSuccess(response.data);
     } catch (err) {
-      if (originalOrder) {
-        onSuccess(originalOrder); // Revert on error
-      }
       setError(t('orderManagement.errors.submit'));
     } finally {
       setIsSubmitting(false);

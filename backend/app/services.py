@@ -239,7 +239,24 @@ def get_order(order_id: int, supabase: Client = Depends(get_supabase_client)) ->
     return response.data[0] if response.data else None
 
 def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order | None:
-    response = supabase.table("orders").update(order.model_dump(exclude_unset=True)).eq("id", order_id).execute()
-    if not response.data:
-        return None
+    order_data = order.model_dump(exclude_unset=True, exclude={"order_items"})
+    if order_data:
+        response = supabase.table("orders").update(order_data).eq("id", order_id).execute()
+        if not response.data:
+            return None
+
+    if order.order_items is not None:
+        # Delete existing items
+        supabase.table("order_items").delete().eq("order_id", order_id).execute()
+
+        # Create new items
+        order_items_data = [
+            {"order_id": order_id, **item.model_dump()}
+            for item in order.order_items
+        ]
+        if order_items_data:
+            items_response = supabase.table("order_items").insert(order_items_data).execute()
+            if not items_response.data:
+                raise HTTPException(status_code=500, detail="Failed to update order items.")
+
     return get_order(order_id, supabase)
