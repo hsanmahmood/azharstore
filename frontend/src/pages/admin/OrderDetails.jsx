@@ -34,22 +34,27 @@ const OrderDetails = ({ order }) => {
       <div className="mt-6">
         <h3 className="text-lg font-medium text-brand-primary mb-4">{t('orderManagement.form.orderItems')}</h3>
         <div className="space-y-4">
-          {order.order_items.map((item) => (
-            <div key={item.id} className="flex items-center gap-4 p-2 rounded-lg bg-black/30">
-              <img
-                src={item.product_variant.image_url || 'https://via.placeholder.com/80'}
-                alt={item.product_variant.name}
-                className="w-20 h-20 object-cover rounded-lg"
-              />
-              <div className="flex-1">
-                <p className="font-semibold">{item.product_variant.name}</p>
-                <p className="text-sm text-brand-secondary">{t('productManagement.form.price')}: {item.price.toFixed(2)} د.ب</p>
+          {order.order_items.map((item) => {
+            const displayItem = item.product_variant || item.product;
+            const imageUrl = displayItem.image_url || (displayItem.product_images && displayItem.product_images[0]?.image_url) || 'https://via.placeholder.com/80';
+
+            return (
+              <div key={item.id} className="flex items-center gap-4 p-2 rounded-lg bg-black/30">
+                <img
+                  src={imageUrl}
+                  alt={displayItem.name}
+                  className="w-20 h-20 object-cover rounded-lg"
+                />
+                <div className="flex-1">
+                  <p className="font-semibold">{displayItem.name}</p>
+                  <p className="text-sm text-brand-secondary">{t('productManagement.form.price')}: {item.price.toFixed(2)} د.ب</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold">{t('productManagement.form.stock')}: {item.quantity}</p>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="font-semibold">{t('productManagement.form.stock')}: {item.quantity}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
