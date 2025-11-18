@@ -40,6 +40,8 @@ const CategoryManagement = () => {
     setIsSubmitting(true);
     setError('');
 
+    console.log('Submitting category data:', formData);
+
     try {
       if (editingCategory) {
         await categoryService.updateCategory(editingCategory.id, formData);
@@ -49,8 +51,13 @@ const CategoryManagement = () => {
       await refreshData();
       closeModal();
     } catch (err) {
-      setError(t(editingCategory ? 'categoryManagement.errors.update' : 'categoryManagement.errors.add'));
-      console.error(err);
+      if (err.response && err.response.status === 422) {
+        const errorDetails = err.response.data.detail.map(d => `${d.loc[d.loc.length - 1]}: ${d.msg}`).join(', ');
+        setError(`${t('categoryManagement.errors.validation')}: ${errorDetails}`);
+      } else {
+        setError(t(editingCategory ? 'categoryManagement.errors.update' : 'categoryManagement.errors.add'));
+      }
+      console.error("Failed to save category:", err.response ? err.response.data : err);
     } finally {
       setIsSubmitting(false);
     }

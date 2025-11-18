@@ -196,6 +196,13 @@ def get_order(order_id: int, supabase: Client = Depends(get_supabase_client)):
         raise HTTPException(status_code=404, detail="Order not found")
     return db_order
 
+@admin_router.delete("/orders/{order_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Admin - Orders"])
+def delete_order(order_id: int, supabase: Client = Depends(get_supabase_client)):
+    success = services.delete_order(order_id=order_id, supabase=supabase)
+    if not success:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return None
+
 @admin_router.patch("/orders/{order_id}", response_model=schemas.Order, tags=["Admin - Orders"])
 def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = Depends(get_supabase_client)):
     db_order = services.update_order(order_id=order_id, order=order, supabase=supabase)

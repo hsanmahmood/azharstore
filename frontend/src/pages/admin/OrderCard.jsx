@@ -24,6 +24,18 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
     }
   };
 
+  const handleDelete = async () => {
+    if (window.confirm(t('orderManagement.confirmDelete', { orderId: order.id }))) {
+      try {
+        await orderService.deleteOrder(order.id);
+        onDelete(order.id);
+      } catch (err) => {
+        // TODO: Show an error notification to the user
+        console.error("Failed to delete order", err);
+      }
+    }
+  };
+
   const cardClasses = `
     bg-black/20 border border-brand-border rounded-2xl p-4 flex flex-col
     transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1
@@ -45,7 +57,7 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
             <button onClick={() => onEdit(order)} className="text-brand-secondary hover:text-brand-primary transition-colors">
               <Edit size={18} />
             </button>
-            <button onClick={() => onDelete(order.id)} className="text-brand-secondary hover:text-red-500 transition-colors">
+            <button onClick={handleDelete} className="text-brand-secondary hover:text-red-500 transition-colors">
               <Trash2 size={18} />
             </button>
           </div>

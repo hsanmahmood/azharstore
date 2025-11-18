@@ -41,19 +41,18 @@ const OrderManagement = () => {
     setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
   };
 
+  const removeOrder = (orderId) => {
+    setOrders(prev => prev.filter(o => o.id !== orderId));
+  };
+
   const openModal = (order = null) => {
     setEditingOrder(order);
     setIsModalOpen(true);
   };
 
-  const openDetailsModal = async (order) => {
-    try {
-      const response = await orderService.getOrder(order.id);
-      setViewingOrder(response.data);
-      setIsDetailsModalOpen(true);
-    } catch (err) {
-      setError(t('orderManagement.errors.fetch'));
-    }
+  const openDetailsModal = (order) => {
+    setViewingOrder(order);
+    setIsDetailsModalOpen(true);
   };
 
   const closeModal = () => {
@@ -99,9 +98,7 @@ const OrderManagement = () => {
             order={order}
             onEdit={openModal}
             onView={openDetailsModal}
-            onDelete={() => {
-              // Add delete functionality here
-            }}
+            onDelete={removeOrder}
           />
         ))}
       </div>

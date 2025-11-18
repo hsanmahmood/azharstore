@@ -1,7 +1,23 @@
 import React from 'react';
 import { Edit, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { customerService } from '../../services/api';
 
 const CustomerCard = ({ customer, onEdit, onDelete }) => {
+  const { t } = useTranslation();
+
+  const handleDelete = async () => {
+    if (window.confirm(t('customerManagement.confirmDelete', { customerName: customer.name }))) {
+      try {
+        await customerService.deleteCustomer(customer.id);
+        onDelete(customer.id);
+      } catch (err) {
+        // TODO: Show an error notification to the user
+        console.error("Failed to delete customer", err);
+      }
+    }
+  };
+
   return (
     <div className="bg-black/20 border border-brand-border rounded-2xl p-4 flex flex-col justify-between transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1">
       <div>
@@ -11,7 +27,7 @@ const CustomerCard = ({ customer, onEdit, onDelete }) => {
             <button onClick={() => onEdit(customer)} className="text-brand-secondary hover:text-brand-primary transition-colors">
               <Edit size={18} />
             </button>
-            <button onClick={() => onDelete(customer.id)} className="text-brand-secondary hover:text-red-500 transition-colors">
+            <button onClick={handleDelete} className="text-brand-secondary hover:text-red-500 transition-colors">
               <Trash2 size={18} />
             </button>
           </div>

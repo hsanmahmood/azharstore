@@ -49,7 +49,7 @@ const OrderForm = ({ order, onSuccess }) => {
   const addOrderItem = () => {
     setFormData((prev) => ({
       ...prev,
-      order_items: [...prev.order_items, { product_id: '', product_variant_id: '', quantity: 1, price: 0 }],
+      order_items: [...prev.order_items, { product_id: null, product_variant_id: null, quantity: 1, price: 0 }],
     }));
   };
 
@@ -67,11 +67,12 @@ const OrderForm = ({ order, onSuccess }) => {
     if (field === 'product_id') {
       const product = products.find((p) => p.id === value);
       newItems[index].price = product ? product.price : 0;
-      newItems[index].product_variant_id = ''; // Reset variant ID
 
-      // If product has variants, auto-select the first one
       if (product && product.product_variants && product.product_variants.length > 0) {
         newItems[index].product_variant_id = product.product_variants[0].id;
+        newItems[index].product_id = null; // Unset product_id if variant is selected
+      } else {
+        newItems[index].product_variant_id = null; // Unset variant_id if no variants
       }
     }
 
@@ -188,9 +189,7 @@ const OrderForm = ({ order, onSuccess }) => {
             <div key={index} className="flex items-center gap-4 p-2 rounded-lg bg-black/20">
               <div className="flex-1">
                 <Dropdown
-                  options={products
-                    .filter(p => p.product_variants && p.product_variants.length > 0)
-                    .map((p) => ({ value: p.id, label: p.name }))}
+                  options={products.map((p) => ({ value: p.id, label: p.name }))}
                   value={item.product_id}
                   onChange={(option) => handleItemChange(index, 'product_id', option.value)}
                   placeholder={t('orderManagement.form.selectProduct')}
@@ -202,7 +201,7 @@ const OrderForm = ({ order, onSuccess }) => {
                   value={item.product_variant_id}
                   onChange={(option) => handleItemChange(index, 'product_variant_id', option.value)}
                   placeholder={t('orderManagement.form.selectVariant')}
-                  disabled={!item.product_id || getProductVariants(item.product_id).length === 1}
+                  disabled={!item.product_id || (getProductVariants(item.product_id).length === 1 && getProductVariants(item.product_id)[0].value === null)}
                 />
               </div>
               <input

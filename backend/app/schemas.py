@@ -98,14 +98,24 @@ class Customer(BaseModel):
     address_block: Optional[str] = None
 
 class OrderItemCreate(BaseModel):
-    product_variant_id: int
+    product_id: Optional[int] = None
+    product_variant_id: Optional[int] = None
     quantity: int
     price: float
+
+    @validator('product_variant_id', pre=True, always=True)
+    def check_product_or_variant(cls, v, values):
+        if values.get('product_id') is None and v is None:
+            raise ValueError('Either product_id or product_variant_id must be provided')
+        if values.get('product_id') is not None and v is not None:
+            raise ValueError('Cannot provide both product_id and product_variant_id')
+        return v
 
 class OrderItem(OrderItemCreate):
     id: int
     order_id: int
     product_variant: Optional['ProductVariant'] = None
+    product: Optional['Product'] = None
 
 class OrderCreate(BaseModel):
     customer_id: int

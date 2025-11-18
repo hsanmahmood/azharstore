@@ -54,9 +54,7 @@ const CustomerManagement = () => {
             key={customer.id}
             customer={customer}
             onEdit={openModal}
-            onDelete={() => {
-              // Add delete functionality here
-            }}
+            onDelete={removeCustomer}
           />
         ))}
       </div>

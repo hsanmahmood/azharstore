@@ -45,6 +45,8 @@ const CustomerForm = ({ customer, onSuccess }) => {
     setIsSubmitting(true);
     setError('');
 
+    console.log('Submitting customer data:', formData);
+
     try {
       let response;
       if (customer) {
@@ -54,11 +56,13 @@ const CustomerForm = ({ customer, onSuccess }) => {
       }
       onSuccess(response.data);
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.detail) {
-        setError(err.response.data.detail);
+      if (err.response && err.response.status === 422) {
+        const errorDetails = err.response.data.detail.map(d => `${d.loc[d.loc.length - 1]}: ${d.msg}`).join(', ');
+        setError(`${t('customerManagement.errors.validation')}: ${errorDetails}`);
       } else {
         setError(t('customerManagement.errors.submit'));
       }
+      console.error("Failed to save customer:", err.response ? err.response.data : err);
     } finally {
       setIsSubmitting(false);
     }

@@ -87,6 +87,7 @@ export const orderService = {
   getOrder: (id) => api.get(`/admin/orders/${id}`),
   createOrder: (data) => api.post('/admin/orders', data),
   updateOrder: (id, data) => api.patch(`/admin/orders/${id}`, data),
+  deleteOrder: (id) => api.delete(`/admin/orders/${id}`),
 };
 
 export default api;

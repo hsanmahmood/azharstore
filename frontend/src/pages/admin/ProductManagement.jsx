@@ -253,65 +253,47 @@ const ProductManagement = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!editingProduct || !editingProduct.id) {
-        try {
-            const payload = {
-                ...formData,
-                price: parseFloat(formData.price),
-                stock_quantity: parseInt(formData.stock_quantity) || 0,
-                category_id: formData.category_id ? parseInt(formData.category_id) : null,
-            };
-            const productResponse = await productService.createProduct(payload);
-
-            const newProductId = productResponse.data.id;
-            const variantPromises = variants.map(variant =>
-                productService.createVariant(newProductId, { name: variant.name, stock_quantity: variant.stock_quantity })
-            );
-            await Promise.all(variantPromises);
-
-            const finalProduct = await productService.getProduct(newProductId);
-            addProduct(finalProduct.data);
-            closeModal();
-        } catch (err) {
-            setError(t('productManagement.errors.add'));
-            console.error("Failed to create product:", err.response ? err.response.data : err);
-        }
-        return;
-    }
-
     setIsSubmitting(true);
     setError('');
 
+    const payload = {
+      ...formData,
+      price: parseFloat(formData.price),
+      stock_quantity: parseInt(formData.stock_quantity) || 0,
+      category_id: formData.category_id ? parseInt(formData.category_id) : null,
+      product_images: editingProduct?.product_images?.map(img => ({
+        id: img.id,
+        is_primary: primaryImage ? img.image_url === primaryImage : img.is_primary,
+      })) || [],
+      product_variants: variants.map(({ id, name, stock_quantity, image_url }) => ({
+        id,
+        name,
+        stock_quantity,
+        image_url,
+      })),
+    };
+
+    console.log('Submitting product data:', payload);
+
     try {
-        const allImages = editingProduct.product_images || [];
-        const primaryImageObject = allImages.find(img => img.image_url === primaryImage);
-        const imagesPayload = allImages.map(img => ({
-            id: img.id,
-            is_primary: primaryImageObject ? img.id === primaryImageObject.id : false,
-        }));
-
-        const payload = {
-            ...formData,
-            price: parseFloat(formData.price),
-            stock_quantity: parseInt(formData.stock_quantity) || 0,
-            category_id: formData.category_id ? parseInt(formData.category_id) : null,
-            product_images: imagesPayload,
-            product_variants: variants.map(({ id, name, stock_quantity, image_url }) => ({
-                id,
-                name,
-                stock_quantity,
-                image_url,
-            })),
-        };
-
+      if (editingProduct && editingProduct.id) {
         const updatedProduct = await productService.updateProduct(editingProduct.id, payload);
         updateProduct(updatedProduct.data);
-        closeModal();
+      } else {
+        const newProduct = await productService.createProduct(payload);
+        addProduct(newProduct.data);
+      }
+      closeModal();
     } catch (err) {
-        setError(t('productManagement.errors.update'));
-        console.error("Failed to update product:", err.response ? err.response.data : err);
+      if (err.response && err.response.status === 422) {
+        const errorDetails = err.response.data.detail.map(d => `${d.loc[d.loc.length - 1]}: ${d.msg}`).join(', ');
+        setError(`${t('productManagement.errors.validation')}: ${errorDetails}`);
+      } else {
+        setError(editingProduct ? t('productManagement.errors.update') : t('productManagement.errors.add'));
+      }
+      console.error("Failed to save product:", err.response ? err.response.data : err);
     } finally {
-        setIsSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
