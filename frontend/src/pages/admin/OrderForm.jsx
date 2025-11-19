@@ -93,53 +93,31 @@ const OrderForm = ({ order, onSuccess }) => {
     setIsSubmitting(true);
     setError('');
 
-    console.log('Submitting order data:', formData);
-
-    const originalOrder = order ? { ...order } : null;
-    const optimisticOrder = {
-      ...(originalOrder || {}),
-      ...formData,
-      id: originalOrder ? originalOrder.id : Date.now(),
-      customer: customers.find(c => c.id === formData.customer_id),
-      order_items: formData.order_items.map(item => {
-        const product = products.find(p => p.id === item.product_id);
-        const productVariant = product ? product.product_variants.find(pv => pv.id === item.product_variant_id) : null;
-        return {
-          ...item,
-          product,
-          product_variant: {
-            ...productVariant,
-            product,
-          },
-        };
-      }),
-    };
-
-    const payload = {
-      ...formData,
-      order_items: formData.order_items.map(item => {
+    const order_items = formData.order_items
+      .filter(item => item.product_id || item.product_variant_id)
+      .map(item => {
         const product = products.find(p => p.id === item.product_id);
         const hasVariants = product && product.product_variants && product.product_variants.length > 0;
+
         return {
           product_id: hasVariants ? null : item.product_id,
           product_variant_id: hasVariants ? item.product_variant_id : null,
           quantity: item.quantity,
           price: item.price,
         };
-      }),
-    };
+      });
+
+    const payload = { ...formData, order_items };
+    console.log('Submitting order data:', payload);
 
     try {
-      let response;
-      if (order) {
-        response = await orderService.updateOrder(order.id, payload);
-      } else {
-        response = await orderService.createOrder(payload);
-      }
+      const response = order
+        ? await orderService.updateOrder(order.id, payload)
+        : await orderService.createOrder(payload);
       onSuccess(response.data);
     } catch (err) {
       if (err.response && err.response.status === 422) {
-        const errorDetails = err.response.data.detail.map(d => `${d.loc[d.loc.length - 1]}: ${d.msg}`).join(', ');
+        const errorDetails = err.response.data.detail.map(d => `${d.loc.join('.')}: ${d.msg}`).join('; ');
         setError(`${t('orderManagement.errors.validation')}: ${errorDetails}`);
       } else {
         setError(t('orderManagement.errors.submit'));
