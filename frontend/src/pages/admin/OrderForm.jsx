@@ -70,9 +70,10 @@ const OrderForm = ({ order, onSuccess }) => {
 
       if (product && product.product_variants && product.product_variants.length > 0) {
         newItems[index].product_variant_id = product.product_variants[0].id;
-        newItems[index].product_id = null; // Unset product_id if variant is selected
+        newItems[index].product_id = value;
       } else {
-        newItems[index].product_variant_id = null; // Unset variant_id if no variants
+        newItems[index].product_variant_id = null;
+        newItems[index].product_id = value;
       }
     }
 
@@ -101,24 +102,35 @@ const OrderForm = ({ order, onSuccess }) => {
       id: originalOrder ? originalOrder.id : Date.now(),
       customer: customers.find(c => c.id === formData.customer_id),
       order_items: formData.order_items.map(item => {
-        const productVariant = products.flatMap(p => p.product_variants).find(pv => pv.id === item.product_variant_id);
-        const product = productVariant ? products.find(p => p.id === productVariant.product_id) : null;
+        const product = products.find(p => p.id === item.product_id);
+        const productVariant = product ? product.product_variants.find(pv => pv.id === item.product_variant_id) : null;
         return {
           ...item,
+          product,
           product_variant: {
             ...productVariant,
-            product: product,
+            product,
           },
         };
       }),
     };
 
+    const payload = {
+      ...formData,
+      order_items: formData.order_items.map(({ product_id, product_variant_id, quantity, price }) => ({
+        product_id: product_variant_id ? null : product_id,
+        product_variant_id,
+        quantity,
+        price,
+      })),
+    };
+
     try {
       let response;
       if (order) {
-        response = await orderService.updateOrder(order.id, formData);
+        response = await orderService.updateOrder(order.id, payload);
       } else {
-        response = await orderService.createOrder(formData);
+        response = await orderService.createOrder(payload);
       }
       onSuccess(response.data);
     } catch (err) {
