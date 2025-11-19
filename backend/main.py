@@ -36,3 +36,13 @@ async def health_head():
 app.include_router(api_router)
 app.include_router(admin_router)
 app.include_router(customers_router)
+
+@app.on_event("startup")
+def startup_event():
+    from app.supabase_client import get_supabase_client
+    supabase = get_supabase_client()
+    try:
+        response = supabase.rpc('get_schema', {}).execute()
+        print("Supabase schema:", response)
+    except Exception as e:
+        print("Error getting schema:", e)
