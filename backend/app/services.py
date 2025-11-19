@@ -231,11 +231,11 @@ def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supa
     return get_order(new_order['id'], supabase)
 
 def get_orders(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Order]:
-    response = supabase.table("orders").select("*, customer:customers(*), order_items(*, product:product_id(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").execute()
+    response = supabase.table("orders").select("*, customer:customers(*), order_items(*, product:products!order_items_product_id_fkey(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").execute()
     return response.data
 
 def get_order(order_id: int, supabase: Client = Depends(get_supabase_client)) -> schemas.Order | None:
-    response = supabase.table("orders").select("*, customer:customers(*), order_items(*, product:product_id(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").eq("id", order_id).execute()
+    response = supabase.table("orders").select("*, customer:customers(*), order_items(*, product:products!order_items_product_id_fkey(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").eq("id", order_id).execute()
     return response.data[0] if response.data else None
 
 def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order | None:
