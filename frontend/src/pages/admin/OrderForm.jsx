@@ -117,12 +117,16 @@ const OrderForm = ({ order, onSuccess }) => {
 
     const payload = {
       ...formData,
-      order_items: formData.order_items.map(({ product_id, product_variant_id, quantity, price }) => ({
-        product_id: product_variant_id ? null : product_id,
-        product_variant_id,
-        quantity,
-        price,
-      })),
+      order_items: formData.order_items.map(item => {
+        const product = products.find(p => p.id === item.product_id);
+        const hasVariants = product && product.product_variants && product.product_variants.length > 0;
+        return {
+          product_id: hasVariants ? null : item.product_id,
+          product_variant_id: hasVariants ? item.product_variant_id : null,
+          quantity: item.quantity,
+          price: item.price,
+        };
+      }),
     };
 
     try {
