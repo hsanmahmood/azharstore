@@ -113,7 +113,7 @@ const OrderForm = ({ order, onSuccess }) => {
       }
       onSuccess();
     } catch (err) {
-      const errorMsg = err.response?.data?.detail?.[0]?.msg || t('orderManagement.errors.submit');
+      const errorMsg = err.response?.data?.detail || t('orderManagement.errors.submit');
       setError(errorMsg);
     } finally {
       setIsSubmitting(false);

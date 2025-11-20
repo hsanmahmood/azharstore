@@ -22,8 +22,8 @@ const Login = () => {
       await login(password);
       navigate('/admin/products');
     } catch (err) {
-      setError('كلمة المرور غير صحيحة');
-      console.error(err);
+      const errorMessage = err.response?.data?.detail || t('login.invalidPassword');
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
