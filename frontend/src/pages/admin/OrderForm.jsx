@@ -25,14 +25,20 @@ const OrderForm = ({ order, onSuccess }) => {
         shipping_method: order.shipping_method,
         status: order.status,
         comments: order.comments || '',
-        order_items: order.order_items ? order.order_items.map(item => {
-          const productVariant = products.flatMap(p => p.product_variants).find(pv => pv.id === item.product_variant_id);
-          const product = productVariant ? products.find(p => p.id === productVariant.product_id) : null;
-          return {
-            ...item,
-            product_id: product ? product.id : '',
-          };
-        }) : [],
+        order_items: order.order_items
+          ? order.order_items.map((item) => {
+              let productId = item.product_id;
+              if (item.product_variant_id) {
+                const productVariant = products
+                  .flatMap((p) => p.product_variants)
+                  .find((pv) => pv.id === item.product_variant_id);
+                if (productVariant) {
+                  productId = productVariant.product_id;
+                }
+              }
+              return { ...item, product_id: productId };
+            })
+          : [],
       });
     }
   }, [order, products]);
@@ -62,21 +68,16 @@ const OrderForm = ({ order, onSuccess }) => {
 
   const handleItemChange = (index, field, value) => {
     const newItems = [...formData.order_items];
-    newItems[index][field] = value;
+    const currentItem = { ...newItems[index] };
+    currentItem[field] = value;
 
     if (field === 'product_id') {
       const product = products.find((p) => p.id === value);
-      newItems[index].price = product ? product.price : 0;
-
-      if (product && product.product_variants && product.product_variants.length > 0) {
-        newItems[index].product_variant_id = product.product_variants[0].id;
-        newItems[index].product_id = value;
-      } else {
-        newItems[index].product_variant_id = null;
-        newItems[index].product_id = value;
-      }
+      currentItem.price = product ? product.price : 0;
+      currentItem.product_variant_id = null; // Reset variant when product changes
     }
 
+    newItems[index] = currentItem;
     setFormData((prev) => ({ ...prev, order_items: newItems }));
   };
 
@@ -94,34 +95,26 @@ const OrderForm = ({ order, onSuccess }) => {
     setError('');
 
     const order_items = formData.order_items
-      .filter(item => item.product_id || item.product_variant_id)
-      .map(item => {
-        const product = products.find(p => p.id === item.product_id);
-        const hasVariants = product && product.product_variants && product.product_variants.length > 0;
-
-        return {
-          product_id: hasVariants ? null : item.product_id,
-          product_variant_id: hasVariants ? item.product_variant_id : null,
-          quantity: item.quantity,
-          price: item.price,
-        };
-      });
+      .filter(item => item.product_id)
+      .map(item => ({
+        product_id: item.product_variant_id ? null : item.product_id,
+        product_variant_id: item.product_variant_id,
+        quantity: item.quantity,
+        price: item.price,
+      }));
 
     const payload = { ...formData, order_items };
-    console.log('Submitting order data:', payload);
 
     try {
-      const response = order
-        ? await orderService.updateOrder(order.id, payload)
-        : await orderService.createOrder(payload);
-      onSuccess(response.data);
-    } catch (err) {
-      if (err.response && err.response.status === 422) {
-        const errorDetails = err.response.data.detail.map(d => `${d.loc.join('.')}: ${d.msg}`).join('; ');
-        setError(`${t('orderManagement.errors.validation')}: ${errorDetails}`);
+      if (order) {
+        await orderService.updateOrder(order.id, payload);
       } else {
-        setError(t('orderManagement.errors.submit'));
+        await orderService.createOrder(payload);
       }
+      onSuccess();
+    } catch (err) {
+      const errorMsg = err.response?.data?.detail?.[0]?.msg || t('orderManagement.errors.submit');
+      setError(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
