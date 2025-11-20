@@ -9,7 +9,7 @@ import LoadingScreen from '../../components/LoadingScreen';
 
 const CustomerManagement = () => {
   const { t } = useTranslation();
-  const { customers, isLoading, error: dataError, addCustomer, updateCustomer } = useContext(DataContext);
+  const { customers, isLoading, error: dataError, addCustomer, updateCustomer, removeCustomer } = useContext(DataContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
 

@@ -21,8 +21,8 @@ CREATE TYPE public.order_status AS ENUM (
 );
 
 CREATE TYPE public.shipping_method AS ENUM (
-    'standard',
-    'express'
+    'delivery',
+    'pick_up'
 );
 
 -- Create the 'categories' table.
