@@ -29,7 +29,7 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
       try {
         await orderService.deleteOrder(order.id);
         onDelete(order.id);
-      } catch (err) => {
+      } catch (err) {
         // TODO: Show an error notification to the user
         console.error("Failed to delete order", err);
       }
