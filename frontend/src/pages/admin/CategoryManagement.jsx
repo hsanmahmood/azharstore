@@ -51,13 +51,11 @@ const CategoryManagement = () => {
       await refreshData();
       closeModal();
     } catch (err) {
-      if (err.response && err.response.status === 422) {
-        const errorDetails = err.response.data.detail.map(d => `${d.loc[d.loc.length - 1]}: ${d.msg}`).join(', ');
-        setError(`${t('categoryManagement.errors.validation')}: ${errorDetails}`);
-      } else {
-        setError(t(editingCategory ? 'categoryManagement.errors.update' : 'categoryManagement.errors.add'));
-      }
-      console.error("Failed to save category:", err.response ? err.response.data : err);
+      const errorMsg = err.response?.data?.detail ||
+                     (editingCategory
+                       ? t('categoryManagement.errors.update')
+                       : t('categoryManagement.errors.add'));
+      setError(errorMsg);
     } finally {
       setIsSubmitting(false);
     }

@@ -285,13 +285,8 @@ const ProductManagement = () => {
       }
       closeModal();
     } catch (err) {
-      if (err.response && err.response.status === 422) {
-        const errorDetails = err.response.data.detail.map(d => `${d.loc[d.loc.length - 1]}: ${d.msg}`).join(', ');
-        setError(`${t('productManagement.errors.validation')}: ${errorDetails}`);
-      } else {
-        setError(editingProduct ? t('productManagement.errors.update') : t('productManagement.errors.add'));
-      }
-      console.error("Failed to save product:", err.response ? err.response.data : err);
+      const errorMsg = err.response?.data?.detail || (editingProduct ? t('productManagement.errors.update') : t('productManagement.errors.add'));
+      setError(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
