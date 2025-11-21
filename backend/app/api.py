@@ -181,29 +181,34 @@ def delete_customer(customer_id: int, supabase: Client = Depends(get_supabase_cl
         raise HTTPException(status_code=404, detail="Customer not found")
     return None
 
-@admin_router.post("/orders", response_model=schemas.Order, tags=["Admin - Orders"])
+orders_router = APIRouter(
+    prefix="/api/admin",
+    dependencies=[Depends(services.get_current_admin_user)],
+)
+
+@orders_router.post("/orders", response_model=schemas.Order, tags=["Admin - Orders"])
 def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supabase_client)):
     return services.create_order(order=order, supabase=supabase)
 
-@admin_router.get("/orders", response_model=List[schemas.Order], tags=["Admin - Orders"])
+@orders_router.get("/orders", response_model=List[schemas.Order], tags=["Admin - Orders"])
 def list_orders(supabase: Client = Depends(get_supabase_client)):
     return services.get_orders(supabase=supabase)
 
-@admin_router.get("/orders/{order_id}", response_model=schemas.Order, tags=["Admin - Orders"])
+@orders_router.get("/orders/{order_id}", response_model=schemas.Order, tags=["Admin - Orders"])
 def get_order(order_id: int, supabase: Client = Depends(get_supabase_client)):
     db_order = services.get_order(order_id=order_id, supabase=supabase)
     if db_order is None:
         raise HTTPException(status_code=404, detail="Order not found")
     return db_order
 
-@admin_router.delete("/orders/{order_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Admin - Orders"])
+@orders_router.delete("/orders/{order_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Admin - Orders"])
 def delete_order(order_id: int, supabase: Client = Depends(get_supabase_client)):
     success = services.delete_order(order_id=order_id, supabase=supabase)
     if not success:
         raise HTTPException(status_code=404, detail="Order not found")
     return None
 
-@admin_router.patch("/orders/{order_id}", response_model=schemas.Order, tags=["Admin - Orders"])
+@orders_router.patch("/orders/{order_id}", response_model=schemas.Order, tags=["Admin - Orders"])
 def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = Depends(get_supabase_client)):
     db_order = services.update_order(order_id=order_id, order=order, supabase=supabase)
     if db_order is None:
