@@ -70,7 +70,7 @@ const OrderDetails = ({ order }) => {
                 />
                 <div className="flex-1">
                   <p className="font-semibold">{name}</p>
-                  <p className="text-sm text-brand-secondary">{t('productManagement.form.price')}: {item.price.toFixed(2)} د.ب</p>
+                  <p className="text-sm text-brand-secondary">{t('productManagement.form.price')}: {item.price.toFixed(2)} {t('common.currency')}</p>
                 </div>
                 <div className="text-right">
                   <p className="font-semibold">{t('productManagement.form.stock')}: {item.quantity}</p>
@@ -78,6 +78,14 @@ const OrderDetails = ({ order }) => {
               </div>
             );
           })}
+        </div>
+      </div>
+
+      <div className="mt-6 border-t border-brand-border/50 pt-6">
+        <div className="space-y-2 text-right">
+          <p className="text-lg"><span className="font-semibold">{t('orderManagement.form.subtotal')}:</span> {total.toFixed(2)} {t('common.currency')}</p>
+          <p className="text-lg"><span className="font-semibold">{t('settings.deliveryPrice')}:</span> {order.delivery_fee.toFixed(2)} {t('common.currency')}</p>
+          <p className="text-xl font-bold"><span className="font-semibold">{t('orderManagement.form.total')}:</span> {(total + order.delivery_fee).toFixed(2)} {t('common.currency')}</p>
         </div>
       </div>
     </div>

@@ -163,7 +163,8 @@
       "selectProduct": "اختر منتج",
       "selectVariant": "اختر خيار",
     "productNotFound": "المنتج غير موجود",
-    "total": "المجموع"
+    "total": "المجموع",
+    "subtotal": "المجموع الفرعي"
     },
     "status": {
       "processing": "قيد المعالجة",
