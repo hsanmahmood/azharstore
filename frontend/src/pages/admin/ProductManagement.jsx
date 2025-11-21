@@ -26,6 +26,7 @@ const ProductManagement = () => {
   } = useContext(DataContext);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [error, setError] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -326,9 +327,11 @@ const ProductManagement = () => {
     }
   };
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = products.filter(product => {
+    const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const categoryMatch = selectedCategory ? product.category_id === selectedCategory : true;
+    return searchMatch && categoryMatch;
+  });
 
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
@@ -344,8 +347,18 @@ const ProductManagement = () => {
         </button>
       </div>
 
-      <div className="mb-8">
-        <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+      <div className="mb-8 flex gap-4">
+        <div className="flex-grow">
+          <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+        </div>
+        <div className="w-64">
+          <Dropdown
+            options={[{ value: null, label: 'All Categories' }, ...categories.map(c => ({ value: c.id, label: c.name }))]}
+            value={selectedCategory}
+            onChange={(option) => setSelectedCategory(option.value)}
+            placeholder="Filter by category"
+          />
+        </div>
       </div>
 
       {dataError && !isModalOpen && (

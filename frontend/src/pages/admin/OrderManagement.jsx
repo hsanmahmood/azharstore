@@ -9,13 +9,16 @@ import OrderForm from './OrderForm';
 import OrderCard from './OrderCard';
 import OrderDetails from './OrderDetails';
 import ConfirmationModal from '../../components/ConfirmationModal';
+import Dropdown from '../../components/Dropdown';
 import { DataContext } from '../../context/DataContext';
 import { SearchContext } from '../../context/SearchContext';
 
 const OrderManagement = () => {
   const { t } = useTranslation();
-  const { orders, isLoading, error: dataError, addOrder, updateOrder, removeOrder } = useContext(DataContext);
+  const { orders, customers, products, isLoading, error: dataError, addOrder, updateOrder, removeOrder } = useContext(DataContext);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState(null);
@@ -80,10 +83,13 @@ const OrderManagement = () => {
     setDeletingOrderId(null);
   };
 
-  const filteredOrders = orders.filter(order =>
-    (order.customer && order.customer.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    order.id.toString().includes(searchTerm)
-  );
+  const filteredOrders = orders.filter(order => {
+    const searchMatch = (order.customer && order.customer.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      order.id.toString().includes(searchTerm);
+    const customerMatch = selectedCustomer ? order.customer_id === selectedCustomer : true;
+    const productMatch = selectedProduct ? order.order_items.some(item => item.product_id === selectedProduct) : true;
+    return searchMatch && customerMatch && productMatch;
+  });
 
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
@@ -99,8 +105,26 @@ const OrderManagement = () => {
         </button>
       </div>
 
-      <div className="mb-8">
-        <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+      <div className="mb-8 flex gap-4">
+        <div className="flex-grow">
+          <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+        </div>
+        <div className="w-64">
+          <Dropdown
+            options={[{ value: null, label: 'All Customers' }, ...customers.map(c => ({ value: c.id, label: c.name }))]}
+            value={selectedCustomer}
+            onChange={(option) => setSelectedCustomer(option.value)}
+            placeholder="Filter by customer"
+          />
+        </div>
+        <div className="w-64">
+          <Dropdown
+            options={[{ value: null, label: 'All Products' }, ...products.map(p => ({ value: p.id, label: p.name }))]}
+            value={selectedProduct}
+            onChange={(option) => setSelectedProduct(option.value)}
+            placeholder="Filter by product"
+          />
+        </div>
       </div>
 
       {dataError && <div className="text-red-500">{dataError}</div>}
