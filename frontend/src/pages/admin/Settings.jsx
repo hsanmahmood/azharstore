@@ -16,12 +16,12 @@ const Settings = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [deletingAreaId, setDeletingAreaId] = useState(null);
-  const [formData, setFormData] = useState({ name: '', price: '', min_for_free_delivery: '' });
+  const [formData, setFormData] = useState({ name: '', price: '' });
   const [freeDeliveryThreshold, setFreeDeliveryThreshold] = useState(appSettings.free_delivery_threshold || '');
 
   const openModal = (area = null) => {
     setEditingArea(area);
-    setFormData(area ? { name: area.name, price: area.price, min_for_free_delivery: area.min_for_free_delivery } : { name: '', price: '', min_for_free_delivery: '' });
+    setFormData(area ? { name: area.name, price: area.price } : { name: '', price: '' });
     setIsModalOpen(true);
   };
 
@@ -138,20 +138,14 @@ const Settings = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {deliveryAreas.map((area) => (
-          <div key={area.id} className="bg-black/20 border border-brand-border rounded-20 p-5">
-            <div className="flex justify-between items-start">
-              <div>
-                <span className="text-lg font-semibold">{area.name}</span>
-                <p className="text-brand-secondary">{area.price} {t('common.currency')}</p>
-              </div>
-              <div className="flex gap-3">
-                <button onClick={() => openModal(area)} className="text-brand-secondary hover:text-brand-primary"><Edit size={20} /></button>
-                <button onClick={() => openDeleteConfirm(area.id)} className="text-brand-secondary hover:text-red-500"><Trash2 size={20} /></button>
-              </div>
+          <div key={area.id} className="bg-black/20 border border-brand-border rounded-20 p-5 flex justify-between items-center">
+            <div>
+              <span className="text-lg font-semibold">{area.name}</span>
+              <p className="text-brand-secondary">{area.price} {t('common.currency')}</p>
             </div>
-            <div className="mt-2 text-sm text-brand-secondary">
-              <span>{t('settings.freeDeliveryThreshold')}: </span>
-              <span>{area.min_for_free_delivery} {t('common.currency')}</span>
+            <div className="flex gap-3">
+              <button onClick={() => openModal(area)} className="text-brand-secondary hover:text-brand-primary"><Edit size={20} /></button>
+              <button onClick={() => openDeleteConfirm(area.id)} className="text-brand-secondary hover:text-red-500"><Trash2 size={20} /></button>
             </div>
           </div>
         ))}
@@ -167,15 +161,6 @@ const Settings = () => {
             <label className="block text-sm font-medium text-brand-secondary mb-2">{t('settings.deliveryPrice')}</label>
             <div className="relative">
               <input type="number" name="price" value={formData.price} onChange={handleFormChange} required className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg pl-12" />
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-secondary">
-                {t('common.currency')}
-              </span>
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-brand-secondary mb-2">{t('settings.freeDeliveryThreshold')}</label>
-            <div className="relative">
-              <input type="number" name="min_for_free_delivery" value={formData.min_for_free_delivery} onChange={handleFormChange} required className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg pl-12" />
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-secondary">
                 {t('common.currency')}
               </span>

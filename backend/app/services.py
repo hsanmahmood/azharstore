@@ -223,13 +223,16 @@ def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supa
     # Calculate subtotal
     subtotal = sum(item.price * item.quantity for item in order.order_items)
 
+    # Get app settings for free delivery threshold
+    app_settings = get_app_settings(supabase)
+
     # Calculate delivery fee
     delivery_fee = 0
     if order.shipping_method == 'delivery' and order.delivery_area_id:
-        area_response = supabase.table("delivery_areas").select("price", "min_for_free_delivery").eq("id", order.delivery_area_id).execute()
+        area_response = supabase.table("delivery_areas").select("price").eq("id", order.delivery_area_id).execute()
         if area_response.data:
             area = area_response.data[0]
-            if area['min_for_free_delivery'] > 0 and subtotal >= area['min_for_free_delivery']:
+            if app_settings.free_delivery_threshold > 0 and subtotal >= app_settings.free_delivery_threshold:
                 delivery_fee = 0
             else:
                 delivery_fee = area['price']
@@ -258,11 +261,11 @@ def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supa
     return get_order(new_order['id'], supabase)
 
 def get_orders(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Order]:
-    response = supabase.table("orders").select("*, customer:customers(*), delivery_area:delivery_areas(*), order_items(*, product:products(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").execute()
+    response = supabase.table("orders").select("*, customer:customers(*), order_items(*, product:products(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").execute()
     return response.data
 
 def get_order(order_id: int, supabase: Client = Depends(get_supabase_client)) -> schemas.Order | None:
-    response = supabase.table("orders").select("*, customer:customers(*), delivery_area:delivery_areas(*), order_items(*, product:products(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").eq("id", order_id).execute()
+    response = supabase.table("orders").select("*, customer:customers(*), order_items(*, product:products(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").eq("id", order_id).execute()
     return response.data[0] if response.data else None
 
 def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order | None:
@@ -286,12 +289,15 @@ def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = D
         shipping_method = order_data.get('shipping_method', current_order['shipping_method'])
         delivery_area_id = order_data.get('delivery_area_id', current_order['delivery_area_id'])
 
+        # Get app settings for free delivery threshold
+        app_settings = get_app_settings(supabase)
+
         delivery_fee = 0
         if shipping_method == 'delivery' and delivery_area_id:
-            area_response = supabase.table("delivery_areas").select("price", "min_for_free_delivery").eq("id", delivery_area_id).execute()
+            area_response = supabase.table("delivery_areas").select("price").eq("id", delivery_area_id).execute()
             if area_response.data:
                 area = area_response.data[0]
-                if area['min_for_free_delivery'] > 0 and subtotal >= area['min_for_free_delivery']:
+                if app_settings.free_delivery_threshold > 0 and subtotal >= app_settings.free_delivery_threshold:
                     delivery_fee = 0
                 else:
                     delivery_fee = area['price']
