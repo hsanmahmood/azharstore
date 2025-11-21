@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
+import { SearchContext } from '../../context/SearchContext';
 import { categoryService } from '../../services/api';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import Modal from '../../components/Modal';
@@ -10,6 +11,7 @@ import ConfirmationModal from '../../components/ConfirmationModal';
 const CategoryManagement = () => {
   const { t } = useTranslation();
   const { categories, setCategories, isLoading, error: dataError, refreshData } = useContext(DataContext);
+  const { searchTerm } = useContext(SearchContext);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
@@ -86,6 +88,10 @@ const CategoryManagement = () => {
     }, 300);
   };
 
+  const filteredCategories = categories.filter(category =>
+    category.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
@@ -107,7 +113,7 @@ const CategoryManagement = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-        {categories.map((category) => (
+        {filteredCategories.map((category) => (
           <div
             key={category.id}
             className={`bg-black/20 border border-brand-border rounded-20 p-5 flex justify-between items-center transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1 ${category.deleting ? 'animate-fade-out' : ''}`}

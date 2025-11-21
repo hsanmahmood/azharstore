@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
+import { SearchContext } from '../../context/SearchContext';
 import { productService } from '../../services/api';
 import { Plus, Loader2, Upload, X, Image as ImageIcon, ChevronDown, Trash2, Save } from 'lucide-react';
 import Modal from '../../components/Modal';
@@ -22,6 +23,7 @@ const ProductManagement = () => {
     removeProduct,
     setProducts // Keep for error recovery on delete
   } = useContext(DataContext);
+  const { searchTerm } = useContext(SearchContext);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -323,6 +325,10 @@ const ProductManagement = () => {
     }
   };
 
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
@@ -344,7 +350,7 @@ const ProductManagement = () => {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <ProductCard
             key={product.id}
             product={product}

@@ -4,12 +4,15 @@ import { useTranslation } from 'react-i18next';
 import { Package, Layers, LogOut, PanelLeft, Menu, Home, Users, ShoppingCart } from 'lucide-react';
 import { AuthContext } from '../../context/AuthContext';
 import MobileAdminSidebar from './MobileAdminSidebar';
+import { SearchProvider, SearchContext } from '../../context/SearchContext';
+import SearchBar from '../../components/SearchBar';
 
-const AdminLayout = () => {
+const AdminLayoutContent = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
+  const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -109,10 +112,13 @@ const AdminLayout = () => {
       </aside>
 
       <div className="flex flex-col flex-1">
-        <header className="sticky top-0 bg-brand-background/80 backdrop-blur-lg border-b border-brand-border p-4 flex items-center md:hidden">
-          <button onClick={() => setIsMobileSidebarOpen(true)} className="text-brand-primary">
+        <header className="sticky top-0 bg-brand-background/80 backdrop-blur-lg border-b border-brand-border p-4 flex items-center justify-between">
+          <button onClick={() => setIsMobileSidebarOpen(true)} className="text-brand-primary md:hidden">
             <Menu size={24} />
           </button>
+          <div className="w-full max-w-xs">
+            <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          </div>
         </header>
         <main className="flex-1 overflow-y-auto">
           <div className="p-4 md:p-8 animate-fade-in-up">
@@ -123,5 +129,11 @@ const AdminLayout = () => {
     </div>
   );
 };
+
+const AdminLayout = () => (
+  <SearchProvider>
+    <AdminLayoutContent />
+  </SearchProvider>
+);
 
 export default AdminLayout;

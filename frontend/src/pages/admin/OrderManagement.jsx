@@ -9,10 +9,12 @@ import OrderCard from './OrderCard';
 import OrderDetails from './OrderDetails';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import { DataContext } from '../../context/DataContext';
+import { SearchContext } from '../../context/SearchContext';
 
 const OrderManagement = () => {
   const { t } = useTranslation();
   const { orders, isLoading, error: dataError, addOrder, updateOrder, removeOrder } = useContext(DataContext);
+  const { searchTerm } = useContext(SearchContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState(null);
@@ -77,6 +79,11 @@ const OrderManagement = () => {
     setDeletingOrderId(null);
   };
 
+  const filteredOrders = orders.filter(order =>
+    (order.customer && order.customer.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    order.id.toString().includes(searchTerm)
+  );
+
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
@@ -95,7 +102,7 @@ const OrderManagement = () => {
       {error && <div className="text-red-500">{error}</div>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {orders.map((order) => (
+        {filteredOrders.map((order) => (
           <OrderCard
             key={order.id}
             order={order}

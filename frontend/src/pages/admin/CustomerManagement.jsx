@@ -5,12 +5,15 @@ import Modal from '../../components/Modal';
 import CustomerForm from './CustomerForm';
 import CustomerCard from './CustomerCard';
 import { DataContext } from '../../context/DataContext';
+import { SearchContext } from '../../context/SearchContext';
 import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
+import { customerService } from '../../services/api';
 
 const CustomerManagement = () => {
   const { t } = useTranslation();
   const { customers, isLoading, error: dataError, addCustomer, updateCustomer, removeCustomer } = useContext(DataContext);
+  const { searchTerm } = useContext(SearchContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -54,6 +57,10 @@ const CustomerManagement = () => {
     setDeletingCustomerId(null);
   };
 
+  const filteredCustomers = customers.filter(customer =>
+    customer.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
@@ -71,7 +78,7 @@ const CustomerManagement = () => {
       {dataError && <div className="text-red-500">{dataError}</div>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {customers.map((customer) => (
+        {filteredCustomers.map((customer) => (
           <CustomerCard
             key={customer.id}
             customer={customer}
