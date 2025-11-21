@@ -164,7 +164,8 @@
       "selectVariant": "اختر خيار",
     "productNotFound": "المنتج غير موجود",
     "total": "المجموع",
-    "subtotal": "المجموع الفرعي"
+    "subtotal": "المجموع الفرعي",
+    "freeDeliveryApplied": "تم تطبيق التوصيل المجاني"
     },
     "status": {
       "processing": "قيد المعالجة",
