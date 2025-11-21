@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
 import { orderService } from '../../services/api';
 import Modal from '../../components/Modal';
-import { DataContext } from '../../context/DataContext';
 import LoadingScreen from '../../components/LoadingScreen';
 import OrderForm from './OrderForm';
 import OrderCard from './OrderCard';
 import OrderDetails from './OrderDetails';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const OrderManagement = () => {
   const { t } = useTranslation();
@@ -18,6 +18,8 @@ const OrderManagement = () => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState(null);
   const [viewingOrder, setViewingOrder] = useState(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [deletingOrderId, setDeletingOrderId] = useState(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -41,8 +43,13 @@ const OrderManagement = () => {
     setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
   };
 
-  const removeOrder = (orderId) => {
-    setOrders(prev => prev.filter(o => o.id !== orderId));
+  const removeOrder = async (orderId) => {
+    try {
+      await orderService.deleteOrder(orderId);
+      setOrders(prev => prev.filter(o => o.id !== orderId));
+    } catch (err) {
+      setError(t('orderManagement.errors.delete'));
+    }
   };
 
   const openModal = (order = null) => {
@@ -75,6 +82,19 @@ const OrderManagement = () => {
     }
   };
 
+  const openDeleteConfirm = (id) => {
+    setDeletingOrderId(id);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deletingOrderId) {
+      removeOrder(deletingOrderId);
+    }
+    setIsConfirmModalOpen(false);
+    setDeletingOrderId(null);
+  };
+
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
@@ -98,7 +118,7 @@ const OrderManagement = () => {
             order={order}
             onEdit={openModal}
             onView={openDetailsModal}
-            onDelete={removeOrder}
+            onDelete={() => openDeleteConfirm(order.id)}
           />
         ))}
       </div>
@@ -120,6 +140,14 @@ const OrderManagement = () => {
       >
         <OrderDetails order={viewingOrder} />
       </Modal>
+
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title={t('common.delete')}
+        message={t('orderManagement.confirmDelete')}
+      />
     </>
   );
 };

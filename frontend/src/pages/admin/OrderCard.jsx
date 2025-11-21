@@ -24,16 +24,8 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
     }
   };
 
-  const handleDelete = async () => {
-    if (window.confirm(t('orderManagement.confirmDelete', { orderId: order.id }))) {
-      try {
-        await orderService.deleteOrder(order.id);
-        onDelete(order.id);
-      } catch (err) {
-        // TODO: Show an error notification to the user
-        console.error("Failed to delete order", err);
-      }
-    }
+  const handleDelete = () => {
+    onDelete(order.id);
   };
 
   const cardClasses = `
@@ -66,7 +58,7 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
           {t('orderManagement.table.customer')}: {order.customer.name}
         </p>
         <div className="mt-3 space-y-2 text-sm">
-          <div className="flex items-center gap-2 text-brand-secondary">
+          <div className="w-full">
             <Dropdown
               options={[
                 { value: 'processing', label: t('orderManagement.status.processing') },

@@ -225,16 +225,19 @@ def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supa
 
     new_order = order_response.data[0]
 
-    order_items_data = [
-        {"order_id": new_order['id'], **item.model_dump()}
-        for item in order.order_items
-    ]
+    order_items_data = []
+    for item in order.order_items:
+        item_data = item.model_dump()
+        if item_data.get("product_variant_id"):
+            item_data["product_id"] = None
+        order_items_data.append({"order_id": new_order['id'], **item_data})
 
-    items_response = supabase.table("order_items").insert(order_items_data).execute()
-    if not items_response.data:
-        # Rollback order creation if items fail
-        supabase.table("orders").delete().eq("id", new_order['id']).execute()
-        raise HTTPException(status_code=500, detail="Failed to create order items.")
+    if order_items_data:
+        items_response = supabase.table("order_items").insert(order_items_data).execute()
+        if not items_response.data:
+            # Rollback order creation if items fail
+            supabase.table("orders").delete().eq("id", new_order['id']).execute()
+            raise HTTPException(status_code=500, detail="Failed to create order items.")
 
     return get_order(new_order['id'], supabase)
 
@@ -258,11 +261,14 @@ def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = D
         supabase.table("order_items").delete().eq("order_id", order_id).execute()
 
         # Create new items
-        order_items_data = [
-            {"order_id": order_id, **item.model_dump()}
-            for item in order.order_items
-        ]
-        if order_items_data:
+        order_items_data = []
+        for item in order.order_items:
+            item_data = item.model_dump()
+            if item_data.get("product_variant_id"):
+                item_data["product_id"] = None
+            order_items_data.append({"order_id": order_id, **item_data})
+
+        if order_items_,data:
             items_response = supabase.table("order_items").insert(order_items_data).execute()
             if not items_response.data:
                 raise HTTPException(status_code=500, detail="Failed to update order items.")

@@ -6,12 +6,15 @@ import CustomerForm from './CustomerForm';
 import CustomerCard from './CustomerCard';
 import { DataContext } from '../../context/DataContext';
 import LoadingScreen from '../../components/LoadingScreen';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const CustomerManagement = () => {
   const { t } = useTranslation();
   const { customers, isLoading, error: dataError, addCustomer, updateCustomer, removeCustomer } = useContext(DataContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [deletingCustomerId, setDeletingCustomerId] = useState(null);
 
   const openModal = (customer = null) => {
     setEditingCustomer(customer);
@@ -30,6 +33,19 @@ const CustomerManagement = () => {
       addCustomer(customer);
     }
     closeModal();
+  };
+
+  const openDeleteConfirm = (id) => {
+    setDeletingCustomerId(id);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deletingCustomerId) {
+      removeCustomer(deletingCustomerId);
+    }
+    setIsConfirmModalOpen(false);
+    setDeletingCustomerId(null);
   };
 
   if (isLoading) return <LoadingScreen fullScreen={false} />;
@@ -54,7 +70,7 @@ const CustomerManagement = () => {
             key={customer.id}
             customer={customer}
             onEdit={openModal}
-            onDelete={removeCustomer}
+            onDelete={() => openDeleteConfirm(customer.id)}
           />
         ))}
       </div>
@@ -67,6 +83,14 @@ const CustomerManagement = () => {
       >
         <CustomerForm customer={editingCustomer} onSuccess={handleSuccess} />
       </Modal>
+
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title={t('common.delete')}
+        message={t('customerManagement.confirmDelete')}
+      />
     </>
   );
 };
