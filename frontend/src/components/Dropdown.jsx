@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Dropdown = ({ options, value, onChange, placeholder }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -53,7 +55,7 @@ const Dropdown = ({ options, value, onChange, placeholder }) => {
           <div className="p-2">
             <input
               type="text"
-              placeholder="Search..."
+              placeholder={t('common.search')}
               className="w-full bg-black/20 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
               onChange={e => setSearchTerm(e.target.value)}
             />

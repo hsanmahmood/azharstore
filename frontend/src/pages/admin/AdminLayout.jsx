@@ -116,9 +116,6 @@ const AdminLayoutContent = () => {
           <button onClick={() => setIsMobileSidebarOpen(true)} className="text-brand-primary md:hidden">
             <Menu size={24} />
           </button>
-          <div className="w-full max-w-xs">
-            <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-          </div>
         </header>
         <main className="flex-1 overflow-y-auto">
           <div className="p-4 md:p-8 animate-fade-in-up">

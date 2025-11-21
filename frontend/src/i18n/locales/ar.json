@@ -6,6 +6,7 @@
   "Categories": "الفئات",
   "Admin Panel": "لوحة الإدارة",
   "common": {
+    "search": "بحث",
     "save": "حفظ",
     "cancel": "إلغاء",
     "delete": "حذف",

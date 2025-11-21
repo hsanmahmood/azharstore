@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
 import { SearchContext } from '../../context/SearchContext';
 import { productService } from '../../services/api';
+import SearchBar from '../../components/SearchBar';
 import { Plus, Loader2, Upload, X, Image as ImageIcon, ChevronDown, Trash2, Save } from 'lucide-react';
 import Modal from '../../components/Modal';
 import Dropdown from '../../components/Dropdown';
@@ -23,7 +24,7 @@ const ProductManagement = () => {
     removeProduct,
     setProducts // Keep for error recovery on delete
   } = useContext(DataContext);
-  const { searchTerm } = useContext(SearchContext);
+  const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -341,6 +342,10 @@ const ProductManagement = () => {
         >
           <Plus size={20} /> {t('productManagement.addProduct')}
         </button>
+      </div>
+
+      <div className="mb-8">
+        <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
       </div>
 
       {dataError && !isModalOpen && (

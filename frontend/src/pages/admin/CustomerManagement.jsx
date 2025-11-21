@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
+import SearchBar from '../../components/SearchBar';
 import Modal from '../../components/Modal';
 import CustomerForm from './CustomerForm';
 import CustomerCard from './CustomerCard';
@@ -13,7 +14,7 @@ import { customerService } from '../../services/api';
 const CustomerManagement = () => {
   const { t } = useTranslation();
   const { customers, isLoading, error: dataError, addCustomer, updateCustomer, removeCustomer } = useContext(DataContext);
-  const { searchTerm } = useContext(SearchContext);
+  const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -73,6 +74,10 @@ const CustomerManagement = () => {
         >
           <Plus size={20} /> {t('customerManagement.addCustomer')}
         </button>
+      </div>
+
+      <div className="mb-8">
+        <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
       </div>
 
       {dataError && <div className="text-red-500">{dataError}</div>}

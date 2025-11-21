@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
 import { orderService } from '../../services/api';
+import SearchBar from '../../components/SearchBar';
 import Modal from '../../components/Modal';
 import LoadingScreen from '../../components/LoadingScreen';
 import OrderForm from './OrderForm';
@@ -14,7 +15,7 @@ import { SearchContext } from '../../context/SearchContext';
 const OrderManagement = () => {
   const { t } = useTranslation();
   const { orders, isLoading, error: dataError, addOrder, updateOrder, removeOrder } = useContext(DataContext);
-  const { searchTerm } = useContext(SearchContext);
+  const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState(null);
@@ -96,6 +97,10 @@ const OrderManagement = () => {
         >
           <Plus size={20} /> {t('orderManagement.addOrder')}
         </button>
+      </div>
+
+      <div className="mb-8">
+        <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
       </div>
 
       {dataError && <div className="text-red-500">{dataError}</div>}
