@@ -268,7 +268,7 @@ def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = D
                 item_data["product_id"] = None
             order_items_data.append({"order_id": order_id, **item_data})
 
-        if order_items_,data:
+        if order_items_data:
             items_response = supabase.table("order_items").insert(order_items_data).execute()
             if not items_response.data:
                 raise HTTPException(status_code=500, detail="Failed to update order items.")
