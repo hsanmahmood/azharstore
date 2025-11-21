@@ -81,9 +81,16 @@ const OrderDetails = ({ order }) => {
 
       <div className="mt-6 border-t border-brand-border/50 pt-6">
         <div className="space-y-2 text-right">
-          <p className="text-lg"><span className="font-semibold">{t('orderManagement.form.subtotal')}:</span> {total.toFixed(2)} {t('common.currency')}</p>
-          <p className="text-lg"><span className="font-semibold">{t('settings.deliveryPrice')}:</span> {order.delivery_fee.toFixed(2)} {t('common.currency')}</p>
-          <p className="text-xl font-bold"><span className="font-semibold">{t('orderManagement.form.total')}:</span> {(total + order.delivery_fee).toFixed(2)} {t('common.currency')}</p>
+          <p className="text-lg"><span className="font-semibold">{t('orderManagement.form.subtotal')}:</span> {subtotal.toFixed(2)} {t('common.currency')}</p>
+          {order.shipping_method === 'delivery' && order.delivery_area && (
+            <>
+              <p className="text-lg"><span className="font-semibold">{t('settings.deliveryPrice')}:</span> {deliveryFee.toFixed(2)} {t('common.currency')}
+                {deliveryFee === 0 && <span className="text-sm text-green-400 ml-2">({t('orderManagement.freeDeliveryApplied')})</span>}
+              </p>
+              <p className="text-sm text-brand-secondary">{t('settings.deliveryArea')}: {order.delivery_area.name} ({t('settings.freeDeliveryMinimum')}: {order.delivery_area.min_for_free_delivery.toFixed(2)} {t('common.currency')})</p>
+            </>
+          )}
+          <p className="text-xl font-bold"><span className="font-semibold">{t('orderManagement.form.total')}:</span> {total.toFixed(2)} {t('common.currency')}</p>
         </div>
       </div>
     </div>

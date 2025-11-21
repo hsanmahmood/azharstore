@@ -101,10 +101,12 @@ class DeliveryArea(BaseModel):
     id: int
     name: str
     price: float
+    min_for_free_delivery: float
 
 class DeliveryAreaCreate(BaseModel):
     name: str
     price: float
+    min_for_free_delivery: float
 
 class AppSettings(BaseModel):
     free_delivery_threshold: float

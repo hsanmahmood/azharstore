@@ -219,6 +219,23 @@ def update_product_variant_image(variant_id: int, image_url: str, supabase: Clie
 
 def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order:
     order_data = order.model_dump(exclude={"order_items"})
+
+    # Calculate subtotal
+    subtotal = sum(item.price * item.quantity for item in order.order_items)
+
+    # Calculate delivery fee
+    delivery_fee = 0
+    if order.shipping_method == 'delivery' and order.delivery_area_id:
+        area_response = supabase.table("delivery_areas").select("price", "min_for_free_delivery").eq("id", order.delivery_area_id).execute()
+        if area_response.data:
+            area = area_response.data[0]
+            if area['min_for_free_delivery'] > 0 and subtotal >= area['min_for_free_delivery']:
+                delivery_fee = 0
+            else:
+                delivery_fee = area['price']
+
+    order_data['delivery_fee'] = delivery_fee
+
     order_response = supabase.table("orders").insert(order_data).execute()
     if not order_response.data:
         raise HTTPException(status_code=500, detail="Failed to create order.")
@@ -235,39 +252,65 @@ def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supa
     if order_items_data:
         items_response = supabase.table("order_items").insert(order_items_data).execute()
         if not items_response.data:
-            # Rollback order creation if items fail
             supabase.table("orders").delete().eq("id", new_order['id']).execute()
             raise HTTPException(status_code=500, detail="Failed to create order items.")
 
     return get_order(new_order['id'], supabase)
 
 def get_orders(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Order]:
-    response = supabase.table("orders").select("*, customer:customers(*), order_items(*, product:products(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").execute()
+    response = supabase.table("orders").select("*, customer:customers(*), delivery_area:delivery_areas(*), order_items(*, product:products(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").execute()
     return response.data
 
 def get_order(order_id: int, supabase: Client = Depends(get_supabase_client)) -> schemas.Order | None:
-    response = supabase.table("orders").select("*, customer:customers(*), order_items(*, product:products(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").eq("id", order_id).execute()
+    response = supabase.table("orders").select("*, customer:customers(*), delivery_area:delivery_areas(*), order_items(*, product:products(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").eq("id", order_id).execute()
     return response.data[0] if response.data else None
 
 def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order | None:
     order_data = order.model_dump(exclude_unset=True, exclude={"order_items"})
+
+    # Recalculate delivery fee if items or delivery area change
+    if order.order_items is not None or 'delivery_area_id' in order_data:
+        # Fetch current order to get all necessary fields
+        current_order_response = supabase.table("orders").select("*, order_items(*)").eq("id", order_id).execute()
+        if not current_order_response.data:
+            raise HTTPException(status_code=404, detail="Order not found for fee calculation.")
+        current_order = current_order_response.data[0]
+
+        # Determine subtotal
+        if order.order_items is not None:
+            subtotal = sum(item.price * item.quantity for item in order.order_items)
+        else:
+            subtotal = sum(item['price'] * item['quantity'] for item in current_order['order_items'])
+
+        # Determine shipping method and delivery area
+        shipping_method = order_data.get('shipping_method', current_order['shipping_method'])
+        delivery_area_id = order_data.get('delivery_area_id', current_order['delivery_area_id'])
+
+        delivery_fee = 0
+        if shipping_method == 'delivery' and delivery_area_id:
+            area_response = supabase.table("delivery_areas").select("price", "min_for_free_delivery").eq("id", delivery_area_id).execute()
+            if area_response.data:
+                area = area_response.data[0]
+                if area['min_for_free_delivery'] > 0 and subtotal >= area['min_for_free_delivery']:
+                    delivery_fee = 0
+                else:
+                    delivery_fee = area['price']
+
+        order_data['delivery_fee'] = delivery_fee
+
     if order_data:
         response = supabase.table("orders").update(order_data).eq("id", order_id).execute()
         if not response.data:
             return None
 
     if order.order_items is not None:
-        # Delete existing items
         supabase.table("order_items").delete().eq("order_id", order_id).execute()
-
-        # Create new items
         order_items_data = []
         for item in order.order_items:
             item_data = item.model_dump()
             if item_data.get("product_variant_id"):
                 item_data["product_id"] = None
             order_items_data.append({"order_id": order_id, **item_data})
-
         if order_items_data:
             items_response = supabase.table("order_items").insert(order_items_data).execute()
             if not items_response.data:

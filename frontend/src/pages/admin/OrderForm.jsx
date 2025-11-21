@@ -52,7 +52,7 @@ const OrderForm = ({ order, onSuccess }) => {
     const selectedArea = deliveryAreas.find(a => a.id === formData.delivery_area_id);
 
     if (formData.shipping_method === 'delivery' && selectedArea) {
-      if (appSettings.free_delivery_threshold > 0 && total >= appSettings.free_delivery_threshold) {
+      if (selectedArea.min_for_free_delivery > 0 && total >= selectedArea.min_for_free_delivery) {
         setFormData(prev => ({ ...prev, delivery_fee: 0 }));
       } else {
         setFormData(prev => ({ ...prev, delivery_fee: selectedArea.price }));
@@ -60,7 +60,7 @@ const OrderForm = ({ order, onSuccess }) => {
     } else {
       setFormData(prev => ({ ...prev, delivery_fee: 0, delivery_area_id: null }));
     }
-  }, [formData.order_items, formData.delivery_area_id, formData.shipping_method, deliveryAreas, appSettings]);
+  }, [formData.order_items, formData.delivery_area_id, formData.shipping_method, deliveryAreas]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
