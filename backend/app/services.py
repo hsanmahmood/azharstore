@@ -244,44 +244,42 @@ def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supa
 def get_orders(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Order]:
     try:
         response = supabase.table("orders").select("*, customer:customers(*), delivery_area:delivery_areas(*), order_items(*, product:products(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").execute()
-        response.data
+        return response.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch orders: {e}")
-    return response.data
 
 def get_order(order_id: int, supabase: Client = Depends(get_supabase_client)) -> schemas.Order | None:
     try:
         response = supabase.table("orders").select("*, customer:customers(*), delivery_area:delivery_areas(*), order_items(*, product:products(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").eq("id", order_id).execute()
-        response.data
+        return response.data[0] if response.data else None
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch order: {e}")
-    return response.data[0] if response.data else None
 
 def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order | None:
-    order_data = order.model_dump(exclude_unset=True, exclude={"order_items"})
-    if order_data:
-        response = supabase.table("orders").update(order_data).eq("id", order_id).execute()
-        if not response.data:
-            return None
+    try:
+        order_data = order.model_dump(exclude_unset=True, exclude={"order_items"})
+        if order_data:
+            response = supabase.table("orders").update(order_data).eq("id", order_id).execute()
+            if not response.data:
+                return None
 
-    if order.order_items is not None:
-        # Delete existing items
-        supabase.table("order_items").delete().eq("order_id", order_id).execute()
+        if order.order_items is not None:
+            supabase.table("order_items").delete().eq("order_id", order_id).execute()
+            order_items_data = []
+            for item in order.order_items:
+                item_data = item.model_dump()
+                if item_data.get("product_variant_id"):
+                    item_data["product_id"] = None
+                order_items_data.append({"order_id": order_id, **item_data})
 
-        # Create new items
-        order_items_data = []
-        for item in order.order_items:
-            item_data = item.model_dump()
-            if item_data.get("product_variant_id"):
-                item_data["product_id"] = None
-            order_items_data.append({"order_id": order_id, **item_data})
+            if order_items_data:
+                items_response = supabase.table("order_items").insert(order_items_data).execute()
+                if not items_response.data:
+                    raise HTTPException(status_code=500, detail="Failed to update order items.")
 
-        if order_items_data:
-            items_response = supabase.table("order_items").insert(order_items_data).execute()
-            if not items_response.data:
-                raise HTTPException(status_code=500, detail="Failed to update order items.")
-
-    return get_order(order_id, supabase)
+        return get_order(order_id, supabase)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 def delete_order(order_id: int, supabase: Client = Depends(get_supabase_client)) -> bool:
     # First, delete associated order items
