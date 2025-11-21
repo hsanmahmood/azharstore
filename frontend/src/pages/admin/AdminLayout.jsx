@@ -112,8 +112,8 @@ const AdminLayoutContent = () => {
       </aside>
 
       <div className="flex flex-col flex-1">
-        <header className="sticky top-0 bg-brand-background/80 backdrop-blur-lg border-b border-brand-border p-4 flex items-center justify-between">
-          <button onClick={() => setIsMobileSidebarOpen(true)} className="text-brand-primary md:hidden">
+        <header className="sticky top-0 bg-brand-background/80 backdrop-blur-lg flex items-center justify-between">
+          <button onClick={() => setIsMobileSidebarOpen(true)} className="text-brand-primary md:hidden p-4">
             <Menu size={24} />
           </button>
         </header>
