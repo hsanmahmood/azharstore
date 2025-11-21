@@ -48,10 +48,13 @@ export const DataProvider = ({ children }) => {
       setError('');
     } catch (err) {
       if (err.response && err.response.status !== 401) {
+        console.error("Error response from server:", err.response);
         const errorMsg = err.response?.data?.detail || err.message || 'Failed to fetch data';
         setError(errorMsg);
+      } else {
+        console.error("An unexpected error occurred:", err);
+        setError('An unexpected error occurred.');
       }
-      console.error(err);
     } finally {
       setIsLoading(false);
     }
