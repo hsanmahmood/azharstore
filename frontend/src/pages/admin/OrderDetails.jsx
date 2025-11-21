@@ -6,7 +6,9 @@ const OrderDetails = ({ order }) => {
 
   if (!order) return null;
 
-  const total = order.order_items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = order.order_items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const deliveryFee = order.delivery_fee || 0;
+  const total = subtotal + deliveryFee;
 
   return (
     <div className="p-6 bg-black/20 rounded-lg">
@@ -27,12 +29,8 @@ const OrderDetails = ({ order }) => {
             <p><span className="font-semibold">{t('orderManagement.table.status')}:</span> {t(`orderManagement.status.${order.status}`)}</p>
             <p><span className="font-semibold">{t('orderManagement.table.shippingMethod')}:</span> {t(`orderManagement.shipping.${order.shipping_method}`)}</p>
             {order.shipping_method === 'delivery' && (
-              <>
-                <p><span className="font-semibold">{t('settings.deliveryArea')}:</span> {order.delivery_area?.name || t('common.notAvailable')}</p>
-                <p><span className="font-semibold">{t('settings.deliveryPrice')}:</span> {order.delivery_fee.toFixed(2)} {t('common.currency')}</p>
-              </>
+              <p><span className="font-semibold">{t('settings.deliveryArea')}:</span> {order.delivery_area?.name || t('common.notAvailable')}</p>
             )}
-            <p className="text-base font-bold pt-2 border-t border-brand-border/50"><span className="font-semibold">{t('orderManagement.form.total')}:</span> {(total + order.delivery_fee).toFixed(2)} {t('common.currency')}</p>
           </div>
         </div>
       </div>

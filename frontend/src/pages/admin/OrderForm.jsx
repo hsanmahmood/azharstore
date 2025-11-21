@@ -258,8 +258,23 @@ const OrderForm = ({ order, onSuccess }) => {
         />
       </div>
 
-      <div className="text-right text-lg font-bold">
-        {t('orderManagement.form.total')}: {formData.order_items.reduce((acc, item) => acc + item.price * item.quantity, 0) + formData.delivery_fee} {t('common.currency')}
+      <div className="mt-6 border-t border-brand-border/50 pt-6">
+        <div className="space-y-2 text-right">
+          <p className="text-lg">
+            <span className="font-semibold">{t('orderManagement.form.subtotal')}:</span>{' '}
+            {formData.order_items.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2)}{' '}
+            {t('common.currency')}
+          </p>
+          <p className="text-lg">
+            <span className="font-semibold">{t('settings.deliveryPrice')}:</span>{' '}
+            {formData.delivery_fee.toFixed(2)} {t('common.currency')}
+          </p>
+          <p className="text-xl font-bold">
+            <span className="font-semibold">{t('orderManagement.form.total')}:</span>{' '}
+            {(formData.order_items.reduce((acc, item) => acc + item.price * item.quantity, 0) + formData.delivery_fee).toFixed(2)}{' '}
+            {t('common.currency')}
+          </p>
+        </div>
       </div>
 
       <div className="flex justify-end gap-4 pt-4">

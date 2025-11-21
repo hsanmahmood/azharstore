@@ -18,7 +18,7 @@ DROP TYPE IF EXISTS public.shipping_method;
 -- Create custom ENUM types.
 CREATE TYPE public.order_status AS ENUM (
     'processing',
-    'shipped',
+    'ready',
     'delivered',
     'cancelled'
 );
