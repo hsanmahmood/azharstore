@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
-import { orderService } from '../../services/api';
+import { apiService } from '../../services/api';
 import SearchBar from '../../components/SearchBar';
 import Modal from '../../components/Modal';
 import LoadingScreen from '../../components/LoadingScreen';
@@ -33,7 +33,7 @@ const OrderManagement = () => {
 
   const deleteOrder = async (orderId) => {
     try {
-      await orderService.deleteOrder(orderId);
+      await apiService.deleteOrder(orderId);
       removeOrder(orderId);
     } catch (err) {
       setError(t('orderManagement.errors.delete'));
@@ -57,7 +57,7 @@ const OrderManagement = () => {
 
   const handleSuccess = async (order) => {
     try {
-      const response = await orderService.getOrder(order.id);
+      const response = await apiService.getOrder(order.id);
       if (editingOrder) {
         updateOrderState(response.data);
       } else {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { customerService } from '../../services/api';
+import { apiService } from '../../services/api';
 import { Loader2 } from 'lucide-react';
 
 const CustomerForm = ({ customer, onSuccess }) => {
@@ -50,9 +50,9 @@ const CustomerForm = ({ customer, onSuccess }) => {
     try {
       let response;
       if (customer) {
-        response = await customerService.updateCustomer(customer.id, formData);
+        response = await apiService.updateCustomer(customer.id, formData);
       } else {
-        response = await customerService.createCustomer(formData);
+        response = await apiService.createCustomer(formData);
       }
       onSuccess(response.data);
     } catch (err) {

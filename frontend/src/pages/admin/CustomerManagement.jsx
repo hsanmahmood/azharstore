@@ -9,7 +9,7 @@ import { DataContext } from '../../context/DataContext';
 import { SearchContext } from '../../context/SearchContext';
 import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
-import { customerService } from '../../services/api';
+import { apiService } from '../../services/api';
 
 const CustomerManagement = () => {
   const { t } = useTranslation();
@@ -47,7 +47,7 @@ const CustomerManagement = () => {
   const handleConfirmDelete = async () => {
     if (deletingCustomerId) {
       try {
-        await customerService.deleteCustomer(deletingCustomerId);
+        await apiService.deleteCustomer(deletingCustomerId);
         removeCustomer(deletingCustomerId);
       } catch (err) {
         // TODO: Show an error notification to the user

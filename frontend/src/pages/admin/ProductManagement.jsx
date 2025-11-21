@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
 import { SearchContext } from '../../context/SearchContext';
-import { productService } from '../../services/api';
+import { apiService } from '../../services/api';
 import SearchBar from '../../components/SearchBar';
 import { Plus, Loader2, Upload, X, Image as ImageIcon, ChevronDown, Trash2, Save } from 'lucide-react';
 import Modal from '../../components/Modal';
@@ -70,7 +70,7 @@ const ProductManagement = () => {
           name: formData.name || t('productManagement.form.draftName'),
           price: parseFloat(formData.price) || 0,
         };
-        const productResponse = await productService.createProduct(draftPayload);
+        const productResponse = await apiService.createProduct(draftPayload);
         currentProductId = productResponse.data.id;
         setEditingProduct(productResponse.data);
         addProduct(productResponse.data);
@@ -82,10 +82,10 @@ const ProductManagement = () => {
     }
 
     try {
-      await productService.uploadImage(currentProductId, file);
+      await apiService.uploadImage(currentProductId, file);
 
       // Fetch the updated product to get all images, including the new primary one
-      const updatedProductResponse = await productService.getProduct(currentProductId);
+      const updatedProductResponse = await apiService.getProduct(currentProductId);
       const updatedImages = updatedProductResponse.data.product_images;
 
       const primaryImg = updatedImages.find(img => img.is_primary);
@@ -113,8 +113,8 @@ const ProductManagement = () => {
 
     setUploadingImages(true);
     try {
-      const response = await productService.uploadVariantImage(variant.id, file);
-      const updatedProduct = await productService.getProduct(editingProduct.id);
+      const response = await apiService.uploadVariantImage(variant.id, file);
+      const updatedProduct = await apiService.getProduct(editingProduct.id);
       setEditingProduct(updatedProduct.data);
     } catch (err) {
       setError(t('productManagement.errors.uploadError'));
@@ -127,11 +127,11 @@ const ProductManagement = () => {
     const variant = variants[index];
     try {
       if (variant.id) {
-        await productService.updateVariant(variant.id, { name: variant.name, stock_quantity: variant.stock_quantity });
+        await apiService.updateVariant(variant.id, { name: variant.name, stock_quantity: variant.stock_quantity });
       } else {
-        await productService.createVariant(editingProduct.id, { name: variant.name, stock_quantity: variant.stock_quantity });
+        await apiService.createVariant(editingProduct.id, { name: variant.name, stock_quantity: variant.stock_quantity });
       }
-      const updatedProduct = await productService.getProduct(editingProduct.id);
+      const updatedProduct = await apiService.getProduct(editingProduct.id);
       setEditingProduct(updatedProduct.data);
     } catch (err) {
       setError(t('productManagement.errors.updateVariantError'));
@@ -182,7 +182,7 @@ const ProductManagement = () => {
     if (!imageToRemove) return;
 
     try {
-      await productService.deleteImage(imageToRemove.id);
+      await apiService.deleteImage(imageToRemove.id);
 
       const updatedImages = editingProduct.product_images.filter(img => img.id !== imageToRemove.id);
 
@@ -225,7 +225,7 @@ const ProductManagement = () => {
           name: formData.name || t('productManagement.form.draftName'),
           price: parseFloat(formData.price) || 0,
         };
-        const productResponse = await productService.createProduct(draftPayload);
+        const productResponse = await apiService.createProduct(draftPayload);
         currentProductId = productResponse.data.id;
         setEditingProduct(productResponse.data);
         addProduct(productResponse.data);
@@ -238,11 +238,11 @@ const ProductManagement = () => {
 
     // Upload images one by one
     try {
-      const uploadPromises = files.map(file => productService.uploadImage(currentProductId, file));
+      const uploadPromises = files.map(file => apiService.uploadImage(currentProductId, file));
       const responses = await Promise.all(uploadPromises);
       const newImages = responses.map(res => res.data);
 
-      const updatedProduct = await productService.getProduct(currentProductId);
+      const updatedProduct = await apiService.getProduct(currentProductId);
       setEditingProduct(updatedProduct.data);
 
       const updatedImages = updatedProduct.data.product_images;
@@ -283,10 +283,10 @@ const ProductManagement = () => {
 
     try {
       if (editingProduct && editingProduct.id) {
-        const updatedProduct = await productService.updateProduct(editingProduct.id, payload);
+        const updatedProduct = await apiService.updateProduct(editingProduct.id, payload);
         updateProduct(updatedProduct.data);
       } else {
-        const newProduct = await productService.createProduct(payload);
+        const newProduct = await apiService.createProduct(payload);
         addProduct(newProduct.data);
       }
       closeModal();
@@ -318,7 +318,7 @@ const ProductManagement = () => {
     setIsConfirmModalOpen(false);
 
     try {
-      await productService.deleteProduct(deletingProductId);
+      await apiService.deleteProduct(deletingProductId);
     } catch (err) {
       setError(t('productManagement.errors.delete'));
       console.error(err);

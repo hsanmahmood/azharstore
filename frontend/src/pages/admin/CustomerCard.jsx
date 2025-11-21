@@ -1,7 +1,7 @@
 import React from 'react';
 import { Edit, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { customerService } from '../../services/api';
+import { apiService } from '../../services/api';
 
 const CustomerCard = ({ customer, onEdit, onDelete }) => {
   const { t } = useTranslation();
@@ -9,7 +9,7 @@ const CustomerCard = ({ customer, onEdit, onDelete }) => {
   const handleDelete = async () => {
     if (window.confirm(t('customerManagement.confirmDelete', { customerName: customer.name }))) {
       try {
-        await customerService.deleteCustomer(customer.id);
+        await apiService.deleteCustomer(customer.id);
         onDelete(customer.id);
       } catch (err) {
         // TODO: Show an error notification to the user

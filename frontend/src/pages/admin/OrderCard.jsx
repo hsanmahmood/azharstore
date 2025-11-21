@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Edit, Trash2, Eye } from 'lucide-react';
 import Dropdown from '../../components/Dropdown';
-import { orderService } from '../../services/api';
+import { apiService } from '../../services/api';
 import { DataContext } from '../../context/DataContext';
 
 const OrderCard = ({ order, onEdit, onDelete, onView }) => {
@@ -17,7 +17,7 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
     updateOrder(updatedOrder);
 
     try {
-      await orderService.updateOrder(order.id, { status: newStatus });
+      await apiService.updateOrder(order.id, { status: newStatus });
     } catch (error) {
       updateOrder(originalOrder);
       // You might want to show an error message to the user
