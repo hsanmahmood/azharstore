@@ -26,6 +26,19 @@
     "productsWithoutOrders": "المنتجات غير المطلوبة",
     "filterByOrders": "التصفية حسب الطلبات"
   },
+  "settings": {
+    "title": "الإعدادات",
+    "deliverySettings": "إعدادات التوصيل",
+    "freeDeliveryThreshold": "الحد الأدنى للتوصيل المجاني",
+    "deliveryAreas": "مناطق التوصيل",
+    "addArea": "إضافة منطقة",
+    "editArea": "تعديل منطقة",
+    "areaName": "اسم المنطقة",
+    "deliveryPrice": "سعر التوصيل",
+    "confirmDeleteArea": "هل أنت متأكد من حذف منطقة التوصيل هذه؟",
+    "deliveryArea": "منطقة التوصيل",
+    "selectArea": "اختر منطقة"
+  },
   "productManagement": {
     "title": "إدارة المنتجات",
     "addProduct": "إضافة منتج",

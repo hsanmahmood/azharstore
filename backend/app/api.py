@@ -213,3 +213,33 @@ def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = D
     if db_order is None:
         raise HTTPException(status_code=404, detail="Order not found")
     return db_order
+
+@admin_router.get("/delivery-areas", response_model=List[schemas.DeliveryArea], tags=["Admin - Delivery Areas"])
+def list_delivery_areas(supabase: Client = Depends(get_supabase_client)):
+    return services.get_delivery_areas(supabase=supabase)
+
+@admin_router.post("/delivery-areas", response_model=schemas.DeliveryArea, tags=["Admin - Delivery Areas"])
+def create_delivery_area(delivery_area: schemas.DeliveryAreaCreate, supabase: Client = Depends(get_supabase_client)):
+    return services.create_delivery_area(delivery_area=delivery_area, supabase=supabase)
+
+@admin_router.patch("/delivery-areas/{delivery_area_id}", response_model=schemas.DeliveryArea, tags=["Admin - Delivery Areas"])
+def update_delivery_area(delivery_area_id: int, delivery_area: schemas.DeliveryAreaCreate, supabase: Client = Depends(get_supabase_client)):
+    db_delivery_area = services.update_delivery_area(delivery_area_id=delivery_area_id, delivery_area=delivery_area, supabase=supabase)
+    if db_delivery_area is None:
+        raise HTTPException(status_code=404, detail="Delivery area not found")
+    return db_delivery_area
+
+@admin_router.delete("/delivery-areas/{delivery_area_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Admin - Delivery Areas"])
+def delete_delivery_area(delivery_area_id: int, supabase: Client = Depends(get_supabase_client)):
+    success = services.delete_delivery_area(delivery_area_id=delivery_area_id, supabase=supabase)
+    if not success:
+        raise HTTPException(status_code=404, detail="Delivery area not found")
+    return None
+
+@admin_router.get("/settings", response_model=schemas.AppSettings, tags=["Admin - Settings"])
+def get_settings(supabase: Client = Depends(get_supabase_client)):
+    return services.get_app_settings(supabase=supabase)
+
+@admin_router.patch("/settings", response_model=schemas.AppSettings, tags=["Admin - Settings"])
+def update_settings(settings_data: schemas.AppSettings, supabase: Client = Depends(get_supabase_client)):
+    return services.update_app_settings(settings_data=settings_data, supabase=supabase)

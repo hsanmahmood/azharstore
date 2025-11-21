@@ -10,6 +10,7 @@ import ProductManagement from './pages/admin/ProductManagement';
 import CategoryManagement from './pages/admin/CategoryManagement';
 import CustomerManagement from './pages/admin/CustomerManagement';
 import OrderManagement from './pages/admin/OrderManagement';
+import Settings from './pages/admin/Settings';
 
 const App = () => {
   const { token } = useContext(AuthContext);
@@ -33,6 +34,7 @@ const App = () => {
             <Route path="categories" element={<CategoryManagement />} />
             <Route path="customers" element={<CustomerManagement />} />
             <Route path="orders" element={<OrderManagement />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
         </Route>
 

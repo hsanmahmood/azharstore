@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Package, Layers, LogOut, PanelLeft, Menu, Home, Users, ShoppingCart } from 'lucide-react';
+import { Package, Layers, LogOut, PanelLeft, Menu, Home, Users, ShoppingCart, Settings } from 'lucide-react';
 import { AuthContext } from '../../context/AuthContext';
 import MobileAdminSidebar from './MobileAdminSidebar';
 import { SearchProvider, SearchContext } from '../../context/SearchContext';
@@ -78,6 +78,10 @@ const AdminLayoutContent = () => {
 
         <div className="px-2 py-4 mt-auto">
           <div className="border-t border-brand-border pt-4 space-y-2">
+            <NavLink to="/admin/settings" className={getNavLinkClasses(isDesktopSidebarOpen)('/admin/settings')} title={isDesktopSidebarOpen ? '' : t('settings.title')}>
+              <Settings className={`h-5 w-5 ${isDesktopSidebarOpen ? 'ml-3' : ''}`} />
+              <span className={`transition-opacity duration-200 ${!isDesktopSidebarOpen ? 'hidden' : 'delay-200'}`}>{t('settings.title')}</span>
+            </NavLink>
             <button
               onClick={() => setIsDesktopSidebarOpen(!isOpen)}
               className={`flex items-center w-full px-4 py-2.5 text-sm font-medium text-brand-secondary hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg transition-colors ${!isOpen ? 'justify-center' : ''}`}

@@ -82,12 +82,63 @@ export const customerService = {
   deleteCustomer: (id) => api.delete(`/admin/customers/${id}`),
 };
 
-export const orderService = {
+export const apiService = {
+  // Auth
+  login: (password) => api.post('/login', { password }),
+
+  // Products
+  getAllProducts: () => api.get('/products'),
+  getProduct: (id) => api.get(`/products/${id}`),
+  createProduct: (data) => api.post('/admin/products', data),
+  updateProduct: (id, data) => api.patch(`/admin/products/${id}`, data),
+  deleteProduct: (id) => api.delete(`/admin/products/${id}`),
+  uploadImage: (productId, file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post(`/admin/products/${productId}/images`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  deleteImage: (imageId) => api.delete(`/admin/products/images/${imageId}`),
+  setPrimaryImage: (imageId) => api.post(`/admin/products/images/${imageId}/set-primary`),
+  createVariant: (productId, data) => api.post(`/admin/products/${productId}/variants`, data),
+  updateVariant: (variantId, data) => api.patch(`/admin/products/variants/${variantId}`, data),
+  deleteVariant: (variantId) => api.delete(`/admin/products/variants/${variantId}`),
+  uploadVariantImage: (variantId, file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post(`/admin/products/variants/${variantId}/image`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+
+  // Categories
+  getAllCategories: () => api.get('/categories').then(res => res.data),
+  createCategory: (data) => api.post('/admin/categories', data),
+  updateCategory: (id, data) => api.patch(`/admin/categories/${id}`, data),
+  deleteCategory: (id) => api.delete(`/admin/categories/${id}`),
+
+  // Customers
+  getAllCustomers: () => api.get('/admin/customers'),
+  createCustomer: (data) => api.post('/admin/customers', data),
+  updateCustomer: (id, data) => api.patch(`/admin/customers/${id}`, data),
+  deleteCustomer: (id) => api.delete(`/admin/customers/${id}`),
+
+  // Orders
   getAllOrders: () => api.get('/admin/orders'),
-  getOrder: (id) => api.get(`/admin/orders/${id}`),
   createOrder: (data) => api.post('/admin/orders', data),
   updateOrder: (id, data) => api.patch(`/admin/orders/${id}`, data),
   deleteOrder: (id) => api.delete(`/admin/orders/${id}`),
+
+  // Delivery Areas
+  getAllDeliveryAreas: () => api.get('/admin/delivery-areas'),
+  createDeliveryArea: (data) => api.post('/admin/delivery-areas', data),
+  updateDeliveryArea: (id, data) => api.patch(`/admin/delivery-areas/${id}`, data),
+  deleteDeliveryArea: (id) => api.delete(`/admin/delivery-areas/${id}`),
+
+  // App Settings
+  getAppSettings: () => api.get('/admin/settings'),
+  updateAppSettings: (data) => api.patch('/admin/settings', data),
 };
 
 export default api;

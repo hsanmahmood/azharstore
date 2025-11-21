@@ -1,19 +1,21 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
-import { orderService } from '../../services/api';
+import { apiService } from '../../services/api';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import Dropdown from '../../components/Dropdown';
 
 const OrderForm = ({ order, onSuccess }) => {
   const { t } = useTranslation();
-  const { customers, products } = useContext(DataContext);
+  const { customers, products, deliveryAreas, appSettings } = useContext(DataContext);
   const [formData, setFormData] = useState({
     customer_id: '',
     shipping_method: '',
     status: 'processing',
     comments: '',
     order_items: [],
+    delivery_area_id: null,
+    delivery_fee: 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -39,9 +41,26 @@ const OrderForm = ({ order, onSuccess }) => {
               return { ...item, product_id: productId };
             })
           : [],
+        delivery_area_id: order.delivery_area_id,
+        delivery_fee: order.delivery_fee,
       });
     }
   }, [order, products]);
+
+  useEffect(() => {
+    const total = formData.order_items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const selectedArea = deliveryAreas.find(a => a.id === formData.delivery_area_id);
+
+    if (formData.shipping_method === 'delivery' && selectedArea) {
+      if (appSettings.free_delivery_threshold > 0 && total >= appSettings.free_delivery_threshold) {
+        setFormData(prev => ({ ...prev, delivery_fee: 0 }));
+      } else {
+        setFormData(prev => ({ ...prev, delivery_fee: selectedArea.price }));
+      }
+    } else {
+      setFormData(prev => ({ ...prev, delivery_fee: 0, delivery_area_id: null }));
+    }
+  }, [formData.order_items, formData.delivery_area_id, formData.shipping_method, deliveryAreas, appSettings]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -107,8 +126,8 @@ const OrderForm = ({ order, onSuccess }) => {
 
     try {
       const response = order
-        ? await orderService.updateOrder(order.id, payload)
-        : await orderService.createOrder(payload);
+        ? await apiService.updateOrder(order.id, payload)
+        : await apiService.createOrder(payload);
       onSuccess(response.data);
     } catch (err) {
       const errorMsg = err.response?.data?.detail || t('orderManagement.errors.submit');
@@ -149,6 +168,20 @@ const OrderForm = ({ order, onSuccess }) => {
           />
         </div>
       </div>
+
+      {formData.shipping_method === 'delivery' && (
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-brand-secondary">
+            {t('settings.deliveryArea')}
+          </label>
+          <Dropdown
+            options={deliveryAreas.map((a) => ({ value: a.id, label: `${a.name} (${a.price} ${t('common.currency')})` }))}
+            value={formData.delivery_area_id}
+            onChange={(option) => handleDropdownChange('delivery_area_id', option)}
+            placeholder={t('settings.selectArea')}
+          />
+        </div>
+      )}
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-brand-secondary">
@@ -223,6 +256,10 @@ const OrderForm = ({ order, onSuccess }) => {
           rows="3"
           className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg"
         />
+      </div>
+
+      <div className="text-right text-lg font-bold">
+        {t('orderManagement.form.total')}: {formData.order_items.reduce((acc, item) => acc + item.price * item.quantity, 0) + formData.delivery_fee} {t('common.currency')}
       </div>
 
       <div className="flex justify-end gap-4 pt-4">

@@ -97,6 +97,18 @@ class Customer(BaseModel):
     address_road: Optional[str] = None
     address_block: Optional[str] = None
 
+class DeliveryArea(BaseModel):
+    id: int
+    name: str
+    price: float
+
+class DeliveryAreaCreate(BaseModel):
+    name: str
+    price: float
+
+class AppSettings(BaseModel):
+    free_delivery_threshold: float
+
 class OrderItemCreate(BaseModel):
     product_id: Optional[int] = None
     product_variant_id: Optional[int] = None
@@ -123,6 +135,8 @@ class OrderCreate(BaseModel):
     status: OrderStatus = OrderStatus.processing
     comments: Optional[str] = None
     order_items: list[OrderItemCreate]
+    delivery_area_id: Optional[int] = None
+    delivery_fee: Optional[float] = None
 
 class Order(BaseModel):
     id: int
@@ -133,12 +147,17 @@ class Order(BaseModel):
     created_at: datetime
     order_items: list[OrderItem] = []
     customer: Customer
+    delivery_area_id: Optional[int] = None
+    delivery_fee: Optional[float] = None
+    delivery_area: Optional[DeliveryArea] = None
 
 class OrderUpdate(BaseModel):
     status: Optional[OrderStatus] = None
     shipping_method: Optional[ShippingMethod] = None
     comments: Optional[str] = None
     order_items: Optional[list[OrderItemCreate]] = None
+    delivery_area_id: Optional[int] = None
+    delivery_fee: Optional[float] = None
 
 class CustomerCreate(BaseModel):
     name: str

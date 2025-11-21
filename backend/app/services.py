@@ -283,3 +283,28 @@ def delete_order(order_id: int, supabase: Client = Depends(get_supabase_client))
     response = supabase.table("orders").delete().eq("id", order_id).execute()
 
     return bool(response.data)
+
+def get_delivery_areas(supabase: Client = Depends(get_supabase_client)) -> list[schemas.DeliveryArea]:
+    response = supabase.table("delivery_areas").select("*").execute()
+    return response.data
+
+def create_delivery_area(delivery_area: schemas.DeliveryAreaCreate, supabase: Client = Depends(get_supabase_client)) -> schemas.DeliveryArea:
+    response = supabase.table("delivery_areas").insert(delivery_area.model_dump()).execute()
+    return response.data[0]
+
+def update_delivery_area(delivery_area_id: int, delivery_area: schemas.DeliveryAreaCreate, supabase: Client = Depends(get_supabase_client)) -> schemas.DeliveryArea | None:
+    response = supabase.table("delivery_areas").update(delivery_area.model_dump()).eq("id", delivery_area_id).execute()
+    return response.data[0] if response.data else None
+
+def delete_delivery_area(delivery_area_id: int, supabase: Client = Depends(get_supabase_client)) -> bool:
+    response = supabase.table("delivery_areas").delete().eq("id", delivery_area_id).execute()
+    return bool(response.data)
+
+def get_app_settings(supabase: Client = Depends(get_supabase_client)) -> schemas.AppSettings:
+    response = supabase.table("app_settings").select("*").execute()
+    settings_dict = {item['key']: item['value'] for item in response.data}
+    return schemas.AppSettings(free_delivery_threshold=float(settings_dict.get('free_delivery_threshold', 0)))
+
+def update_app_settings(settings_data: schemas.AppSettings, supabase: Client = Depends(get_supabase_client)) -> schemas.AppSettings:
+    supabase.table("app_settings").upsert({"key": "free_delivery_threshold", "value": str(settings_data.free_delivery_threshold)}).execute()
+    return get_app_settings(supabase)

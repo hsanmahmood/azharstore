@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useCallback, useContext } from 'react';
-import { productService, categoryService, customerService, orderService } from '../services/api';
+import { apiService } from '../services/api';
 import { AuthContext } from './AuthContext';
 
 export const DataContext = createContext();
@@ -10,6 +10,8 @@ export const DataProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [deliveryAreas, setDeliveryAreas] = useState([]);
+  const [appSettings, setAppSettings] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -17,8 +19,8 @@ export const DataProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const publicDataPromises = [
-        productService.getAllProducts(),
-        categoryService.getAllCategories(),
+        apiService.getAllProducts(),
+        apiService.getAllCategories(),
       ];
 
       const [productsRes, categoriesRes] = await Promise.all(publicDataPromises);
@@ -26,15 +28,21 @@ export const DataProvider = ({ children }) => {
       setCategories(categoriesRes);
 
       if (token) {
-        const [customersRes, ordersRes] = await Promise.all([
-          customerService.getAllCustomers(),
-          orderService.getAllOrders(),
+        const [customersRes, ordersRes, deliveryAreasRes, appSettingsRes] = await Promise.all([
+          apiService.getAllCustomers(),
+          apiService.getAllOrders(),
+          apiService.getAllDeliveryAreas(),
+          apiService.getAppSettings(),
         ]);
         setCustomers(customersRes.data);
         setOrders(ordersRes.data);
+        setDeliveryAreas(deliveryAreasRes.data);
+        setAppSettings(appSettingsRes.data);
       } else {
         setCustomers([]);
         setOrders([]);
+        setDeliveryAreas([]);
+        setAppSettings({});
       }
 
       setError('');
@@ -93,6 +101,10 @@ export const DataProvider = ({ children }) => {
     setCustomers,
     orders,
     setOrders,
+    deliveryAreas,
+    setDeliveryAreas,
+    appSettings,
+    setAppSettings,
     isLoading,
     error,
     refreshData: fetchData,
