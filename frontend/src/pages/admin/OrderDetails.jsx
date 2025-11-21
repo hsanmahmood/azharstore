@@ -26,7 +26,13 @@ const OrderDetails = ({ order }) => {
             <p><span className="font-semibold">{t('orderManagement.table.orderId')}:</span> #{order.id}</p>
             <p><span className="font-semibold">{t('orderManagement.table.status')}:</span> {t(`orderManagement.status.${order.status}`)}</p>
             <p><span className="font-semibold">{t('orderManagement.table.shippingMethod')}:</span> {t(`orderManagement.shipping.${order.shipping_method}`)}</p>
-            <p><span className="font-semibold">{t('orderManagement.table.total')}:</span> {total.toFixed(2)} د.ب</p>
+            {order.shipping_method === 'delivery' && (
+              <>
+                <p><span className="font-semibold">{t('settings.deliveryArea')}:</span> {order.delivery_area?.name || t('common.notAvailable')}</p>
+                <p><span className="font-semibold">{t('settings.deliveryPrice')}:</span> {order.delivery_fee.toFixed(2)} {t('common.currency')}</p>
+              </>
+            )}
+            <p className="text-base font-bold pt-2 border-t border-brand-border/50"><span className="font-semibold">{t('orderManagement.form.total')}:</span> {(total + order.delivery_fee).toFixed(2)} {t('common.currency')}</p>
           </div>
         </div>
       </div>
