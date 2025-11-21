@@ -246,14 +246,14 @@ def get_orders(supabase: Client = Depends(get_supabase_client)) -> list[schemas.
         response = supabase.table("orders").select("*, customer:customers(*), delivery_area:delivery_areas(*), order_items(*, product:products(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").execute()
         return response.data
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch orders: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 def get_order(order_id: int, supabase: Client = Depends(get_supabase_client)) -> schemas.Order | None:
     try:
         response = supabase.table("orders").select("*, customer:customers(*), delivery_area:delivery_areas(*), order_items(*, product:products(*, product_images(*)), product_variant:product_variants(*, product:products(*, product_images(*))))").eq("id", order_id).execute()
         return response.data[0] if response.data else None
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch order: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order | None:
     try:
