@@ -55,7 +55,8 @@
       "draftError": "فشل في إنشاء مسودة المنتج",
       "uploadError": "فشل في تحميل الصور",
       "addVariantError": "فشل في إضافة الخيار",
-      "updateVariantError": "فشل في تحديث الخيار"
+      "updateVariantError": "فشل في تحديث الخيار",
+      "variantInUse": "لا يمكن حذف الخيار لأنه مستخدم في طلب حالي."
     }
   },
   "categoryManagement": {

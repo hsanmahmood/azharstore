@@ -285,8 +285,12 @@ const ProductManagement = () => {
       }
       closeModal();
     } catch (err) {
-      const errorMsg = err.response?.data?.detail || (editingProduct ? t('productManagement.errors.update') : t('productManagement.errors.add'));
-      setError(errorMsg);
+      if (err.response && err.response.status === 409) {
+        setError(t('productManagement.errors.variantInUse'));
+      } else {
+        const errorMsg = err.response?.data?.detail || (editingProduct ? t('productManagement.errors.update') : t('productManagement.errors.add'));
+        setError(errorMsg);
+      }
     } finally {
       setIsSubmitting(false);
     }

@@ -144,6 +144,14 @@ def update_product(product_id: int, product: schemas.ProductUpdate, supabase: Cl
 
         variants_to_delete = current_variant_ids - upserted_variant_ids
         if variants_to_delete:
+            # Check if any of the variants to be deleted are in an order
+            response = supabase.table("order_items").select("id").in_("product_variant_id", list(variants_to_delete)).execute()
+            if response.data:
+                # If there are order items associated with the variants, raise an error
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Cannot delete product variants that are part of an existing order."
+                )
             supabase.table("product_variants").delete().in_("id", list(variants_to_delete)).execute()
 
     # Update product details
