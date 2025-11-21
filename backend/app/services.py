@@ -218,28 +218,31 @@ def update_product_variant_image(variant_id: int, image_url: str, supabase: Clie
     return response.data[0] if response.data else None
 
 def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order:
-    order_data = order.model_dump(exclude={"order_items"})
-    order_response = supabase.table("orders").insert(order_data).execute()
-    if not order_response.data:
-        raise HTTPException(status_code=500, detail="Failed to create order.")
+    try:
+        order_data = order.model_dump(exclude={"order_items"})
+        order_response = supabase.table("orders").insert(order_data).execute()
+        if not order_response.data:
+            raise HTTPException(status_code=500, detail="Failed to create order.")
 
-    new_order = order_response.data[0]
+        new_order = order_response.data[0]
 
-    order_items_data = []
-    for item in order.order_items:
-        item_data = item.model_dump()
-        if item_data.get("product_variant_id"):
-            item_data["product_id"] = None
-        order_items_data.append({"order_id": new_order['id'], **item_data})
+        order_items_data = []
+        for item in order.order_items:
+            item_data = item.model_dump()
+            if item_data.get("product_variant_id"):
+                item_data["product_id"] = None
+            order_items_data.append({"order_id": new_order['id'], **item_data})
 
-    if order_items_data:
-        items_response = supabase.table("order_items").insert(order_items_data).execute()
-        if not items_response.data:
-            # Rollback order creation if items fail
-            supabase.table("orders").delete().eq("id", new_order['id']).execute()
-            raise HTTPException(status_code=500, detail="Failed to create order items.")
+        if order_items_data:
+            items_response = supabase.table("order_items").insert(order_items_data).execute()
+            if not items_response.data:
+                # Rollback order creation if items fail
+                supabase.table("orders").delete().eq("id", new_order['id']).execute()
+                raise HTTPException(status_code=500, detail="Failed to create order items.")
 
-    return get_order(new_order['id'], supabase)
+        return get_order(new_order['id'], supabase)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 def get_orders(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Order]:
     try:

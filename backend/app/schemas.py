@@ -151,6 +151,12 @@ class Order(BaseModel):
     delivery_fee: Optional[float] = None
     delivery_area: Optional[DeliveryArea] = None
 
+    @validator('delivery_area_id', pre=True, always=True)
+    def set_delivery_area_id(cls, v, values):
+        if 'delivery_area' in values and values['delivery_area']:
+            return values['delivery_area'].id
+        return v
+
 class OrderUpdate(BaseModel):
     status: Optional[OrderStatus] = None
     shipping_method: Optional[ShippingMethod] = None
