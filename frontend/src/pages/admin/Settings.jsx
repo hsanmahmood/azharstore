@@ -159,7 +159,12 @@ const Settings = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-brand-secondary mb-2">{t('settings.deliveryPrice')}</label>
-            <input type="number" name="price" value={formData.price} onChange={handleFormChange} required className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg" />
+            <div className="relative">
+              <input type="number" name="price" value={formData.price} onChange={handleFormChange} required className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg pl-12" />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-secondary">
+                {t('common.currency')}
+              </span>
+            </div>
           </div>
           <div className="flex justify-end gap-4 pt-4">
             <button type="button" onClick={closeModal} className="bg-brand-border/10 text-brand-primary font-bold py-2 px-4 rounded-lg">{t('common.cancel')}</button>

@@ -16,6 +16,7 @@
     "create": "إنشاء",
     "saveChanges": "حفظ التغييرات",
     "actions": "الإجراءات",
+    "currency": "د.ب",
     "allCategories": "جميع الفئات",
     "filterByCategory": "التصفية حسب الفئة",
     "allCustomers": "جميع العملاء",
@@ -160,7 +161,8 @@
       "noVariants": "لا توجد خيارات",
       "selectProduct": "اختر منتج",
       "selectVariant": "اختر خيار",
-      "productNotFound": "المنتج غير موجود"
+    "productNotFound": "المنتج غير موجود",
+    "total": "المجموع"
     },
     "status": {
       "processing": "قيد المعالجة",
