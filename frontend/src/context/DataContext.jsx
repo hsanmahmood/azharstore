@@ -48,7 +48,7 @@ export const DataProvider = ({ children }) => {
       setError('');
     } catch (err) {
       if (err.response && err.response.status !== 401) {
-        const errorMsg = err.response?.data?.detail || 'Failed to fetch data';
+        const errorMsg = err.response?.data?.detail || err.message || 'Failed to fetch data';
         setError(errorMsg);
       }
       console.error(err);
