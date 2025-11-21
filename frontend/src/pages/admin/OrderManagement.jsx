@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
 import { orderService } from '../../services/api';
@@ -8,45 +8,27 @@ import OrderForm from './OrderForm';
 import OrderCard from './OrderCard';
 import OrderDetails from './OrderDetails';
 import ConfirmationModal from '../../components/ConfirmationModal';
+import { DataContext } from '../../context/DataContext';
 
 const OrderManagement = () => {
   const { t } = useTranslation();
-  const [orders, setOrders] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { orders, isLoading, error: dataError, addOrder, updateOrder, removeOrder } = useContext(DataContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState(null);
   const [viewingOrder, setViewingOrder] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [deletingOrderId, setDeletingOrderId] = useState(null);
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await orderService.getAllOrders();
-        setOrders(response.data);
-      } catch (err) {
-        setError(t('orderManagement.errors.fetch'));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchOrders();
-  }, []);
-
-  const addOrder = (order) => {
-    setOrders(prev => [order, ...prev]);
-  };
+  const [error, setError] = useState('');
 
   const updateOrderState = (updatedOrder) => {
-    setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
+    updateOrder(updatedOrder);
   };
 
-  const removeOrder = async (orderId) => {
+  const deleteOrder = async (orderId) => {
     try {
       await orderService.deleteOrder(orderId);
-      setOrders(prev => prev.filter(o => o.id !== orderId));
+      removeOrder(orderId);
     } catch (err) {
       setError(t('orderManagement.errors.delete'));
     }
@@ -89,7 +71,7 @@ const OrderManagement = () => {
 
   const handleConfirmDelete = () => {
     if (deletingOrderId) {
-      removeOrder(deletingOrderId);
+      deleteOrder(deletingOrderId);
     }
     setIsConfirmModalOpen(false);
     setDeletingOrderId(null);
@@ -109,6 +91,7 @@ const OrderManagement = () => {
         </button>
       </div>
 
+      {dataError && <div className="text-red-500">{dataError}</div>}
       {error && <div className="text-red-500">{error}</div>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
