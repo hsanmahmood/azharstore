@@ -157,9 +157,9 @@ const OrderForm = ({ order, onSuccess }) => {
         <Dropdown
           options={[
             { value: 'processing', label: t('orderManagement.status.processing') },
-            { value: 'ready', label: t('orderManagement.status.ready') },
-            { value: 'delivered', label: t('orderManagement.status.delivered') },
             { value: 'shipped', label: t('orderManagement.status.shipped') },
+            { value: 'delivered', label: t('orderManagement.status.delivered') },
+            { value: 'cancelled', label: t('orderManagement.status.cancelled') },
           ]}
           value={formData.status}
           onChange={(option) => handleDropdownChange('status', option)}

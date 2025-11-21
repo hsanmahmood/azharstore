@@ -140,9 +140,9 @@
     },
     "status": {
       "processing": "قيد المعالجة",
-      "ready": "جاهز",
+      "shipped": "تم الشحن",
       "delivered": "تم التوصيل",
-      "shipped": "تم الشحن"
+      "cancelled": "تم الإلغاء"
     },
     "shipping": {
       "delivery": "توصيل",
