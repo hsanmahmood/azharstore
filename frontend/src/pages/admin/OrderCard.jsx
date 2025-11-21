@@ -62,6 +62,7 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
             <Dropdown
               options={[
                 { value: 'processing', label: t('orderManagement.status.processing') },
+                { value: 'ready', label: t('orderManagement.status.ready') },
                 { value: 'shipped', label: t('orderManagement.status.shipped') },
                 { value: 'delivered', label: t('orderManagement.status.delivered') },
                 { value: 'cancelled', label: t('orderManagement.status.cancelled') },
