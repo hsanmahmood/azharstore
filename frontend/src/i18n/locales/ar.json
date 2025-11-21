@@ -15,7 +15,16 @@
     "confirm": "تأكيد",
     "create": "إنشاء",
     "saveChanges": "حفظ التغييرات",
-    "actions": "الإجراءات"
+    "actions": "الإجراءات",
+    "allCategories": "جميع الفئات",
+    "filterByCategory": "التصفية حسب الفئة",
+    "allCustomers": "جميع العملاء",
+    "filterByCustomer": "التصفية حسب العميل",
+    "allProducts": "جميع المنتجات",
+    "filterByProduct": "التصفية حسب المنتج",
+    "productsWithOrders": "المنتجات المطلوبة",
+    "productsWithoutOrders": "المنتجات غير المطلوبة",
+    "filterByOrders": "التصفية حسب الطلبات"
   },
   "productManagement": {
     "title": "إدارة المنتجات",

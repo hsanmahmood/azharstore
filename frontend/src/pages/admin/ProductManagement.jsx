@@ -17,6 +17,7 @@ const ProductManagement = () => {
   const {
     products,
     categories,
+    orders,
     isLoading,
     error: dataError,
     addProduct,
@@ -27,6 +28,7 @@ const ProductManagement = () => {
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [error, setError] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [orderFilter, setOrderFilter] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -330,7 +332,11 @@ const ProductManagement = () => {
   const filteredProducts = products.filter(product => {
     const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     const categoryMatch = selectedCategory ? product.category_id === selectedCategory : true;
-    return searchMatch && categoryMatch;
+
+    const productHasOrders = orders.some(order => order.order_items.some(item => item.product_id === product.id));
+    const orderMatch = orderFilter ? (orderFilter === 'with-orders' ? productHasOrders : !productHasOrders) : true;
+
+    return searchMatch && categoryMatch && orderMatch;
   });
 
   if (isLoading) return <LoadingScreen fullScreen={false} />;
@@ -347,18 +353,24 @@ const ProductManagement = () => {
         </button>
       </div>
 
-      <div className="mb-8 flex gap-4">
-        <div className="flex-grow">
-          <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-        </div>
-        <div className="w-64">
-          <Dropdown
-            options={[{ value: null, label: 'All Categories' }, ...categories.map(c => ({ value: c.id, label: c.name }))]}
-            value={selectedCategory}
-            onChange={(option) => setSelectedCategory(option.value)}
-            placeholder="Filter by category"
-          />
-        </div>
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+        <Dropdown
+          options={[{ value: null, label: t('common.allCategories') }, ...categories.map(c => ({ value: c.id, label: c.name }))]}
+          value={selectedCategory}
+          onChange={(option) => setSelectedCategory(option.value)}
+          placeholder={t('common.filterByCategory')}
+        />
+        <Dropdown
+          options={[
+            { value: null, label: t('common.allProducts') },
+            { value: 'with-orders', label: t('common.productsWithOrders') },
+            { value: 'without-orders', label: t('common.productsWithoutOrders') },
+          ]}
+          value={orderFilter}
+          onChange={(option) => setOrderFilter(option.value)}
+          placeholder={t('common.filterByOrders')}
+        />
       </div>
 
       {dataError && !isModalOpen && (

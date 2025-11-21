@@ -105,26 +105,20 @@ const OrderManagement = () => {
         </button>
       </div>
 
-      <div className="mb-8 flex gap-4">
-        <div className="flex-grow">
-          <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-        </div>
-        <div className="w-64">
-          <Dropdown
-            options={[{ value: null, label: 'All Customers' }, ...customers.map(c => ({ value: c.id, label: c.name }))]}
-            value={selectedCustomer}
-            onChange={(option) => setSelectedCustomer(option.value)}
-            placeholder="Filter by customer"
-          />
-        </div>
-        <div className="w-64">
-          <Dropdown
-            options={[{ value: null, label: 'All Products' }, ...products.map(p => ({ value: p.id, label: p.name }))]}
-            value={selectedProduct}
-            onChange={(option) => setSelectedProduct(option.value)}
-            placeholder="Filter by product"
-          />
-        </div>
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+        <Dropdown
+          options={[{ value: null, label: t('common.allCustomers') }, ...customers.map(c => ({ value: c.id, label: c.name }))]}
+          value={selectedCustomer}
+          onChange={(option) => setSelectedCustomer(option.value)}
+          placeholder={t('common.filterByCustomer')}
+        />
+        <Dropdown
+          options={[{ value: null, label: t('common.allProducts') }, ...products.map(p => ({ value: p.id, label: p.name }))]}
+          value={selectedProduct}
+          onChange={(option) => setSelectedProduct(option.value)}
+          placeholder={t('common.filterByProduct')}
+        />
       </div>
 
       {dataError && <div className="text-red-500">{dataError}</div>}
