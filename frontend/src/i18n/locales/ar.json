@@ -37,7 +37,8 @@
     "deliveryPrice": "سعر التوصيل",
     "confirmDeleteArea": "هل أنت متأكد من حذف منطقة التوصيل هذه؟",
     "deliveryArea": "منطقة التوصيل",
-    "selectArea": "اختر منطقة"
+    "selectArea": "اختر منطقة",
+    "delivery": "التوصيل"
   },
   "productManagement": {
     "title": "إدارة المنتجات",

@@ -94,6 +94,14 @@ const Settings = () => {
     <>
       <h1 className="text-3xl font-bold text-brand-primary mb-8">{t('settings.title')}</h1>
 
+      <div className="mb-8 border-b border-brand-border">
+        <nav className="flex space-x-4">
+          <button className="py-2 px-4 text-lg font-semibold text-brand-primary border-b-2 border-brand-primary">
+            {t('settings.delivery')}
+          </button>
+        </nav>
+      </div>
+
       <div className="bg-black/20 border border-brand-border rounded-20 p-6 mb-8">
         <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.deliverySettings')}</h2>
         <div className="flex items-center gap-4">
