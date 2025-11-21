@@ -40,9 +40,15 @@ const CustomerManagement = () => {
     setIsConfirmModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (deletingCustomerId) {
-      removeCustomer(deletingCustomerId);
+      try {
+        await customerService.deleteCustomer(deletingCustomerId);
+        removeCustomer(deletingCustomerId);
+      } catch (err) {
+        // TODO: Show an error notification to the user
+        console.error("Failed to delete customer", err);
+      }
     }
     setIsConfirmModalOpen(false);
     setDeletingCustomerId(null);
