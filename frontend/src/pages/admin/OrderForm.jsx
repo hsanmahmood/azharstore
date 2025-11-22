@@ -136,10 +136,12 @@ const OrderForm = ({ order, onSuccess }) => {
     const payload = { ...formData, order_items };
 
     try {
-      const response = order
-        ? await apiService.updateOrder(order.id, payload)
-        : await apiService.createOrder(payload);
-      onSuccess(response.data);
+      if (order) {
+        await apiService.updateOrder(order.id, payload);
+      } else {
+        await apiService.createOrder(payload);
+      }
+      onSuccess();
     } catch (err) {
       const errorMsg = err.response?.data?.detail || t('orderManagement.errors.submit');
       setError(errorMsg);

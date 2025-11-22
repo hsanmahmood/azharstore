@@ -15,7 +15,7 @@ import { SearchContext } from '../../context/SearchContext';
 
 const OrderManagement = () => {
   const { t } = useTranslation();
-  const { orders, customers, products, isLoading, error: dataError, addOrder, updateOrder, removeOrder, setError } = useContext(DataContext);
+  const { orders, customers, products, isLoading, error: dataError, addOrder, updateOrder, removeOrder, setError, setOrders } = useContext(DataContext);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -55,14 +55,10 @@ const OrderManagement = () => {
     setEditingOrder(null);
   };
 
-  const handleSuccess = async (order) => {
+  const handleSuccess = async () => {
     try {
-      const response = await apiService.getOrder(order.id);
-      if (editingOrder) {
-        updateOrderState(response.data);
-      } else {
-        addOrder(response.data);
-      }
+      const response = await apiService.getAllOrders();
+      setOrders(response.data);
     } catch (error) {
       const errorMsg = error.response?.data?.detail || t('orderManagement.errors.fetch');
       setError(errorMsg);

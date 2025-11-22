@@ -180,7 +180,8 @@
     },
     "errors": {
       "fetch": "Failed to fetch orders",
-      "submit": "Failed to save order"
+      "delete": "Failed to delete order",
+      "freeDeliveryApplied": "Free delivery applied"
     }
   }
 }
