@@ -22,6 +22,7 @@ essential_origins = {
     "https://beta.azhar.store",
     "https://az-rosy.vercel.app",
     "https://azhar.store",
+    "https://admin.azhar.store",
 }
 
 additional_origins = {origin.strip() for origin in settings.CORS_ORIGINS.split(",") if origin.strip()}

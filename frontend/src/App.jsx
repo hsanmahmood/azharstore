@@ -15,29 +15,40 @@ import Settings from './pages/admin/Settings';
 const App = () => {
   const { token } = useContext(AuthContext);
   const location = useLocation();
+  const isAdminSite = window.location.hostname.startsWith('admin');
   const { t } = useTranslation();
 
   useEffect(() => {
-    document.title = 'AzharStore';
-  }, [location, t]);
+    document.title = isAdminSite ? 'AzharStore Admin' : 'AzharStore';
+  }, [location, t, isAdminSite]);
+
+  if (isAdminSite) {
+    return (
+      <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col">
+        <Routes>
+          <Route path="/login" element={token ? <Navigate to="/" /> : <Login />} />
+          <Route path="/" element={<ProtectedRoute />}>
+            <Route element={<AdminLayout />}>
+              <Route index element={<Navigate to="products" />} />
+              <Route path="products" element={<ProductManagement />} />
+              <Route path="categories" element={<CategoryManagement />} />
+              <Route path="customers" element={<CustomerManagement />} />
+              <Route path="orders" element={<OrderManagement />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
+          </Route>
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col">
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={token ? <Navigate to="/admin/products" /> : <Login />} />
-
-        <Route path="/admin" element={<ProtectedRoute />}>
-          <Route element={<AdminLayout />}>
-            <Route index element={<Navigate to="products" />} />
-            <Route path="products" element={<ProductManagement />} />
-            <Route path="categories" element={<CategoryManagement />} />
-            <Route path="customers" element={<CustomerManagement />} />
-            <Route path="orders" element={<OrderManagement />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
-        </Route>
-
+        <Route path="/login" element={token ? <Navigate to="/" /> : <Login />} />
+        <Route path="/admin/*" element={<Navigate to="/" />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </div>
