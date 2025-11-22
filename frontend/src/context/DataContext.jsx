@@ -88,6 +88,10 @@ export const DataProvider = ({ children }) => {
     setCustomers(prev => prev.filter(c => c.id !== customerId));
   };
 
+  const addOrder = (order) => {
+    setOrders(prev => [order, ...prev]);
+  };
+
   const updateOrder = (updatedOrder) => {
     setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
   };
@@ -120,6 +124,7 @@ export const DataProvider = ({ children }) => {
     removeCustomer,
     updateOrder,
     removeOrder,
+    addOrder,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
