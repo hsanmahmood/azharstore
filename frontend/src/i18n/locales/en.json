@@ -165,7 +165,9 @@
       "productNotFound": "Product not found",
       "total": "Total",
       "subtotal": "Subtotal",
-      "freeDeliveryApplied": "Free Delivery Applied"
+      "freeDeliveryApplied": "Free Delivery Applied",
+      "unitPrice": "Unit Price",
+      "quantity": "Quantity"
     },
     "freeDeliveryApplied": "Free Delivery Applied",
     "status": {

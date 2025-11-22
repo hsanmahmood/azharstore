@@ -165,7 +165,9 @@
     "productNotFound": "المنتج غير موجود",
     "total": "المجموع",
     "subtotal": "المجموع الفرعي",
-    "freeDeliveryApplied": "تم تطبيق التوصيل المجاني"
+    "freeDeliveryApplied": "تم تطبيق التوصيل المجاني",
+    "unitPrice": "سعر الوحدة",
+    "quantity": "الكمية"
     },
     "freeDeliveryApplied": "تم تطبيق التوصيل المجاني",
     "status": {
