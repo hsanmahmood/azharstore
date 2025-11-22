@@ -86,7 +86,7 @@ const CategoryManagement = () => {
   };
 
   const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase())
+    category && category.name && category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (isLoading) return <LoadingScreen fullScreen={false} />;
