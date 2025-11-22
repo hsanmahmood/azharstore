@@ -10,21 +10,18 @@ const OrderDetails = ({ order }) => {
 
   const subtotal = useMemo(() => {
     return order.order_items.reduce((acc, item) => {
-      const product = products.find(p => p.id === (item.product_id || item.product_variant?.product_id));
-      if (!product) return acc;
-
       const quantity = Number(item.quantity) || 0;
+      let price = 0;
 
-      if (item.product_variant_id) {
-        const variant = product.product_variants.find(v => v.id === item.product_variant_id);
-        const price = Number(variant?.price) || 0;
-        return acc + (price * quantity);
-      } else {
-        const price = Number(product.price) || 0;
-        return acc + (price * quantity);
+      if (item.product_variant) {
+        price = Number(item.product_variant.price) || 0;
+      } else if (item.product) {
+        price = Number(item.product.price) || 0;
       }
+
+      return acc + (price * quantity);
     }, 0);
-  }, [order.order_items, products]);
+  }, [order.order_items]);
   const deliveryFee = order.delivery_fee || 0;
   const total = subtotal + deliveryFee;
 
