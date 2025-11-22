@@ -120,7 +120,7 @@ const OrderForm = ({ order, onSuccess }) => {
     if (!product || !product.product_variants || product.product_variants.length === 0) {
       return [{ value: null, label: t('orderManagement.form.noVariants') }];
     }
-    return product.product_variants.map((v) => ({ value: v.id, label: v.name }));
+    return product.product_variants.map((v) => ({ value: v.id, label: `${v.name} (${v.price} ${t('common.currency')})` }));
   };
 
   const getItemPrice = (item) => {
@@ -242,7 +242,7 @@ const OrderForm = ({ order, onSuccess }) => {
             <div key={index} className="flex items-center gap-4 p-2 rounded-lg bg-black/20">
               <div className="flex-1">
                 <Dropdown
-                  options={products.map((p) => ({ value: p.id, label: p.name }))}
+                  options={products.map((p) => ({ value: p.id, label: `${p.name} (${p.price} ${t('common.currency')})` }))}
                   value={item.product_id}
                   onChange={(option) => handleItemChange(index, 'product_id', option.value)}
                   placeholder={t('orderManagement.form.selectProduct')}
