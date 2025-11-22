@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
-import { apiService } from '../../services/api';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import LoadingScreen from '../../components/LoadingScreen';
@@ -9,7 +8,7 @@ import ConfirmationModal from '../../components/ConfirmationModal';
 
 const Settings = () => {
   const { t } = useTranslation();
-  const { deliveryAreas, appSettings, isLoading, error: dataError, refreshData } = useContext(DataContext);
+  const { deliveryAreas, appSettings, isLoading, error: dataError, addDeliveryArea, updateDeliveryArea, deleteDeliveryArea, updateAppSettings } = useContext(DataContext);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingArea, setEditingArea] = useState(null);
@@ -43,11 +42,10 @@ const Settings = () => {
 
     try {
       if (editingArea) {
-        await apiService.updateDeliveryArea(editingArea.id, formData);
+        await updateDeliveryArea(editingArea.id, formData);
       } else {
-        await apiService.createDeliveryArea(formData);
+        await addDeliveryArea(formData);
       }
-      await refreshData();
       closeModal();
     } catch (err) {
       setError('Failed to save delivery area.');
@@ -66,8 +64,7 @@ const Settings = () => {
     setIsConfirmModalOpen(false);
 
     try {
-      await apiService.deleteDeliveryArea(deletingAreaId);
-      await refreshData();
+      await deleteDeliveryArea(deletingAreaId);
     } catch (err) {
       setError('Failed to delete delivery area.');
     } finally {
@@ -79,8 +76,7 @@ const Settings = () => {
     setIsSubmitting(true);
     setError('');
     try {
-      await apiService.updateAppSettings({ free_delivery_threshold: parseFloat(freeDeliveryThreshold) });
-      await refreshData();
+      await updateAppSettings({ free_delivery_threshold: parseFloat(freeDeliveryThreshold) });
     } catch (err) {
       setError('Failed to save settings.');
     } finally {

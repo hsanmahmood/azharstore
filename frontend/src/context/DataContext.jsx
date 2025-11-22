@@ -100,6 +100,41 @@ export const DataProvider = ({ children }) => {
     setOrders(prev => prev.filter(o => o.id !== orderId));
   };
 
+  const addCategory = async (category) => {
+    await apiService.createCategory(category);
+    await fetchData();
+  };
+
+  const updateCategory = async (id, category) => {
+    await apiService.updateCategory(id, category);
+    await fetchData();
+  };
+
+  const deleteCategory = async (id) => {
+    await apiService.deleteCategory(id);
+    await fetchData();
+  };
+
+  const addDeliveryArea = async (area) => {
+    await apiService.createDeliveryArea(area);
+    await fetchData();
+  };
+
+  const updateDeliveryArea = async (id, area) => {
+    await apiService.updateDeliveryArea(id, area);
+    await fetchData();
+  };
+
+  const deleteDeliveryArea = async (id) => {
+    await apiService.deleteDeliveryArea(id);
+    await fetchData();
+  };
+
+  const updateAppSettings = async (settings) => {
+    await apiService.updateAppSettings(settings);
+    await fetchData();
+  };
+
   const value = {
     products,
     setProducts,
@@ -125,6 +160,13 @@ export const DataProvider = ({ children }) => {
     updateOrder,
     removeOrder,
     addOrder,
+    addCategory,
+    updateCategory,
+    deleteCategory,
+    addDeliveryArea,
+    updateDeliveryArea,
+    deleteDeliveryArea,
+    updateAppSettings,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

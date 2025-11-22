@@ -2,7 +2,6 @@ import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
 import { SearchContext } from '../../context/SearchContext';
-import { categoryService } from '../../services/api';
 import SearchBar from '../../components/SearchBar';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import Modal from '../../components/Modal';
@@ -11,7 +10,7 @@ import ConfirmationModal from '../../components/ConfirmationModal';
 
 const CategoryManagement = () => {
   const { t } = useTranslation();
-  const { categories, setCategories, isLoading, error: dataError, refreshData } = useContext(DataContext);
+  const { categories, isLoading, error: dataError, addCategory, updateCategory, deleteCategory } = useContext(DataContext);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,11 +46,10 @@ const CategoryManagement = () => {
 
     try {
       if (editingCategory) {
-        await categoryService.updateCategory(editingCategory.id, formData);
+        await updateCategory(editingCategory.id, formData);
       } else {
-        await categoryService.createCategory(formData);
+        await addCategory(formData);
       }
-      await refreshData();
       closeModal();
     } catch (err) {
       const errorMsg = err.response?.data?.detail ||
@@ -73,20 +71,14 @@ const CategoryManagement = () => {
     if (!deletingCategoryId) return;
     setIsConfirmModalOpen(false);
 
-    setCategories(prev => prev.map(c => c.id === deletingCategoryId ? { ...c, deleting: true } : c));
-
-    setTimeout(async () => {
-      try {
-        await categoryService.deleteCategory(deletingCategoryId);
-        setCategories(prev => prev.filter(c => c.id !== deletingCategoryId));
-      } catch (err) {
-        setError(t('categoryManagement.errors.delete'));
-        console.error(err);
-        await refreshData();
-      } finally {
-        setDeletingCategoryId(null);
-      }
-    }, 300);
+    try {
+      await deleteCategory(deletingCategoryId);
+    } catch (err) {
+      setError(t('categoryManagement.errors.delete'));
+      console.error(err);
+    } finally {
+      setDeletingCategoryId(null);
+    }
   };
 
   const filteredCategories = categories.filter(category =>
