@@ -7,7 +7,7 @@ import Dropdown from '../../components/Dropdown';
 
 const OrderForm = ({ order, onSuccess }) => {
   const { t } = useTranslation();
-  const { customers, products, deliveryAreas, appSettings } = useContext(DataContext);
+  const { customers, products, deliveryAreas, appSettings, orders } = useContext(DataContext);
   const [formData, setFormData] = useState({
     customer_id: '',
     shipping_method: '',
@@ -22,13 +22,14 @@ const OrderForm = ({ order, onSuccess }) => {
 
   useEffect(() => {
     if (order) {
+      const currentOrder = orders.find(o => o.id === order.id) || order;
       setFormData({
-        customer_id: order.customer_id,
-        shipping_method: order.shipping_method,
-        status: order.status,
-        comments: order.comments || '',
-        order_items: order.order_items
-          ? order.order_items.map((item) => {
+        customer_id: currentOrder.customer_id,
+        shipping_method: currentOrder.shipping_method,
+        status: currentOrder.status,
+        comments: currentOrder.comments || '',
+        order_items: currentOrder.order_items
+          ? currentOrder.order_items.map((item) => {
               let productId = item.product_id;
               if (item.product_variant_id) {
                 const productVariant = products
@@ -41,25 +42,35 @@ const OrderForm = ({ order, onSuccess }) => {
               return { ...item, product_id: productId };
             })
           : [],
-        delivery_area_id: order.delivery_area_id,
-        delivery_fee: order.delivery_fee,
+        delivery_area_id: currentOrder.delivery_area_id,
+        delivery_fee: currentOrder.delivery_fee,
       });
     }
-  }, [order, products]);
+  }, [order, products, orders]);
 
   useEffect(() => {
-    const total = formData.order_items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const subtotal = formData.order_items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     const selectedArea = deliveryAreas.find(a => a.id === formData.delivery_area_id);
 
+    let newDeliveryFee = 0;
+    let newDeliveryAreaId = formData.delivery_area_id;
+
     if (formData.shipping_method === 'delivery' && selectedArea) {
-      if (appSettings.free_delivery_threshold > 0 && total >= appSettings.free_delivery_threshold) {
-        setFormData(prev => ({ ...prev, delivery_fee: 0 }));
+      const freeDeliveryThreshold = appSettings?.free_delivery_threshold || 0;
+      if (freeDeliveryThreshold > 0 && subtotal >= freeDeliveryThreshold) {
+        newDeliveryFee = 0;
       } else {
-        setFormData(prev => ({ ...prev, delivery_fee: selectedArea.price }));
+        newDeliveryFee = selectedArea.price;
       }
-    } else {
-      setFormData(prev => ({ ...prev, delivery_fee: 0, delivery_area_id: null }));
+    } else if (formData.shipping_method !== 'delivery') {
+      newDeliveryAreaId = null;
     }
+
+    setFormData(prev => ({
+      ...prev,
+      delivery_fee: newDeliveryFee,
+      delivery_area_id: newDeliveryAreaId,
+    }));
   }, [formData.order_items, formData.delivery_area_id, formData.shipping_method, deliveryAreas, appSettings]);
 
   const handleChange = (e) => {
