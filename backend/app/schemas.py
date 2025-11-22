@@ -113,7 +113,6 @@ class OrderItemCreate(BaseModel):
     product_id: Optional[int] = None
     product_variant_id: Optional[int] = None
     quantity: int
-    price: float
 
     @validator('product_variant_id', pre=True, always=True)
     def check_product_or_variant(cls, v, values):

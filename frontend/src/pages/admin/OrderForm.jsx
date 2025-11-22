@@ -30,26 +30,35 @@ const OrderForm = ({ order, onSuccess }) => {
         comments: currentOrder.comments || '',
         order_items: currentOrder.order_items
           ? currentOrder.order_items.map((item) => {
-              let productId = item.product_id;
-              if (item.product_variant_id) {
-                const productVariant = products
-                  .flatMap((p) => p.product_variants)
-                  .find((pv) => pv.id === item.product_variant_id);
-                if (productVariant) {
-                  productId = productVariant.product_id;
-                }
-              }
-              return { ...item, product_id: productId };
+              const product = products.find(p =>
+                (item.product_id && p.id === item.product_id) ||
+                (item.product_variant_id && p.product_variants.some(v => v.id === item.product_variant_id))
+              );
+              return {
+                ...item,
+                product_id: product ? product.id : null,
+              };
             })
           : [],
         delivery_area_id: currentOrder.delivery_area_id,
         delivery_fee: currentOrder.delivery_fee,
       });
     }
-  }, [order, products, orders]);
+  }, [order, orders, products]);
 
   useEffect(() => {
-    const subtotal = formData.order_items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    const subtotal = formData.order_items.reduce((acc, item) => {
+      const product = products.find(p => p.id === item.product_id);
+      if (!product) return acc;
+
+      const variant = item.product_variant_id
+        ? product.product_variants.find(v => v.id === item.product_variant_id)
+        : null;
+
+      const price = variant ? variant.price : product.price;
+      return acc + (price * item.quantity);
+    }, 0);
+
     const selectedArea = deliveryAreas.find(a => a.id === formData.delivery_area_id);
 
     let newDeliveryFee = 0;
@@ -102,8 +111,6 @@ const OrderForm = ({ order, onSuccess }) => {
     currentItem[field] = value;
 
     if (field === 'product_id') {
-      const product = products.find((p) => p.id === value);
-      currentItem.price = product ? product.price : 0;
       currentItem.product_variant_id = null; // Reset variant when product changes
     }
 
@@ -130,7 +137,6 @@ const OrderForm = ({ order, onSuccess }) => {
         product_id: item.product_variant_id ? null : item.product_id,
         product_variant_id: item.product_variant_id,
         quantity: item.quantity,
-        price: item.price,
       }));
 
     const payload = { ...formData, order_items };
@@ -213,6 +219,12 @@ const OrderForm = ({ order, onSuccess }) => {
           placeholder={t('orderManagement.form.selectStatus')}
         />
       </div>
+
+      {formData.shipping_method === 'delivery' && formData.delivery_fee === 0 && appSettings.free_delivery_threshold > 0 && (
+        <div className="text-sm text-green-500 bg-green-500/10 p-3 rounded-lg text-center">
+          {t('orderManagement.freeDeliveryApplied')}
+        </div>
+      )}
 
       <div>
         <h3 className="text-lg font-medium text-brand-primary mb-4">{t('orderManagement.form.orderItems')}</h3>

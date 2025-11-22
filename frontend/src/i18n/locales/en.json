@@ -167,6 +167,7 @@
       "subtotal": "Subtotal",
       "freeDeliveryApplied": "Free Delivery Applied"
     },
+    "freeDeliveryApplied": "Free Delivery Applied",
     "status": {
       "processing": "Processing",
       "ready": "Ready",

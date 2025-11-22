@@ -167,6 +167,7 @@
     "subtotal": "المجموع الفرعي",
     "freeDeliveryApplied": "تم تطبيق التوصيل المجاني"
     },
+    "freeDeliveryApplied": "تم تطبيق التوصيل المجاني",
     "status": {
       "processing": "قيد المعالجة",
       "ready": "جاهز",

@@ -229,6 +229,8 @@ def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supa
         order_items_data = []
         for item in order.order_items:
             item_data = item.model_dump()
+            if "price" in item_data:
+                del item_data["price"]
             if item_data.get("product_variant_id"):
                 item_data["product_id"] = None
             order_items_data.append({"order_id": new_order['id'], **item_data})
@@ -271,6 +273,8 @@ def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = D
             order_items_data = []
             for item in order.order_items:
                 item_data = item.model_dump()
+                if "price" in item_data:
+                    del item_data["price"]
                 if item_data.get("product_variant_id"):
                     item_data["product_id"] = None
                 order_items_data.append({"order_id": order_id, **item_data})
