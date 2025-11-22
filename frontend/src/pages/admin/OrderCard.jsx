@@ -52,6 +52,9 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
 
   return (
     <div className={cardClasses}>
+      <pre className="text-xs text-white bg-gray-800 p-2 rounded-md overflow-auto">
+        {JSON.stringify(order, null, 2)}
+      </pre>
       <div className="flex flex-col h-full">
         <div className="flex justify-between items-start gap-2">
           <h3 className="text-lg font-bold text-brand-primary flex-1 break-words">
