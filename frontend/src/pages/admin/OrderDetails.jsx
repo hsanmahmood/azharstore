@@ -4,7 +4,7 @@ import { DataContext } from '../../context/DataContext';
 
 const OrderDetails = ({ order }) => {
   const { t } = useTranslation();
-  const { products } = useContext(DataContext);
+  const { products, appSettings } = useContext(DataContext);
 
   if (!order) return null;
 
@@ -24,7 +24,9 @@ const OrderDetails = ({ order }) => {
       return acc + (price * quantity);
     }, 0);
   }, [order.order_items]);
-  const deliveryFee = order.delivery_fee || 0;
+
+  const isFreeDelivery = subtotal >= appSettings.free_delivery_threshold && appSettings.free_delivery_threshold > 0;
+  const deliveryFee = isFreeDelivery ? 0 : (order.delivery_fee || 0);
   const total = subtotal + deliveryFee;
 
   return (
@@ -116,7 +118,7 @@ const OrderDetails = ({ order }) => {
           <p className="text-lg"><span className="font-semibold">{t('orderManagement.form.subtotal')}:</span> {subtotal.toFixed(2)} {t('common.currency')}</p>
           {order.shipping_method === 'delivery' && (
             <p className="text-lg"><span className="font-semibold">{t('settings.deliveryPrice')}:</span> {deliveryFee.toFixed(2)} {t('common.currency')}
-              {deliveryFee === 0 && <span className="text-sm text-green-400 ml-2">({t('orderManagement.freeDeliveryApplied')})</span>}
+              {isFreeDelivery && <span className="text-sm text-green-400 ml-2">({t('orderManagement.freeDeliveryApplied')})</span>}
             </p>
           )}
           <p className="text-xl font-bold"><span className="font-semibold">{t('orderManagement.form.total')}:</span> {total.toFixed(2)} {t('common.currency')}</p>

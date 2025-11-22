@@ -7,7 +7,7 @@ import { DataContext } from '../../context/DataContext';
 
 const OrderCard = ({ order, onEdit, onDelete, onView }) => {
   const { t } = useTranslation();
-  const { updateOrder, products } = useContext(DataContext);
+  const { updateOrder, products, appSettings } = useContext(DataContext);
 
   const handleStatusChange = async (option) => {
     const newStatus = option.value;
@@ -50,7 +50,10 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
     }, 0);
   }, [order.order_items]);
 
-  const total = subtotal + (order.delivery_fee || 0);
+  const deliveryFee = subtotal >= appSettings.free_delivery_threshold && appSettings.free_delivery_threshold > 0
+    ? 0
+    : (order.delivery_fee || 0);
+  const total = subtotal + deliveryFee;
 
   return (
     <div className={cardClasses}>
