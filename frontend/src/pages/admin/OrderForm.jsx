@@ -24,27 +24,16 @@ const OrderForm = ({ order, onSuccess }) => {
     if (order) {
       const currentOrder = orders.find(o => o.id === order.id) || order;
       setFormData({
-        customer_id: currentOrder.customer_id,
-        shipping_method: currentOrder.shipping_method,
-        status: currentOrder.status,
+        customer_id: currentOrder.customer_id || '',
+        shipping_method: currentOrder.shipping_method || '',
+        status: currentOrder.status || 'processing',
         comments: currentOrder.comments || '',
-        order_items: currentOrder.order_items
-          ? currentOrder.order_items.map((item) => {
-              const product = products.find(p =>
-                (item.product_id && p.id === item.product_id) ||
-                (item.product_variant_id && p.product_variants.some(v => v.id === item.product_variant_id))
-              );
-              return {
-                ...item,
-                product_id: product ? product.id : null,
-              };
-            })
-          : [],
-        delivery_area_id: currentOrder.delivery_area_id,
-        delivery_fee: currentOrder.delivery_fee,
+        order_items: currentOrder.order_items || [],
+        delivery_area_id: currentOrder.delivery_area_id || null,
+        delivery_fee: currentOrder.delivery_fee || 0,
       });
     }
-  }, [order, orders, products]);
+  }, [order, orders]);
 
   useEffect(() => {
     const subtotal = formData.order_items.reduce((acc, item) => {
