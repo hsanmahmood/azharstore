@@ -13,10 +13,12 @@ const OrderDetails = ({ order }) => {
       const quantity = Number(item.quantity) || 0;
       let price = 0;
 
-      if (item.product_variant) {
+      if (item.product_variant && item.product_variant.price > 0) {
         price = Number(item.product_variant.price) || 0;
       } else if (item.product) {
         price = Number(item.product.price) || 0;
+      } else if (item.product_variant && item.product_variant.product) {
+        price = Number(item.product_variant.product.price) || 0;
       }
 
       return acc + (price * quantity);

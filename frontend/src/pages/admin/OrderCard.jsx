@@ -38,10 +38,12 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
       const quantity = Number(item.quantity) || 0;
       let price = 0;
 
-      if (item.product_variant) {
+      if (item.product_variant && item.product_variant.price > 0) {
         price = Number(item.product_variant.price) || 0;
       } else if (item.product) {
         price = Number(item.product.price) || 0;
+      } else if (item.product_variant && item.product_variant.product) {
+        price = Number(item.product_variant.product.price) || 0;
       }
 
       return acc + (price * quantity);
@@ -52,9 +54,6 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
 
   return (
     <div className={cardClasses}>
-      <pre className="text-xs text-white bg-gray-800 p-2 rounded-md overflow-auto">
-        {JSON.stringify(order, null, 2)}
-      </pre>
       <div className="flex flex-col h-full">
         <div className="flex justify-between items-start gap-2">
           <h3 className="text-lg font-bold text-brand-primary flex-1 break-words">
