@@ -23,17 +23,29 @@ const OrderForm = ({ order, onSuccess }) => {
   useEffect(() => {
     if (order) {
       const currentOrder = orders.find(o => o.id === order.id) || order;
+
+      const processedOrderItems = (currentOrder.order_items || []).map(item => {
+        if (item.product_variant_id && !item.product_id) {
+          for (const product of products) {
+            if (product.product_variants && product.product_variants.some(v => v.id === item.product_variant_id)) {
+              return { ...item, product_id: product.id };
+            }
+          }
+        }
+        return item;
+      });
+
       setFormData({
         customer_id: currentOrder.customer_id || '',
         shipping_method: currentOrder.shipping_method || '',
         status: currentOrder.status || 'processing',
         comments: currentOrder.comments || '',
-        order_items: currentOrder.order_items || [],
+        order_items: processedOrderItems,
         delivery_area_id: currentOrder.delivery_area_id || null,
         delivery_fee: currentOrder.delivery_fee || 0,
       });
     }
-  }, [order, orders]);
+  }, [order, orders, products]);
 
   const subtotal = useMemo(() => {
     return formData.order_items.reduce((acc, item) => {
@@ -109,6 +121,16 @@ const OrderForm = ({ order, onSuccess }) => {
       return [{ value: null, label: t('orderManagement.form.noVariants') }];
     }
     return product.product_variants.map((v) => ({ value: v.id, label: v.name }));
+  };
+
+  const getItemPrice = (item) => {
+    const product = products.find(p => p.id === item.product_id);
+    if (!product) return 0;
+    if (item.product_variant_id) {
+      const variant = product.product_variants.find(v => v.id === item.product_variant_id);
+      return variant ? variant.price : 0;
+    }
+    return product.price;
   };
 
   const handleSubmit = async (e) => {
@@ -242,6 +264,9 @@ const OrderForm = ({ order, onSuccess }) => {
                 className="w-20 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg"
                 min="1"
               />
+              <div className="w-24 text-center text-sm text-brand-secondary">
+                {getItemPrice(item)} {t('common.currency')}
+              </div>
               <button type="button" onClick={() => removeOrderItem(index)} className="text-red-500">
                 <Trash2 size={18} />
               </button>
