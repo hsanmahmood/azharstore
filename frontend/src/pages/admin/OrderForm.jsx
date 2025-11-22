@@ -120,7 +120,7 @@ const OrderForm = ({ order, onSuccess }) => {
     if (!product || !product.product_variants || product.product_variants.length === 0) {
       return [{ value: null, label: t('orderManagement.form.noVariants') }];
     }
-    return product.product_variants.map((v) => ({ value: v.id, label: `${v.name} (${v.price})` }));
+    return product.product_variants.map((v) => ({ value: v.id, label: v.name }));
   };
 
   const getItemPrice = (item) => {
@@ -264,9 +264,6 @@ const OrderForm = ({ order, onSuccess }) => {
                 className="w-20 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg"
                 min="1"
               />
-              <div className="w-24 text-center text-sm text-brand-secondary">
-                {getItemPrice(item)}
-              </div>
               <button type="button" onClick={() => removeOrderItem(index)} className="text-red-500">
                 <Trash2 size={18} />
               </button>
