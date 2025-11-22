@@ -50,9 +50,7 @@ const OrderForm = ({ order, onSuccess }) => {
 
     const selectedArea = deliveryAreas.find(a => a.id === formData.delivery_area_id);
 
-    let newDeliveryFee = 0;
-    let newDeliveryAreaId = formData.delivery_area_id;
-
+    let newDeliveryFee = formData.delivery_fee;
     if (formData.shipping_method === 'delivery' && selectedArea) {
       const freeDeliveryThreshold = appSettings?.free_delivery_threshold || 0;
       if (freeDeliveryThreshold > 0 && subtotal >= freeDeliveryThreshold) {
@@ -61,15 +59,14 @@ const OrderForm = ({ order, onSuccess }) => {
         newDeliveryFee = selectedArea.price;
       }
     } else if (formData.shipping_method !== 'delivery') {
-      newDeliveryAreaId = null;
+      newDeliveryFee = 0;
     }
 
     setFormData(prev => ({
       ...prev,
       delivery_fee: newDeliveryFee,
-      delivery_area_id: newDeliveryAreaId,
     }));
-  }, [formData.order_items, formData.delivery_area_id, formData.shipping_method, deliveryAreas, appSettings]);
+  }, [formData.order_items, formData.delivery_area_id, formData.shipping_method, deliveryAreas, appSettings, products]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
