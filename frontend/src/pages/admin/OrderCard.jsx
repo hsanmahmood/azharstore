@@ -33,7 +33,11 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
     transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1
   `;
 
-  const total = order.order_items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = order.order_items.reduce((acc, item) => {
+    const price = item.product_variant?.price ?? item.product?.price ?? 0;
+    return acc + (price * item.quantity);
+  }, 0);
+  const total = subtotal + (order.delivery_fee || 0);
 
   return (
     <div className={cardClasses}>
