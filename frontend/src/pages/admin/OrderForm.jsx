@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
 import { apiService } from '../../services/api';
@@ -35,19 +35,19 @@ const OrderForm = ({ order, onSuccess }) => {
     }
   }, [order, orders]);
 
-  useEffect(() => {
-    const subtotal = formData.order_items.reduce((acc, item) => {
+  const subtotal = useMemo(() => {
+    return formData.order_items.reduce((acc, item) => {
       const product = products.find(p => p.id === item.product_id);
       if (!product) return acc;
-
       const variant = item.product_variant_id
         ? product.product_variants.find(v => v.id === item.product_variant_id)
         : null;
-
       const price = variant ? variant.price : product.price;
       return acc + (price * item.quantity);
     }, 0);
+  }, [formData.order_items, products]);
 
+  useEffect(() => {
     const selectedArea = deliveryAreas.find(a => a.id === formData.delivery_area_id);
 
     let newDeliveryFee = formData.delivery_fee;
@@ -61,12 +61,11 @@ const OrderForm = ({ order, onSuccess }) => {
     } else if (formData.shipping_method !== 'delivery') {
       newDeliveryFee = 0;
     }
-
     setFormData(prev => ({
       ...prev,
       delivery_fee: newDeliveryFee,
     }));
-  }, [formData.order_items, formData.delivery_area_id, formData.shipping_method, deliveryAreas, appSettings, products]);
+  }, [subtotal, formData.delivery_area_id, formData.shipping_method, deliveryAreas, appSettings]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -206,11 +205,13 @@ const OrderForm = ({ order, onSuccess }) => {
         />
       </div>
 
-      {formData.shipping_method === 'delivery' && formData.delivery_fee === 0 && appSettings.free_delivery_threshold > 0 && (
-        <div className="text-sm text-green-500 bg-green-500/10 p-3 rounded-lg text-center">
-          {t('orderManagement.freeDeliveryApplied')}
-        </div>
-      )}
+      {formData.shipping_method === 'delivery' &&
+        appSettings.free_delivery_threshold > 0 &&
+        subtotal >= appSettings.free_delivery_threshold && (
+          <div className="text-sm text-green-500 bg-green-500/10 p-3 rounded-lg text-center">
+            {t('orderManagement.freeDeliveryApplied')}
+          </div>
+        )}
 
       <div>
         <h3 className="text-lg font-medium text-brand-primary mb-4">{t('orderManagement.form.orderItems')}</h3>
