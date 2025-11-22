@@ -6,7 +6,10 @@ const OrderDetails = ({ order }) => {
 
   if (!order) return null;
 
-  const subtotal = order.order_items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = order.order_items.reduce((acc, item) => {
+    const price = item.product_variant?.price || item.product?.price || 0;
+    return acc + price * item.quantity;
+  }, 0);
   const deliveryFee = order.delivery_fee || 0;
   const total = subtotal + deliveryFee;
 
@@ -39,7 +42,8 @@ const OrderDetails = ({ order }) => {
         <h3 className="text-lg font-medium text-brand-primary mb-4">{t('orderManagement.form.orderItems')}</h3>
         <div className="space-y-4">
           {order.order_items.map((item) => {
-            if (!item || !item.product_variant || !item.product_variant.product) {
+            const product = item.product || item.product_variant?.product;
+            if (!product) {
               return (
                 <div key={item.id || Math.random()} className="flex items-center gap-4 p-2 rounded-lg bg-black/30">
                   <div className="w-20 h-20 bg-black/40 rounded-lg flex items-center justify-center">
@@ -53,11 +57,11 @@ const OrderDetails = ({ order }) => {
             }
 
             const variant = item.product_variant;
-            const product = variant.product;
             const primaryImage = product.product_images?.find(img => img.is_primary);
 
-            const imageUrl = variant.image_url || primaryImage?.image_url || 'https://via.placeholder.com/80';
-            const name = `${product.name} - ${variant.name}`;
+            const imageUrl = variant?.image_url || primaryImage?.image_url || 'https://via.placeholder.com/80';
+            const name = variant ? `${product.name} - ${variant.name}` : product.name;
+            const price = variant ? variant.price : product.price;
 
             return (
               <div key={item.id} className="flex items-center gap-4 p-2 rounded-lg bg-black/30">
@@ -68,7 +72,7 @@ const OrderDetails = ({ order }) => {
                 />
                 <div className="flex-1">
                   <p className="font-semibold">{name}</p>
-                  <p className="text-sm text-brand-secondary">{t('productManagement.form.price')}: {item.price.toFixed(2)} {t('common.currency')}</p>
+                  <p className="text-sm text-brand-secondary">{t('productManagement.form.price')}: {price.toFixed(2)} {t('common.currency')}</p>
                 </div>
                 <div className="text-right">
                   <p className="font-semibold">{t('productManagement.form.stock')}: {item.quantity}</p>
