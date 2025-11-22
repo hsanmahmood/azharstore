@@ -39,6 +39,7 @@ class ProductVariant(BaseModel):
     id: int
     product_id: int
     name: str
+    price: float
     stock_quantity: int
     image_url: Optional[str] = None
     product: Optional['Product'] = None
@@ -56,15 +57,18 @@ class Product(BaseModel):
 
 class ProductVariantCreate(BaseModel):
     name: str
+    price: float
     stock_quantity: int
 
 class ProductVariantUpdate(BaseModel):
     name: Optional[str] = None
+    price: Optional[float] = None
     stock_quantity: Optional[int] = None
 
 class ProductVariantUpsert(BaseModel):
     id: Optional[int] = None
     name: str
+    price: float
     stock_quantity: int
     image_url: Optional[str] = None
 

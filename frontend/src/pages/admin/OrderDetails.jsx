@@ -13,11 +13,15 @@ const OrderDetails = ({ order }) => {
       const product = products.find(p => p.id === (item.product_id || item.product_variant?.product_id));
       if (!product) return acc;
 
+      const quantity = Number(item.quantity) || 0;
+
       if (item.product_variant_id) {
         const variant = product.product_variants.find(v => v.id === item.product_variant_id);
-        return acc + (variant ? variant.price * item.quantity : 0);
+        const price = Number(variant?.price) || 0;
+        return acc + (price * quantity);
       } else {
-        return acc + (product.price * item.quantity);
+        const price = Number(product.price) || 0;
+        return acc + (price * quantity);
       }
     }, 0);
   }, [order.order_items, products]);
