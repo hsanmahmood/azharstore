@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
+import { apiService } from '../../services/api';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import LoadingScreen from '../../components/LoadingScreen';
@@ -42,9 +43,11 @@ const Settings = () => {
 
     try {
       if (editingArea) {
-        await updateDeliveryArea(editingArea.id, formData);
+        const updatedArea = await apiService.updateDeliveryArea(editingArea.id, formData);
+        updateDeliveryArea(updatedArea);
       } else {
-        await addDeliveryArea(formData);
+        const newArea = await apiService.createDeliveryArea(formData);
+        addDeliveryArea(newArea);
       }
       closeModal();
     } catch (err) {
@@ -64,7 +67,8 @@ const Settings = () => {
     setIsConfirmModalOpen(false);
 
     try {
-      await deleteDeliveryArea(deletingAreaId);
+      await apiService.deleteDeliveryArea(deletingAreaId);
+      deleteDeliveryArea(deletingAreaId);
     } catch (err) {
       setError('Failed to delete delivery area.');
     } finally {
@@ -76,7 +80,8 @@ const Settings = () => {
     setIsSubmitting(true);
     setError('');
     try {
-      await updateAppSettings({ free_delivery_threshold: parseFloat(freeDeliveryThreshold) });
+      const newSettings = await apiService.updateAppSettings({ free_delivery_threshold: parseFloat(freeDeliveryThreshold) });
+      updateAppSettings(newSettings);
     } catch (err) {
       setError('Failed to save settings.');
     } finally {

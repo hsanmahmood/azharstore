@@ -100,39 +100,32 @@ export const DataProvider = ({ children }) => {
     setOrders(prev => prev.filter(o => o.id !== orderId));
   };
 
-  const addCategory = async (category) => {
-    await apiService.createCategory(category);
-    await fetchData();
+  const addCategory = (category) => {
+    setCategories(prev => [category, ...prev]);
   };
 
-  const updateCategory = async (id, category) => {
-    await apiService.updateCategory(id, category);
-    await fetchData();
+  const updateCategory = (updatedCategory) => {
+    setCategories(prev => prev.map(c => c.id === updatedCategory.id ? updatedCategory : c));
   };
 
-  const deleteCategory = async (id) => {
-    await apiService.deleteCategory(id);
-    await fetchData();
+  const deleteCategory = (id) => {
+    setCategories(prev => prev.filter(c => c.id !== id));
   };
 
-  const addDeliveryArea = async (area) => {
-    await apiService.createDeliveryArea(area);
-    await fetchData();
+  const addDeliveryArea = (area) => {
+    setDeliveryAreas(prev => [area, ...prev]);
   };
 
-  const updateDeliveryArea = async (id, area) => {
-    await apiService.updateDeliveryArea(id, area);
-    await fetchData();
+  const updateDeliveryArea = (updatedArea) => {
+    setDeliveryAreas(prev => prev.map(a => a.id === updatedArea.id ? updatedArea : a));
   };
 
-  const deleteDeliveryArea = async (id) => {
-    await apiService.deleteDeliveryArea(id);
-    await fetchData();
+  const deleteDeliveryArea = (id) => {
+    setDeliveryAreas(prev => prev.filter(a => a.id !== id));
   };
 
-  const updateAppSettings = async (settings) => {
-    await apiService.updateAppSettings(settings);
-    await fetchData();
+  const updateAppSettings = (settings) => {
+    setAppSettings(settings);
   };
 
   const value = {

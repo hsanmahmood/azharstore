@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
 import { SearchContext } from '../../context/SearchContext';
+import { apiService } from '../../services/api';
 import SearchBar from '../../components/SearchBar';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import Modal from '../../components/Modal';
@@ -46,9 +47,11 @@ const CategoryManagement = () => {
 
     try {
       if (editingCategory) {
-        await updateCategory(editingCategory.id, formData);
+        const updatedCategory = await apiService.updateCategory(editingCategory.id, formData);
+        updateCategory(updatedCategory);
       } else {
-        await addCategory(formData);
+        const newCategory = await apiService.createCategory(formData);
+        addCategory(newCategory);
       }
       closeModal();
     } catch (err) {
@@ -72,7 +75,8 @@ const CategoryManagement = () => {
     setIsConfirmModalOpen(false);
 
     try {
-      await deleteCategory(deletingCategoryId);
+      await apiService.deleteCategory(deletingCategoryId);
+      deleteCategory(deletingCategoryId);
     } catch (err) {
       setError(t('categoryManagement.errors.delete'));
       console.error(err);
