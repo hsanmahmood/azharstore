@@ -75,23 +75,34 @@ const OrderDetails = ({ order }) => {
 
             const imageUrl = variant?.image_url || primaryImage?.image_url || 'https://via.placeholder.com/80';
             const name = variant ? `${product.name} - ${variant.name}` : product.name;
-            const price = variant?.price ?? product?.price ?? 0;
-            const lineItemTotal = (Number(price) || 0) * (Number(item.quantity) || 0);
+            let unitPrice = 0;
+            if (variant && variant.price > 0) {
+              unitPrice = variant.price;
+            } else if (product) {
+              unitPrice = product.price;
+            }
+
+            const lineItemTotal = unitPrice * item.quantity;
 
             return (
               <div key={item.id} className="flex items-center gap-4 p-2 rounded-lg bg-black/30">
                 <img
                   src={imageUrl}
                   alt={name}
-                  className="w-20 h-20 object-cover rounded-lg"
+                  className="w-16 h-16 object-cover rounded-lg"
                 />
                 <div className="flex-1">
                   <p className="font-semibold">{name}</p>
                   <p className="text-sm text-brand-secondary">
-                    {item.quantity} x {price.toFixed(2)} {t('common.currency')}
+                    {t('orderManagement.form.unitPrice')}: {unitPrice.toFixed(2)} {t('common.currency')}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="text-center">
+                  <p className="text-xs text-brand-secondary">{t('orderManagement.form.quantity')}</p>
+                  <p className="font-semibold">{item.quantity}</p>
+                </div>
+                <div className="text-right w-28">
+                  <p className="text-xs text-brand-secondary">{t('orderManagement.form.total')}</p>
                   <p className="font-semibold text-lg">{lineItemTotal.toFixed(2)} {t('common.currency')}</p>
                 </div>
               </div>
