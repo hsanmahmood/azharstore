@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Edit, Trash2, Eye } from 'lucide-react';
 import Dropdown from '../../components/Dropdown';
@@ -7,7 +7,7 @@ import { DataContext } from '../../context/DataContext';
 
 const OrderCard = ({ order, onEdit, onDelete, onView }) => {
   const { t } = useTranslation();
-  const { updateOrder } = useContext(DataContext);
+  const { updateOrder, products } = useContext(DataContext);
 
   const handleStatusChange = async (option) => {
     const newStatus = option.value;
@@ -33,10 +33,20 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
     transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1
   `;
 
-  const subtotal = order.order_items.reduce((acc, item) => {
-    const price = item.product_variant?.price ?? item.product?.price ?? 0;
-    return acc + (price * item.quantity);
-  }, 0);
+  const subtotal = useMemo(() => {
+    return order.order_items.reduce((acc, item) => {
+      const product = products.find(p => p.id === (item.product_id || item.product_variant?.product_id));
+      if (!product) return acc;
+
+      if (item.product_variant_id) {
+        const variant = product.product_variants.find(v => v.id === item.product_variant_id);
+        return acc + (variant ? variant.price * item.quantity : 0);
+      } else {
+        return acc + (product.price * item.quantity);
+      }
+    }, 0);
+  }, [order.order_items, products]);
+
   const total = subtotal + (order.delivery_fee || 0);
 
   return (
