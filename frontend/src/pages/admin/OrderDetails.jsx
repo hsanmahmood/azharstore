@@ -61,7 +61,7 @@ const OrderDetails = ({ order }) => {
 
             const imageUrl = variant?.image_url || primaryImage?.image_url || 'https://via.placeholder.com/80';
             const name = variant ? `${product.name} - ${variant.name}` : product.name;
-            const price = variant ? variant.price : product.price;
+            const price = variant?.price ?? product?.price ?? 0;
 
             return (
               <div key={item.id} className="flex items-center gap-4 p-2 rounded-lg bg-black/30">
