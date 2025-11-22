@@ -15,7 +15,7 @@ import { SearchContext } from '../../context/SearchContext';
 
 const OrderManagement = () => {
   const { t } = useTranslation();
-  const { orders, customers, products, isLoading, error: dataError, addOrder, updateOrder, removeOrder } = useContext(DataContext);
+  const { orders, customers, products, isLoading, error: dataError, addOrder, updateOrder, removeOrder, setError } = useContext(DataContext);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -25,7 +25,6 @@ const OrderManagement = () => {
   const [viewingOrder, setViewingOrder] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [deletingOrderId, setDeletingOrderId] = useState(null);
-  const [error, setError] = useState('');
 
   const updateOrderState = (updatedOrder) => {
     updateOrder(updatedOrder);
@@ -36,7 +35,8 @@ const OrderManagement = () => {
       await apiService.deleteOrder(orderId);
       removeOrder(orderId);
     } catch (err) {
-      setError(t('orderManagement.errors.delete'));
+      const errorMsg = err.response?.data?.detail || t('orderManagement.errors.delete');
+      setError(errorMsg);
     }
   };
 
@@ -64,7 +64,8 @@ const OrderManagement = () => {
         addOrder(response.data);
       }
     } catch (error) {
-      setError(t('orderManagement.errors.fetch'));
+      const errorMsg = error.response?.data?.detail || t('orderManagement.errors.fetch');
+      setError(errorMsg);
     } finally {
       closeModal();
     }
@@ -122,7 +123,6 @@ const OrderManagement = () => {
       </div>
 
       {dataError && <div className="text-red-500">{dataError}</div>}
-      {error && <div className="text-red-500">{error}</div>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredOrders.map((order) => (
