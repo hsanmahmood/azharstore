@@ -33,10 +33,10 @@ const AdminLayoutContent = () => {
   };
 
   const navLinks = [
-    { to: '/admin/products', text: t('admin.nav.products'), icon: Package },
-    { to: '/admin/categories', text: t('admin.nav.categories'), icon: Layers },
-    { to: '/admin/customers', text: t('admin.nav.customers'), icon: Users },
-    { to: '/admin/orders', text: t('orderManagement.title'), icon: ShoppingCart },
+    { to: '/products', text: t('admin.nav.products'), icon: Package },
+    { to: '/categories', text: t('admin.nav.categories'), icon: Layers },
+    { to: '/customers', text: t('admin.nav.customers'), icon: Users },
+    { to: '/orders', text: t('orderManagement.title'), icon: ShoppingCart },
   ];
 
   const getNavLinkClasses = (isOpen) => (to) => {
@@ -59,12 +59,6 @@ const AdminLayoutContent = () => {
 
         <nav className="flex-grow px-2">
           <ul className="space-y-2">
-            <li>
-              <Link to="/" className={getNavLinkClasses(isOpen)('/home')} title={isOpen ? '' : t('admin.nav.home')}>
-                <Home className={`h-5 w-5 ${isOpen ? 'ml-3' : ''}`} />
-                <span className={`transition-opacity duration-200 ${!isOpen ? 'hidden' : 'delay-200'}`}>{t('admin.nav.home')}</span>
-              </Link>
-            </li>
             {navLinks.map((link) => (
               <li key={link.to}>
                 <NavLink to={link.to} className={getNavLinkClasses(isOpen)(link.to)} title={isOpen ? '' : link.text}>
@@ -78,7 +72,7 @@ const AdminLayoutContent = () => {
 
         <div className="px-2 py-4 mt-auto">
           <div className="border-t border-brand-border pt-4 space-y-2">
-            <NavLink to="/admin/settings" className={getNavLinkClasses(isDesktopSidebarOpen)('/admin/settings')} title={isDesktopSidebarOpen ? '' : t('settings.title')}>
+            <NavLink to="/settings" className={getNavLinkClasses(isDesktopSidebarOpen)('/settings')} title={isDesktopSidebarOpen ? '' : t('settings.title')}>
               <Settings className={`h-5 w-5 ${isDesktopSidebarOpen ? 'ml-3' : ''}`} />
               <span className={`transition-opacity duration-200 ${!isDesktopSidebarOpen ? 'hidden' : 'delay-200'}`}>{t('settings.title')}</span>
             </NavLink>

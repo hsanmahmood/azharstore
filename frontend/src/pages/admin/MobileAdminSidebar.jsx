@@ -26,12 +26,6 @@ const MobileAdminSidebar = ({ isOpen, onClose, navLinks, handleLogout }) => {
 
           <nav className="flex-grow px-2">
             <ul className="space-y-2">
-              <li>
-                <Link to="/" onClick={onClose} className="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg text-brand-secondary hover:bg-brand-primary/5 hover:text-brand-primary">
-                  <Home className="h-5 w-5 ml-3" />
-                  <span>{t('admin.nav.home')}</span>
-                </Link>
-              </li>
               {navLinks.map((link) => (
                 <li key={link.to}>
                   <NavLink
