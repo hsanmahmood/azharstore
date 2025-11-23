@@ -5,15 +5,21 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
   const [content, setContent] = useState(initialValue || '');
   const [showColorPalette, setShowColorPalette] = useState(false);
   const editorRef = useRef(null);
+  let currentFontSize = 3; // Corresponds to <font size="3">
 
   const colors = [
-    '#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF',
-    '#C0C0C0', '#808080', '#800000', '#008000', '#000080', '#808000', '#008080'
+    '#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF',
+    '#FFFF00', '#00FFFF', '#FF00FF', '#C0C0C0', '#808080'
   ];
 
   const applyStyle = (command, value = null) => {
     document.execCommand(command, false, value);
     editorRef.current.focus();
+  };
+
+  const changeFontSize = (direction) => {
+    currentFontSize = direction === 'increase' ? Math.min(7, currentFontSize + 1) : Math.max(1, currentFontSize - 1);
+    applyStyle('fontSize', currentFontSize);
   };
 
   const handleContentChange = (e) => {
@@ -36,14 +42,14 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
         </button>
         <button
           type="button"
-          onClick={() => applyStyle('increaseFontSize')}
+          onClick={() => changeFontSize('increase')}
           className="p-2 rounded hover:bg-black/20 focus:outline-none"
         >
           <Plus size={20} />
         </button>
         <button
           type="button"
-          onClick={() => applyStyle('decreaseFontSize')}
+          onClick={() => changeFontSize('decrease')}
           className="p-2 rounded hover:bg-black/20 focus:outline-none"
         >
           <Minus size={20} />
@@ -57,7 +63,7 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
             <Palette size={20} />
           </button>
           {showColorPalette && (
-            <div className="absolute z-10 grid grid-cols-5 gap-1 p-2 bg-black/30 border border-brand-border rounded-lg">
+            <div className="absolute z-10 grid grid-cols-5 gap-2 p-2 bg-black/30 border border-brand-border rounded-lg">
               {colors.map((color) => (
                 <button
                   key={color}
@@ -80,6 +86,7 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
         onInput={handleContentChange}
         dangerouslySetInnerHTML={{ __html: content }}
         className="w-full h-48 p-2 resize-y overflow-auto focus:outline-none"
+        style={{ fontFamily: 'Tajawal, sans-serif' }}
       />
     </div>
   );
