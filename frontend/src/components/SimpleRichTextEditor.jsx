@@ -1,21 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Bold, Plus, Minus, Palette } from 'lucide-react';
-import ColorPicker from './jscolorpicker/colorpicker.js';
-import './jscolorpicker/colorpicker.css';
 
 const SimpleRichTextEditor = ({ initialValue, onChange }) => {
   const [content, setContent] = useState(initialValue || '');
+  const [showColorPalette, setShowColorPalette] = useState(false);
   const editorRef = useRef(null);
-  const colorPickerRef = useRef(null);
-  let currentFontSize = 3;
+  let currentFontSize = 3; // Corresponds to <font size="3">
 
-  useEffect(() => {
-    return () => {
-      if (colorPickerRef.current) {
-        colorPickerRef.current.destroy();
-      }
-    };
-  }, []);
+  const colors = [
+    '#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF',
+    '#FFFF00', '#00FFFF', '#FF00FF', '#C0C0C0', '#808080'
+  ];
 
   const applyStyle = (command, value = null) => {
     document.execCommand(command, false, value);
@@ -37,21 +32,6 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
 
   const handleMouseDown = (e) => {
     e.preventDefault();
-  };
-
-  const openColorPicker = () => {
-    if (colorPickerRef.current) {
-      colorPickerRef.current.destroy();
-    }
-    const picker = new ColorPicker({
-      target: editorRef.current,
-      headless: true,
-    });
-    picker.on('pick', (color) => {
-      applyStyle('foreColor', color.hex);
-    });
-    picker.open();
-    colorPickerRef.current = picker;
   };
 
   return (
@@ -81,14 +61,33 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
         >
           <Minus size={20} />
         </button>
-        <button
-          type="button"
-          onMouseDown={handleMouseDown}
-          onClick={openColorPicker}
-          className="p-2 rounded hover:bg-black/20 focus:outline-none"
-        >
-          <Palette size={20} />
-        </button>
+        <div className="relative">
+          <button
+            type="button"
+            onMouseDown={handleMouseDown}
+            onClick={() => setShowColorPalette(!showColorPalette)}
+            className="p-2 rounded hover:bg-black/20 focus:outline-none"
+          >
+            <Palette size={20} />
+          </button>
+          {showColorPalette && (
+            <div className="absolute z-10 grid grid-cols-5 gap-2 p-2 bg-black/30 border border-brand-border rounded-lg">
+              {colors.map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  onMouseDown={handleMouseDown}
+                  onClick={() => {
+                    applyStyle('foreColor', color);
+                    setShowColorPalette(false);
+                  }}
+                  className="w-6 h-6 rounded"
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
       <div
         ref={editorRef}

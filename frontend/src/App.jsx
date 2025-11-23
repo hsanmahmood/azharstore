@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from './context/AuthContext';
-import Home from './pages/Home';
+import StoreFront from './pages/StoreFront';
 import Login from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './pages/admin/AdminLayout';
@@ -46,7 +46,7 @@ const App = () => {
   return (
     <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col">
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<StoreFront />} />
         <Route path="/login" element={token ? <Navigate to="/" /> : <Login />} />
         <Route path="/admin/*" element={<Navigate to="/" />} />
         <Route path="*" element={<Navigate to="/" />} />
