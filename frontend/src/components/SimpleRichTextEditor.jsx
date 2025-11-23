@@ -30,11 +30,16 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
     }
   };
 
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+  };
+
   return (
     <div className="border border-brand-border rounded-lg">
       <div className="flex items-center p-2 border-b border-brand-border">
         <button
           type="button"
+          onMouseDown={handleMouseDown}
           onClick={() => applyStyle('bold')}
           className="p-2 rounded hover:bg-black/20 focus:outline-none"
         >
@@ -42,6 +47,7 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
         </button>
         <button
           type="button"
+          onMouseDown={handleMouseDown}
           onClick={() => changeFontSize('increase')}
           className="p-2 rounded hover:bg-black/20 focus:outline-none"
         >
@@ -49,6 +55,7 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
         </button>
         <button
           type="button"
+          onMouseDown={handleMouseDown}
           onClick={() => changeFontSize('decrease')}
           className="p-2 rounded hover:bg-black/20 focus:outline-none"
         >
@@ -57,6 +64,7 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
         <div className="relative">
           <button
             type="button"
+            onMouseDown={handleMouseDown}
             onClick={() => setShowColorPalette(!showColorPalette)}
             className="p-2 rounded hover:bg-black/20 focus:outline-none"
           >
@@ -68,6 +76,7 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
                 <button
                   key={color}
                   type="button"
+                  onMouseDown={handleMouseDown}
                   onClick={() => {
                     applyStyle('foreColor', color);
                     setShowColorPalette(false);
