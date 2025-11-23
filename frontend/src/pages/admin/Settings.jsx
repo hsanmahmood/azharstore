@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
 import { apiService } from '../../services/api';
@@ -6,7 +6,7 @@ import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
-import { Editor } from '@tinymce/tinymce-react';
+import SimpleRichTextEditor from '../../components/SimpleRichTextEditor';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -25,9 +25,6 @@ const Settings = () => {
   const [freeDeliveryThreshold, setFreeDeliveryThreshold] = useState('');
   const [deliveryMessage, setDeliveryMessage] = useState('');
   const [pickupMessage, setPickupMessage] = useState('');
-
-  const editorDeliveryRef = useRef(null);
-  const editorPickupRef = useRef(null);
 
   useEffect(() => {
     if (appSettings) {
@@ -112,8 +109,8 @@ const Settings = () => {
     setError('');
     try {
       const updatedSettings = {
-        delivery_message: editorDeliveryRef.current ? editorDeliveryRef.current.getContent() : deliveryMessage,
-        pickup_message: editorPickupRef.current ? editorPickupRef.current.getContent() : pickupMessage,
+        delivery_message: deliveryMessage,
+        pickup_message: pickupMessage,
       };
       const newSettings = await apiService.updateAppSettings(updatedSettings);
       updateAppSettings(newSettings);
@@ -121,18 +118,6 @@ const Settings = () => {
       setError('Failed to save messages.');
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const imageUploadHandler = async (blobInfo) => {
-    const formData = new FormData();
-    formData.append('file', blobInfo.blob(), blobInfo.filename());
-
-    try {
-      const response = await apiService.uploadImage(formData);
-      return response.location;
-    } catch (error) {
-      throw new Error('Image upload failed');
     }
   };
 
@@ -217,40 +202,16 @@ const Settings = () => {
         <div className="space-y-8">
           <div>
             <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.deliveryMessage')}</h2>
-            <Editor
-              apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
-              onInit={(_evt, editor) => editorDeliveryRef.current = editor}
+            <SimpleRichTextEditor
               initialValue={deliveryMessage}
-              init={{
-                height: 300,
-                menubar: false,
-                plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-                toolbar: 'undo redo | blocks fontselect fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-                skin: 'oxide-dark',
-                images_upload_handler: imageUploadHandler,
-                automatic_uploads: true,
-                font_formats: 'Andale Mono=andale mono,times; Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats; Tajawal=tajawal,sans-serif',
-                content_style: "@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap'); body { font-family: 'Tajawal', sans-serif; }"
-              }}
+              onChange={(content) => setDeliveryMessage(content)}
             />
           </div>
           <div>
             <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.pickupMessage')}</h2>
-            <Editor
-              apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
-              onInit={(_evt, editor) => editorPickupRef.current = editor}
+            <SimpleRichTextEditor
               initialValue={pickupMessage}
-              init={{
-                height: 300,
-                menubar: false,
-                plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-                toolbar: 'undo redo | blocks fontselect fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-                skin: 'oxide-dark',
-                images_upload_handler: imageUploadHandler,
-                automatic_uploads: true,
-                font_formats: 'Andale Mono=andale mono,times; Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats; Tajawal=tajawal,sans-serif',
-                content_style: "@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap'); body { font-family: 'Tajawal', sans-serif; }"
-              }}
+              onChange={(content) => setPickupMessage(content)}
             />
           </div>
           <div className="flex justify-end">
