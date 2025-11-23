@@ -225,9 +225,9 @@ const Settings = () => {
                 height: 300,
                 menubar: false,
                 plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-                toolbar: 'undo redo | styleselect | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat | styleselect',
                 skin: 'oxide-dark',
-                content_css: '/src/index.css',
+                content_css: 'dark /src/index.css',
                 images_upload_handler: imageUploadHandler,
                 automatic_uploads: true,
                 style_formats: [
@@ -246,9 +246,9 @@ const Settings = () => {
                 height: 300,
                 menubar: false,
                 plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-                toolbar: 'undo redo | styleselect | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat | styleselect',
                 skin: 'oxide-dark',
-                content_css: '/src/index.css',
+                content_css: 'dark /src/index.css',
                 images_upload_handler: imageUploadHandler,
                 automatic_uploads: true,
                 style_formats: [
