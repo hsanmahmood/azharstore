@@ -6,14 +6,14 @@ const ImageUploader = ({ onUpload, preview, uploading, multiple = false, size = 
   const { t } = useTranslation();
 
   return (
-    <label className={`relative flex justify-center items-center aspect-square ${size} border-2 border-brand-border border-dashed rounded-lg cursor-pointer hover:border-brand-primary/50 transition-colors overflow-hidden`}>
+    <label className={`relative flex justify-center items-center aspect-square ${size} border-2 border-soft-border border-dashed rounded-lg cursor-pointer hover:border-brand-purple/50 transition-colors overflow-hidden bg-gray-50`}>
       {uploading ? (
-        <Loader2 className="animate-spin text-brand-primary" />
+        <Loader2 className="animate-spin text-brand-purple" />
       ) : preview ? (
         <img src={preview} alt="Preview" className="absolute inset-0 w-full h-full object-cover" />
       ) : (
         <div className="space-y-1 text-center">
-          <Upload className="mx-auto h-8 w-8 text-brand-secondary" />
+          <Upload className="mx-auto h-8 w-8 text-text-light" />
         </div>
       )}
       <input

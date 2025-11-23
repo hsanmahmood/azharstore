@@ -407,21 +407,21 @@ const ProductManagement = () => {
             <nav className="flex space-x-4" aria-label="Tabs">
               <button
                 type="button"
-                className={`tab-item ${activeTab === 'details' ? 'active' : ''}`}
+                className={`py-2 px-4 text-lg font-semibold transition-colors duration-200 ${activeTab === 'details' ? 'text-brand-purple border-b-2 border-brand-purple' : 'text-text-light hover:text-brand-purple'}`}
                 onClick={() => setActiveTab('details')}
               >
                 {t('productManagement.tabs.details')}
               </button>
               <button
                 type="button"
-                className={`tab-item ${activeTab === 'images' ? 'active' : ''}`}
+                className={`py-2 px-4 text-lg font-semibold transition-colors duration-200 ${activeTab === 'images' ? 'text-brand-purple border-b-2 border-brand-purple' : 'text-text-light hover:text-brand-purple'}`}
                 onClick={() => setActiveTab('images')}
               >
                 {t('productManagement.tabs.images')}
               </button>
               <button
                 type="button"
-                className={`tab-item ${activeTab === 'variants' ? 'active' : ''}`}
+                className={`py-2 px-4 text-lg font-semibold transition-colors duration-200 ${activeTab === 'variants' ? 'text-brand-purple border-b-2 border-brand-purple' : 'text-text-light hover:text-brand-purple'}`}
                 onClick={() => setActiveTab('variants')}
               >
                 {t('productManagement.tabs.variants')}
@@ -582,7 +582,7 @@ const ProductManagement = () => {
         <div className={activeTab === 'images' ? '' : 'hidden'}>
           <div className="space-y-8">
             <div>
-              <h3 className="text-lg font-medium text-brand-primary mb-4">{t('productManagement.form.primaryImage')}</h3>
+              <h3 className="text-lg font-medium text-brand-purple mb-4">{t('productManagement.form.primaryImage')}</h3>
               <div className="relative w-40 h-40">
                 <ImageUploader
                   onUpload={handlePrimaryImageUpload}
@@ -594,7 +594,7 @@ const ProductManagement = () => {
                   <button
                     type="button"
                     onClick={() => removeImage(primaryImage, true)}
-                    className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 text-white shadow-lg"
+                    className="absolute -top-2 -right-2 bg-stock-red rounded-full p-1 text-white shadow-lg"
                     aria-label={t('common.remove')}
                   >
                     <X size={14} />
@@ -603,15 +603,15 @@ const ProductManagement = () => {
               </div>
             </div>
 
-            <hr className="border-brand-border" />
+            <hr className="border-soft-border" />
 
             <div>
-              <h3 className="text-lg font-medium text-brand-primary mb-4">{t('productManagement.form.galleryImages')}</h3>
+              <h3 className="text-lg font-medium text-brand-purple mb-4">{t('productManagement.form.galleryImages')}</h3>
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
                 {imagePreviews.map((preview, index) => (
                   <div key={index} className="relative w-24 h-24">
                     <img src={preview} alt={`Preview ${index}`} className="w-full h-full object-cover rounded-lg" />
-                    <button type="button" onClick={() => removeImage(preview)} className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 text-white shadow-lg">
+                    <button type="button" onClick={() => removeImage(preview)} className="absolute -top-2 -right-2 bg-stock-red rounded-full p-1 text-white shadow-lg">
                       <X size={14} />
                     </button>
                   </div>
