@@ -9,22 +9,30 @@ export default {
         arabic: ['Tajawal', 'sans-serif'],
       },
       colors: {
-        "background-dark": "#161617",
+        "primary-background": "#f4f0f4",
+        "brand-purple": "#742370",
+        "text-dark": "#1f2937",
+        "text-light": "#6b7280",
+        "stock-green": "#10b981",
+        "stock-orange": "#f59e0b",
+        "stock-red": "#ef4444",
+        "category-purple": "#E0C0E0",
+        "category-blue": "#C0C0E0",
         brand: {
-          background: "#1a1a1a",
+          background: "#f4f0f4",
           gray: "#6e6c6f",
           white: "#ffffff",
           black: "#000000",
-          primary: "#ffffff",
+          primary: "#742370",
           secondary: "#a0a0a0",
-          border: "rgba(255, 255, 255, 0.1)",
+          border: "rgba(0, 0, 0, 0.1)",
         },
       },
       borderRadius: {
         20: "20px",
       },
       boxShadow: {
-        card: "0 8px 24px rgba(0,0,0,0.4)",
+        card: "0 8px 24px rgba(0,0,0,0.1)",
       },
       keyframes: {
         modalIn: {
