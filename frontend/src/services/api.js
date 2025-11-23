@@ -139,6 +139,13 @@ export const apiService = {
   // App Settings
   getAppSettings: () => api.get('/admin/settings'),
   updateAppSettings: (data) => api.patch('/admin/settings', data),
+
+  // General
+  uploadImage: (formData) => {
+    return api.post('/admin/upload-image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(res => res.data);
+  },
 };
 
 export default api;

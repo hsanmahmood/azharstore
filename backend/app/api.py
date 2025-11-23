@@ -243,3 +243,25 @@ def get_settings(supabase: Client = Depends(get_supabase_client)):
 @admin_router.patch("/settings", response_model=schemas.AppSettings, tags=["Admin - Settings"])
 def update_settings(settings_data: schemas.AppSettings, supabase: Client = Depends(get_supabase_client)):
     return services.update_app_settings(settings_data=settings_data, supabase=supabase)
+
+@admin_router.post("/upload-image", tags=["Admin - General"])
+def upload_image(file: UploadFile = File(...), supabase: Client = Depends(get_supabase_client)):
+    file_path = f"messages/{uuid.uuid4()}_{file.filename}"
+    try:
+        file_content = file.file.read()
+
+        # Determine content type, default if not available
+        content_type = file.content_type if file.content_type else "application/octet-stream"
+
+        # Upload with explicit content type
+        supabase.storage.from_("products").upload(
+            file_path,
+            file_content,
+            {"content-type": content_type}
+        )
+
+        image_url = supabase.storage.from_("products").get_public_url(file_path)
+
+        return {"location": image_url}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Image upload failed: {str(e)}")

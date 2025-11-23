@@ -316,8 +316,22 @@ def delete_delivery_area(delivery_area_id: int, supabase: Client = Depends(get_s
 def get_app_settings(supabase: Client = Depends(get_supabase_client)) -> schemas.AppSettings:
     response = supabase.table("app_settings").select("*").execute()
     settings_dict = {item['key']: item['value'] for item in response.data}
-    return schemas.AppSettings(free_delivery_threshold=float(settings_dict.get('free_delivery_threshold', 0)))
+
+    # Safely convert free_delivery_threshold to float, defaulting to 0.0 if it's None or empty
+    free_delivery_threshold_str = settings_dict.get('free_delivery_threshold')
+    free_delivery_threshold = float(free_delivery_threshold_str) if free_delivery_threshold_str else 0.0
+
+    return schemas.AppSettings(
+        free_delivery_threshold=free_delivery_threshold,
+        delivery_message=settings_dict.get('delivery_message', ''),
+        pickup_message=settings_dict.get('pickup_message', '')
+    )
 
 def update_app_settings(settings_data: schemas.AppSettings, supabase: Client = Depends(get_supabase_client)) -> schemas.AppSettings:
-    supabase.table("app_settings").upsert({"key": "free_delivery_threshold", "value": str(settings_data.free_delivery_threshold)}).execute()
+    settings_to_update = settings_data.model_dump(exclude_unset=True)
+
+    for key, value in settings_to_update.items():
+        if value is not None:
+            supabase.table("app_settings").upsert({"key": key, "value": str(value)}).execute()
+
     return get_app_settings(supabase)

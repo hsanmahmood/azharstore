@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
 import { apiService } from '../../services/api';
@@ -6,10 +6,13 @@ import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
+import { Editor } from '@tinymce/tinymce-react';
 
 const Settings = () => {
   const { t } = useTranslation();
   const { deliveryAreas, appSettings, isLoading, error: dataError, addDeliveryArea, updateDeliveryArea, deleteDeliveryArea, updateAppSettings } = useContext(DataContext);
+
+  const [activeTab, setActiveTab] = useState('delivery');
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingArea, setEditingArea] = useState(null);
@@ -17,7 +20,22 @@ const Settings = () => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [deletingAreaId, setDeletingAreaId] = useState(null);
   const [formData, setFormData] = useState({ name: '', price: '' });
-  const [freeDeliveryThreshold, setFreeDeliveryThreshold] = useState(appSettings.free_delivery_threshold || '');
+
+  // Settings state
+  const [freeDeliveryThreshold, setFreeDeliveryThreshold] = useState('');
+  const [deliveryMessage, setDeliveryMessage] = useState('');
+  const [pickupMessage, setPickupMessage] = useState('');
+
+  const editorDeliveryRef = useRef(null);
+  const editorPickupRef = useRef(null);
+
+  useEffect(() => {
+    if (appSettings) {
+      setFreeDeliveryThreshold(appSettings.free_delivery_threshold || '');
+      setDeliveryMessage(appSettings.delivery_message || '');
+      setPickupMessage(appSettings.pickup_message || '');
+    }
+  }, [appSettings]);
 
   const openModal = (area = null) => {
     setEditingArea(area);
@@ -37,10 +55,8 @@ const Settings = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.price) return;
-
     setIsSubmitting(true);
     setError('');
-
     try {
       if (editingArea) {
         const updatedArea = await apiService.updateDeliveryArea(editingArea.id, formData);
@@ -65,7 +81,6 @@ const Settings = () => {
   const handleConfirmDelete = async () => {
     if (!deletingAreaId) return;
     setIsConfirmModalOpen(false);
-
     try {
       await apiService.deleteDeliveryArea(deletingAreaId);
       deleteDeliveryArea(deletingAreaId);
@@ -80,7 +95,12 @@ const Settings = () => {
     setIsSubmitting(true);
     setError('');
     try {
-      const newSettings = await apiService.updateAppSettings({ free_delivery_threshold: parseFloat(freeDeliveryThreshold) });
+      const updatedSettings = {
+        free_delivery_threshold: parseFloat(freeDeliveryThreshold) || 0,
+        delivery_message: editorDeliveryRef.current ? editorDeliveryRef.current.getContent() : deliveryMessage,
+        pickup_message: editorPickupRef.current ? editorPickupRef.current.getContent() : pickupMessage,
+      };
+      const newSettings = await apiService.updateAppSettings(updatedSettings);
       updateAppSettings(newSettings);
     } catch (err) {
       setError('Failed to save settings.');
@@ -89,68 +109,137 @@ const Settings = () => {
     }
   };
 
+  const imageUploadHandler = async (blobInfo) => {
+    const formData = new FormData();
+    formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+    try {
+      const response = await apiService.uploadImage(formData);
+      return response.location;
+    } catch (error) {
+      throw new Error('Image upload failed');
+    }
+  };
+
   if (isLoading) return <LoadingScreen fullScreen={false} />;
+
+  const TabButton = ({ tabName, label }) => (
+    <button
+      onClick={() => setActiveTab(tabName)}
+      className={`py-2 px-4 text-lg font-semibold transition-colors duration-200 ${
+        activeTab === tabName
+          ? 'text-brand-primary border-b-2 border-brand-primary'
+          : 'text-brand-secondary hover:text-brand-primary'
+      }`}
+    >
+      {label}
+    </button>
+  );
 
   return (
     <>
-      <h1 className="text-3xl font-bold text-brand-primary mb-8">{t('settings.title')}</h1>
-
-      <div className="mb-8 border-b border-brand-border">
-        <nav className="flex space-x-4">
-          <button className="py-2 px-4 text-lg font-semibold text-brand-primary border-b-2 border-brand-primary">
-            {t('settings.delivery')}
-          </button>
-        </nav>
-      </div>
-
-      <div className="bg-black/20 border border-brand-border rounded-20 p-6 mb-8">
-        <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.deliverySettings')}</h2>
-        <div className="flex items-center gap-4">
-          <label htmlFor="freeDeliveryThreshold" className="text-brand-secondary">{t('settings.freeDeliveryThreshold')}</label>
-          <input
-            id="freeDeliveryThreshold"
-            type="number"
-            value={freeDeliveryThreshold}
-            onChange={(e) => setFreeDeliveryThreshold(e.target.value)}
-            className="w-40 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
-          />
-          <button
-            onClick={handleSettingsSave}
-            className="bg-brand-primary text-brand-background font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all duration-200"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? <Loader2 className="animate-spin" /> : t('common.save')}
-          </button>
-        </div>
-      </div>
-
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-bold text-brand-primary">{t('settings.deliveryAreas')}</h2>
+        <h1 className="text-3xl font-bold text-brand-primary">{t('settings.title')}</h1>
         <button
-          onClick={() => openModal()}
-          className="flex items-center gap-2 bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
+          onClick={handleSettingsSave}
+          className="bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95 flex items-center"
+          disabled={isSubmitting}
         >
-          <Plus size={20} /> {t('settings.addArea')}
+          {isSubmitting ? <Loader2 className="animate-spin" /> : t('common.saveChanges')}
         </button>
       </div>
 
-      {dataError && !isModalOpen && <div className="text-red-500 mb-6">{dataError}</div>}
-      {error && <div className="text-red-500 mb-6">{error}</div>}
+      <div className="mb-8 border-b border-brand-border">
+        <nav className="flex space-x-4">
+          <TabButton tabName="delivery" label={t('settings.delivery')} />
+          <TabButton tabName="messages" label={t('settings.messages')} />
+        </nav>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {deliveryAreas.map((area) => (
-          <div key={area.id} className="bg-black/20 border border-brand-border rounded-20 p-5 flex justify-between items-center">
-            <div>
-              <span className="text-lg font-semibold">{area.name}</span>
-              <p className="text-brand-secondary">{area.price} {t('common.currency')}</p>
-            </div>
-            <div className="flex gap-3">
-              <button onClick={() => openModal(area)} className="text-brand-secondary hover:text-brand-primary"><Edit size={20} /></button>
-              <button onClick={() => openDeleteConfirm(area.id)} className="text-brand-secondary hover:text-red-500"><Trash2 size={20} /></button>
+      {error && <div className="text-red-500 mb-6 bg-red-900/20 p-3 rounded-lg">{error}</div>}
+
+      {activeTab === 'delivery' && (
+        <div>
+          <div className="bg-black/20 border border-brand-border rounded-20 p-6 mb-8">
+            <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.deliverySettings')}</h2>
+            <div className="flex items-center gap-4">
+              <label htmlFor="freeDeliveryThreshold" className="text-brand-secondary">{t('settings.freeDeliveryThreshold')}</label>
+              <input
+                id="freeDeliveryThreshold"
+                type="number"
+                value={freeDeliveryThreshold}
+                onChange={(e) => setFreeDeliveryThreshold(e.target.value)}
+                className="w-40 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+              />
             </div>
           </div>
-        ))}
-      </div>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-bold text-brand-primary">{t('settings.deliveryAreas')}</h2>
+            <button
+              onClick={() => openModal()}
+              className="flex items-center gap-2 bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
+            >
+              <Plus size={20} /> {t('settings.addArea')}
+            </button>
+          </div>
+          {dataError && !isModalOpen && <div className="text-red-500 mb-6">{dataError}</div>}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {deliveryAreas.map((area) => (
+              <div key={area.id} className="bg-black/20 border border-brand-border rounded-20 p-5 flex justify-between items-center">
+                <div>
+                  <span className="text-lg font-semibold">{area.name}</span>
+                  <p className="text-brand-secondary">{area.price} {t('common.currency')}</p>
+                </div>
+                <div className="flex gap-3">
+                  <button onClick={() => openModal(area)} className="text-brand-secondary hover:text-brand-primary"><Edit size={20} /></button>
+                  <button onClick={() => openDeleteConfirm(area.id)} className="text-brand-secondary hover:text-red-500"><Trash2 size={20} /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'messages' && (
+        <div className="space-y-8">
+          <div>
+            <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.deliveryMessage')}</h2>
+            <Editor
+              apiKey="YOUR_TINYMCE_API_KEY" // Replace with your TinyMCE API key
+              onInit={(_evt, editor) => editorDeliveryRef.current = editor}
+              initialValue={deliveryMessage}
+              init={{
+                height: 300,
+                menubar: false,
+                plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+                skin: 'oxide-dark',
+                content_css: 'dark',
+                images_upload_handler: imageUploadHandler,
+                automatic_uploads: true,
+              }}
+            />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.pickupMessage')}</h2>
+            <Editor
+              apiKey="YOUR_TINYMCE_API_KEY" // Replace with your TinyMCE API key
+              onInit={(_evt, editor) => editorPickupRef.current = editor}
+              initialValue={pickupMessage}
+              init={{
+                height: 300,
+                menubar: false,
+                plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+                skin: 'oxide-dark',
+                content_css: 'dark',
+                images_upload_handler: imageUploadHandler,
+                automatic_uploads: true,
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       <Modal isOpen={isModalOpen} onClose={closeModal} title={editingArea ? t('settings.editArea') : t('settings.addArea')}>
         <form onSubmit={handleFormSubmit} className="space-y-4">

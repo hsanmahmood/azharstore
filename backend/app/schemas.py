@@ -111,7 +111,9 @@ class DeliveryAreaCreate(BaseModel):
     price: float
 
 class AppSettings(BaseModel):
-    free_delivery_threshold: float
+    free_delivery_threshold: Optional[float] = None
+    delivery_message: Optional[str] = None
+    pickup_message: Optional[str] = None
 
 class OrderItemCreate(BaseModel):
     product_id: Optional[int] = None
