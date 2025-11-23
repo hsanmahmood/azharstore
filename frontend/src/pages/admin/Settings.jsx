@@ -6,7 +6,7 @@ import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
-import EditorWithLoading from '../../components/EditorWithLoading';
+import { Editor } from '@tinymce/tinymce-react';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -217,7 +217,7 @@ const Settings = () => {
         <div className="space-y-8">
           <div>
             <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.deliveryMessage')}</h2>
-            <EditorWithLoading
+            <Editor
               apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
               onInit={(_evt, editor) => editorDeliveryRef.current = editor}
               initialValue={deliveryMessage}
@@ -225,8 +225,9 @@ const Settings = () => {
                 height: 300,
                 menubar: false,
                 plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+                toolbar: 'undo redo | blocks fontselect fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
                 skin: 'oxide-dark',
+                content_css: 'dark',
                 images_upload_handler: imageUploadHandler,
                 automatic_uploads: true,
                 font_formats: 'Andale Mono=andale mono,times; Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats; Tajawal=tajawal,sans-serif',
@@ -236,7 +237,7 @@ const Settings = () => {
           </div>
           <div>
             <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.pickupMessage')}</h2>
-            <EditorWithLoading
+            <Editor
               apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
               onInit={(_evt, editor) => editorPickupRef.current = editor}
               initialValue={pickupMessage}
@@ -244,8 +245,9 @@ const Settings = () => {
                 height: 300,
                 menubar: false,
                 plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+                toolbar: 'undo redo | blocks fontselect fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
                 skin: 'oxide-dark',
+                content_css: 'dark',
                 images_upload_handler: imageUploadHandler,
                 automatic_uploads: true,
                 font_formats: 'Andale Mono=andale mono,times; Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats; Tajawal=tajawal,sans-serif',
