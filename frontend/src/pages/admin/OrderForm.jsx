@@ -169,7 +169,7 @@ const OrderForm = ({ order, onSuccess }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-brand-secondary">
+          <label className="block text-sm font-medium text-text-light">
             {t('orderManagement.form.customer')}
           </label>
           <Dropdown
@@ -180,7 +180,7 @@ const OrderForm = ({ order, onSuccess }) => {
           />
         </div>
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-brand-secondary">
+          <label className="block text-sm font-medium text-text-light">
             {t('orderManagement.form.shippingMethod')}
           </label>
           <Dropdown
@@ -197,7 +197,7 @@ const OrderForm = ({ order, onSuccess }) => {
 
       {formData.shipping_method === 'delivery' && (
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-brand-secondary">
+          <label className="block text-sm font-medium text-text-light">
             {t('settings.deliveryArea')}
           </label>
           <Dropdown
@@ -210,7 +210,7 @@ const OrderForm = ({ order, onSuccess }) => {
       )}
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-brand-secondary">
+        <label className="block text-sm font-medium text-text-light">
           {t('orderManagement.form.status')}
         </label>
         <Dropdown
@@ -230,16 +230,16 @@ const OrderForm = ({ order, onSuccess }) => {
       {formData.shipping_method === 'delivery' &&
         appSettings.free_delivery_threshold > 0 &&
         subtotal >= appSettings.free_delivery_threshold && (
-          <div className="text-sm text-green-500 bg-green-500/10 p-3 rounded-lg text-center">
+          <div className="text-sm text-stock-green bg-stock-green/10 p-3 rounded-lg text-center">
             {t('orderManagement.freeDeliveryApplied')}
           </div>
         )}
 
       <div>
-        <h3 className="text-lg font-medium text-brand-primary mb-4">{t('orderManagement.form.orderItems')}</h3>
+        <h3 className="text-lg font-medium text-brand-purple mb-4">{t('orderManagement.form.orderItems')}</h3>
         <div className="space-y-4">
           {formData.order_items.map((item, index) => (
-            <div key={index} className="flex items-center gap-4 p-2 rounded-lg bg-black/20">
+            <div key={index} className="flex items-center gap-4 p-2 rounded-lg bg-card-background">
               <div className="flex-1">
                 <Dropdown
                   options={products.map((p) => ({ value: p.id, label: `${p.name} (${p.price} ${t('common.currency')})` }))}
@@ -261,10 +261,10 @@ const OrderForm = ({ order, onSuccess }) => {
                 type="number"
                 value={item.quantity}
                 onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value) || 1)}
-                className="w-20 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg"
+                className="w-20 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg"
                 min="1"
               />
-              <button type="button" onClick={() => removeOrderItem(index)} className="text-red-500">
+              <button type="button" onClick={() => removeOrderItem(index)} className="text-stock-red">
                 <Trash2 size={18} />
               </button>
             </div>
@@ -272,7 +272,7 @@ const OrderForm = ({ order, onSuccess }) => {
           <button
             type="button"
             onClick={addOrderItem}
-            className="flex items-center gap-2 text-sm text-brand-primary bg-brand-primary/10 hover:bg-brand-primary/20 px-3 py-2 rounded-lg transition-colors"
+            className="flex items-center gap-2 text-sm text-brand-purple bg-brand-purple/10 hover:bg-brand-purple/20 px-3 py-2 rounded-lg transition-colors"
           >
             <Plus size={16} /> {t('orderManagement.form.addProduct')}
           </button>
@@ -280,7 +280,7 @@ const OrderForm = ({ order, onSuccess }) => {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-brand-secondary">
+        <label className="block text-sm font-medium text-text-light">
           {t('orderManagement.form.comments')}
         </label>
         <textarea
@@ -288,7 +288,7 @@ const OrderForm = ({ order, onSuccess }) => {
           value={formData.comments}
           onChange={handleChange}
           rows="3"
-          className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg"
+          className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg"
         />
       </div>
 

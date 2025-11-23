@@ -117,19 +117,19 @@ const CategoryManagement = () => {
         {filteredCategories.map((category) => (
           <div
             key={category.id}
-            className={`bg-black/20 border border-brand-border rounded-20 p-5 flex justify-between items-center transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1 ${category.deleting ? 'animate-fade-out' : ''}`}
+            className={`bg-card-background border border-soft-border rounded-20 p-5 flex justify-between items-center transition-all duration-300 hover:border-brand-purple/50 hover:-translate-y-1 ${category.deleting ? 'animate-fade-out' : ''}`}
           >
-            <span className="text-lg font-semibold">{category.name}</span>
+            <span className="text-lg font-semibold text-text-dark">{category.name}</span>
             <div className="flex gap-3">
               <button
                 onClick={() => openModal(category)}
-                className="text-brand-secondary hover:text-brand-primary transition-colors"
+                className="text-text-light hover:text-brand-purple transition-colors"
               >
                 <Edit size={20} />
               </button>
               <button
                 onClick={() => openDeleteConfirm(category.id)}
-                className="text-brand-secondary hover:text-red-500 transition-colors"
+                className="text-text-light hover:text-stock-red transition-colors"
               >
                 <Trash2 size={20} />
               </button>
@@ -152,7 +152,7 @@ const CategoryManagement = () => {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-brand-secondary mb-2">
+            <label className="block text-sm font-medium text-text-light mb-2">
               {t('categoryManagement.form.name')}
             </label>
             <input
@@ -161,7 +161,7 @@ const CategoryManagement = () => {
               value={formData.name}
               onChange={handleFormChange}
               required
-              className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+              className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
             />
           </div>
 

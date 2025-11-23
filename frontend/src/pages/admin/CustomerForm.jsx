@@ -68,7 +68,7 @@ const CustomerForm = ({ customer, onSuccess }) => {
       {error && <div className="text-red-500 text-sm text-center mb-4">{error}</div>}
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-brand-secondary text-right">
+        <label className="block text-sm font-medium text-text-light text-right">
           {t('customerManagement.form.name')}
         </label>
         <input
@@ -77,13 +77,13 @@ const CustomerForm = ({ customer, onSuccess }) => {
           value={formData.name}
           onChange={handleChange}
           required
-          className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50 text-right"
+          className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 text-right placeholder-text-light"
           dir="rtl"
         />
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-brand-secondary text-right">
+        <label className="block text-sm font-medium text-text-light text-right">
           {t('customerManagement.form.phone')}
         </label>
         <input
@@ -92,21 +92,21 @@ const CustomerForm = ({ customer, onSuccess }) => {
           value={formData.phone_number}
           onChange={handleChange}
           required
-          className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50 text-right"
+          className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 text-right placeholder-text-light"
           dir="rtl"
         />
-        <p className="text-xs text-brand-secondary text-right mt-1">
+        <p className="text-xs text-text-light text-right mt-1">
           {t('customerManagement.form.phoneHint')}
         </p>
       </div>
 
       <div className="text-right my-4">
-        <span className="text-lg text-brand-primary">{t('customerManagement.form.address')}</span>
+        <span className="text-lg text-text-dark">{t('customerManagement.form.address')}</span>
       </div>
 
       <div className="grid grid-cols-2 gap-x-4 gap-y-6">
         <div className="space-y-2">
-          <label className="block text-xs font-medium text-brand-secondary text-right">
+          <label className="block text-xs font-medium text-text-light text-right">
             {t('customerManagement.form.addressRoad')}
           </label>
           <input
@@ -114,12 +114,12 @@ const CustomerForm = ({ customer, onSuccess }) => {
             name="address_road"
             value={formData.address_road}
             onChange={handleChange}
-            className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50 text-right"
+            className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right placeholder-text-light"
             dir="rtl"
           />
         </div>
         <div className="space-y-2">
-          <label className="block text-xs font-medium text-brand-secondary text-right">
+          <label className="block text-xs font-medium text-text-light text-right">
             {t('customerManagement.form.addressHome')}
           </label>
           <input
@@ -127,12 +127,12 @@ const CustomerForm = ({ customer, onSuccess }) => {
             name="address_home"
             value={formData.address_home}
             onChange={handleChange}
-            className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50 text-right"
+            className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right placeholder-text-light"
             dir="rtl"
           />
         </div>
         <div className="space-y-2">
-          <label className="block text-xs font-medium text-brand-secondary text-right">
+          <label className="block text-xs font-medium text-text-light text-right">
             {t('customerManagement.form.addressBlock')}
           </label>
           <input
@@ -140,12 +140,12 @@ const CustomerForm = ({ customer, onSuccess }) => {
             name="address_block"
             value={formData.address_block}
             onChange={handleChange}
-            className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50 text-right"
+            className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right placeholder-text-light"
             dir="rtl"
           />
         </div>
         <div className="space-y-2">
-          <label className="block text-xs font-medium text-brand-secondary text-right">
+          <label className="block text-xs font-medium text-text-light text-right">
             {t('customerManagement.form.town')}
           </label>
           <input
@@ -153,7 +153,7 @@ const CustomerForm = ({ customer, onSuccess }) => {
             name="town"
             value={formData.town}
             onChange={handleChange}
-            className="w-full bg-black/30 border border-brand-border text-brand-primary p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary/50 text-right"
+            className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right placeholder-text-light"
             dir="rtl"
           />
         </div>

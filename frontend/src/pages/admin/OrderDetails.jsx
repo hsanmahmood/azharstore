@@ -30,43 +30,43 @@ const OrderDetails = ({ order }) => {
   const total = subtotal + deliveryFee;
 
   return (
-    <div className="p-6 bg-black/20 rounded-lg">
+    <div className="p-6 bg-card-background rounded-lg text-text-dark">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <h3 className="text-lg font-medium text-brand-primary mb-4">{t('customerManagement.title')}</h3>
-          <div className="space-y-2 text-sm">
-            <p><span className="font-semibold">{t('customerManagement.form.name')}:</span> {order.customer.name}</p>
-            <p><span className="font-semibold">{t('customerManagement.form.phone')}:</span> {order.customer.phone_number}</p>
-            <p><span className="font-semibold">{t('customerManagement.form.town')}:</span> {order.customer.town}</p>
-            <p><span className="font-semibold">{t('customerManagement.form.address')}:</span> {`${order.customer.address_road}, ${order.customer.address_block}, ${order.customer.address_home}`}</p>
+          <h3 className="text-lg font-medium text-brand-purple mb-4">{t('customerManagement.title')}</h3>
+          <div className="space-y-2 text-sm text-text-light">
+            <p><span className="font-semibold text-text-dark">{t('customerManagement.form.name')}:</span> {order.customer.name}</p>
+            <p><span className="font-semibold text-text-dark">{t('customerManagement.form.phone')}:</span> {order.customer.phone_number}</p>
+            <p><span className="font-semibold text-text-dark">{t('customerManagement.form.town')}:</span> {order.customer.town}</p>
+            <p><span className="font-semibold text-text-dark">{t('customerManagement.form.address')}:</span> {`${order.customer.address_road}, ${order.customer.address_block}, ${order.customer.address_home}`}</p>
           </div>
         </div>
         <div>
-          <h3 className="text-lg font-medium text-brand-primary mb-4">{t('orderManagement.title')}</h3>
-          <div className="space-y-2 text-sm">
-            <p><span className="font-semibold">{t('orderManagement.table.orderId')}:</span> #{order.id}</p>
-            <p><span className="font-semibold">{t('orderManagement.table.status')}:</span> {t(`orderManagement.status.${order.status}`)}</p>
-            <p><span className="font-semibold">{t('orderManagement.table.shippingMethod')}:</span> {t(`orderManagement.shipping.${order.shipping_method}`)}</p>
+          <h3 className="text-lg font-medium text-brand-purple mb-4">{t('orderManagement.title')}</h3>
+          <div className="space-y-2 text-sm text-text-light">
+            <p><span className="font-semibold text-text-dark">{t('orderManagement.table.orderId')}:</span> #{order.id}</p>
+            <p><span className="font-semibold text-text-dark">{t('orderManagement.table.status')}:</span> {t(`orderManagement.status.${order.status}`)}</p>
+            <p><span className="font-semibold text-text-dark">{t('orderManagement.table.shippingMethod')}:</span> {t(`orderManagement.shipping.${order.shipping_method}`)}</p>
             {order.shipping_method === 'delivery' && (
-              <p><span className="font-semibold">{t('settings.deliveryArea')}:</span> {order.delivery_area?.name || t('common.notAvailable')}</p>
+              <p><span className="font-semibold text-text-dark">{t('settings.deliveryArea')}:</span> {order.delivery_area?.name || t('common.notAvailable')}</p>
             )}
           </div>
         </div>
       </div>
 
       <div className="mt-6">
-        <h3 className="text-lg font-medium text-brand-primary mb-4">{t('orderManagement.form.orderItems')}</h3>
+        <h3 className="text-lg font-medium text-brand-purple mb-4">{t('orderManagement.form.orderItems')}</h3>
         <div className="space-y-4">
           {order.order_items.map((item) => {
             const product = item.product || item.product_variant?.product;
             if (!product) {
               return (
-                <div key={item.id || Math.random()} className="flex items-center gap-4 p-2 rounded-lg bg-black/30">
-                  <div className="w-20 h-20 bg-black/40 rounded-lg flex items-center justify-center">
-                    <p className="text-xs text-brand-secondary">{t('orderManagement.form.productNotFound')}</p>
+                <div key={item.id || Math.random()} className="flex items-center gap-4 p-2 rounded-lg bg-brand-white">
+                  <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <p className="text-xs text-text-light">{t('orderManagement.form.productNotFound')}</p>
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-red-500">{t('orderManagement.form.productNotFound')}</p>
+                    <p className="font-semibold text-stock-red">{t('orderManagement.form.productNotFound')}</p>
                   </div>
                 </div>
               );
@@ -87,25 +87,25 @@ const OrderDetails = ({ order }) => {
             const lineItemTotal = unitPrice * item.quantity;
 
             return (
-              <div key={item.id} className="flex items-center gap-4 p-2 rounded-lg bg-black/30">
+              <div key={item.id} className="flex items-center gap-4 p-2 rounded-lg bg-brand-white">
                 <img
                   src={imageUrl}
                   alt={name}
                   className="w-16 h-16 object-cover rounded-lg"
                 />
                 <div className="flex-1">
-                  <p className="font-semibold">{name}</p>
-                  <p className="text-sm text-brand-secondary">
+                  <p className="font-semibold text-text-dark">{name}</p>
+                  <p className="text-sm text-text-light">
                     {t('orderManagement.form.unitPrice')}: {unitPrice.toFixed(2)} {t('common.currency')}
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-brand-secondary">{t('orderManagement.form.quantity')}</p>
-                  <p className="font-semibold">{item.quantity}</p>
+                  <p className="text-xs text-text-light">{t('orderManagement.form.quantity')}</p>
+                  <p className="font-semibold text-text-dark">{item.quantity}</p>
                 </div>
                 <div className="text-right w-28">
-                  <p className="text-xs text-brand-secondary">{t('orderManagement.form.total')}</p>
-                  <p className="font-semibold text-lg">{lineItemTotal.toFixed(2)} {t('common.currency')}</p>
+                  <p className="text-xs text-text-light">{t('orderManagement.form.total')}</p>
+                  <p className="font-semibold text-lg text-text-dark">{lineItemTotal.toFixed(2)} {t('common.currency')}</p>
                 </div>
               </div>
             );
@@ -113,15 +113,15 @@ const OrderDetails = ({ order }) => {
         </div>
       </div>
 
-      <div className="mt-6 border-t border-brand-border/50 pt-6">
+      <div className="mt-6 border-t border-soft-border pt-6">
         <div className="space-y-2 text-right">
-          <p className="text-lg"><span className="font-semibold">{t('orderManagement.form.subtotal')}:</span> {subtotal.toFixed(2)} {t('common.currency')}</p>
+          <p className="text-lg text-text-light"><span className="font-semibold text-text-dark">{t('orderManagement.form.subtotal')}:</span> {subtotal.toFixed(2)} {t('common.currency')}</p>
           {order.shipping_method === 'delivery' && (
-            <p className="text-lg"><span className="font-semibold">{t('settings.deliveryPrice')}:</span> {deliveryFee.toFixed(2)} {t('common.currency')}
-              {isFreeDelivery && <span className="text-sm text-green-400 ml-2">({t('orderManagement.freeDeliveryApplied')})</span>}
+            <p className="text-lg text-text-light"><span className="font-semibold text-text-dark">{t('settings.deliveryPrice')}:</span> {deliveryFee.toFixed(2)} {t('common.currency')}
+              {isFreeDelivery && <span className="text-sm text-stock-green ml-2">({t('orderManagement.freeDeliveryApplied')})</span>}
             </p>
           )}
-          <p className="text-xl font-bold"><span className="font-semibold">{t('orderManagement.form.total')}:</span> {total.toFixed(2)} {t('common.currency')}</p>
+          <p className="text-xl font-bold text-text-dark"><span className="font-semibold">{t('orderManagement.form.total')}:</span> {total.toFixed(2)} {t('common.currency')}</p>
         </div>
       </div>
     </div>
