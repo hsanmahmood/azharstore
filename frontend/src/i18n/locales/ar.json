@@ -40,7 +40,10 @@
     "confirmDeleteArea": "هل أنت متأكد من حذف منطقة التوصيل هذه؟",
     "deliveryArea": "منطقة التوصيل",
     "selectArea": "اختر منطقة",
-    "delivery": "التوصيل"
+    "delivery": "التوصيل",
+    "messages": "الرسائل",
+    "deliveryMessage": "رسالة التوصيل",
+    "pickupMessage": "رسالة الاستلام"
   },
   "productManagement": {
     "title": "إدارة المنتجات",

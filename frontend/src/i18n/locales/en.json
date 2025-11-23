@@ -40,7 +40,10 @@
     "confirmDeleteArea": "Are you sure you want to delete this delivery area?",
     "deliveryArea": "Delivery Area",
     "selectArea": "Select Area",
-    "delivery": "Delivery"
+    "delivery": "Delivery",
+    "messages": "Messages",
+    "deliveryMessage": "Delivery Message",
+    "pickupMessage": "Pickup Message"
   },
   "productManagement": {
     "title": "Product Management",

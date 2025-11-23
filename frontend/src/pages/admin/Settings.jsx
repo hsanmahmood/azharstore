@@ -91,19 +91,34 @@ const Settings = () => {
     }
   };
 
-  const handleSettingsSave = async () => {
+  const handleDeliverySettingsSave = async () => {
     setIsSubmitting(true);
     setError('');
     try {
       const updatedSettings = {
         free_delivery_threshold: parseFloat(freeDeliveryThreshold) || 0,
+      };
+      const newSettings = await apiService.updateAppSettings(updatedSettings);
+      updateAppSettings(newSettings);
+    } catch (err) {
+      setError('Failed to save delivery settings.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleMessagesSave = async () => {
+    setIsSubmitting(true);
+    setError('');
+    try {
+      const updatedSettings = {
         delivery_message: editorDeliveryRef.current ? editorDeliveryRef.current.getContent() : deliveryMessage,
         pickup_message: editorPickupRef.current ? editorPickupRef.current.getContent() : pickupMessage,
       };
       const newSettings = await apiService.updateAppSettings(updatedSettings);
       updateAppSettings(newSettings);
     } catch (err) {
-      setError('Failed to save settings.');
+      setError('Failed to save messages.');
     } finally {
       setIsSubmitting(false);
     }
@@ -138,16 +153,7 @@ const Settings = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-brand-primary">{t('settings.title')}</h1>
-        <button
-          onClick={handleSettingsSave}
-          className="bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95 flex items-center"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? <Loader2 className="animate-spin" /> : t('common.saveChanges')}
-        </button>
-      </div>
+      <h1 className="text-3xl font-bold text-brand-primary mb-8">{t('settings.title')}</h1>
 
       <div className="mb-8 border-b border-brand-border">
         <nav className="flex space-x-4">
@@ -171,6 +177,13 @@ const Settings = () => {
                 onChange={(e) => setFreeDeliveryThreshold(e.target.value)}
                 className="w-40 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
               />
+               <button
+                onClick={handleDeliverySettingsSave}
+                className="bg-brand-primary text-brand-background font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all duration-200"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? <Loader2 className="animate-spin" /> : t('common.save')}
+              </button>
             </div>
           </div>
           <div className="flex justify-between items-center mb-8">
@@ -205,7 +218,7 @@ const Settings = () => {
           <div>
             <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.deliveryMessage')}</h2>
             <Editor
-              apiKey="YOUR_TINYMCE_API_KEY" // Replace with your TinyMCE API key
+              apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
               onInit={(_evt, editor) => editorDeliveryRef.current = editor}
               initialValue={deliveryMessage}
               init={{
@@ -223,7 +236,7 @@ const Settings = () => {
           <div>
             <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.pickupMessage')}</h2>
             <Editor
-              apiKey="YOUR_TINYMCE_API_KEY" // Replace with your TinyMCE API key
+              apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
               onInit={(_evt, editor) => editorPickupRef.current = editor}
               initialValue={pickupMessage}
               init={{
@@ -237,6 +250,15 @@ const Settings = () => {
                 automatic_uploads: true,
               }}
             />
+          </div>
+          <div className="flex justify-end">
+            <button
+              onClick={handleMessagesSave}
+              className="bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95 flex items-center"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? <Loader2 className="animate-spin" /> : t('common.saveChanges')}
+            </button>
           </div>
         </div>
       )}
