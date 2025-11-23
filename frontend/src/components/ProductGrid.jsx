@@ -20,7 +20,7 @@ const ProductGrid = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {products.map((product) => (
-        <div key={product.id} className="bg-brand-white rounded-lg shadow-card overflow-hidden">
+        <div key={product.id} className="bg-card-background rounded-lg shadow-card overflow-hidden">
           <img src={product.image_url} alt={product.name} className="w-full h-48 object-cover" />
           <div className="p-4">
             <h3 className="text-lg font-semibold text-text-dark">{product.name}</h3>

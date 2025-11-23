@@ -12,12 +12,14 @@ export default {
         "primary-background": "#f4f0f4",
         "brand-purple": "#742370",
         "text-dark": "#1f2937",
-        "text-light": "#6b7280",
+        "text-light": "#4a4a4a",
         "stock-green": "#10b981",
         "stock-orange": "#f59e0b",
         "stock-red": "#ef4444",
         "category-purple": "#E0C0E0",
         "category-blue": "#C0C0E0",
+        "card-background": "rgba(255, 255, 255, 0.6)",
+        "soft-border": "#dcd9dc",
         brand: {
           background: "#f4f0f4",
           gray: "#6e6c6f",
@@ -25,14 +27,14 @@ export default {
           black: "#000000",
           primary: "#742370",
           secondary: "#a0a0a0",
-          border: "rgba(0, 0, 0, 0.1)",
+          border: "#dcd9dc",
         },
       },
       borderRadius: {
         20: "20px",
       },
       boxShadow: {
-        card: "0 8px 24px rgba(0,0,0,0.1)",
+        card: "0 4px 12px rgba(0,0,0,0.05)",
       },
       keyframes: {
         modalIn: {
