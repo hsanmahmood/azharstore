@@ -4,8 +4,8 @@ import TransformedImage from '../../components/TransformedImage';
 
 const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
   const cardClasses = `
-    bg-black/20 border border-brand-border rounded-2xl p-4 flex flex-col
-    transition-all duration-300 hover:border-brand-primary/50 hover:-translate-y-1
+    bg-card-background border border-soft-border rounded-2xl p-4 flex flex-col
+    transition-all duration-300 hover:border-brand-purple/50 hover:-translate-y-1
     ${optimistic ? 'opacity-50 animate-pulse' : ''}
   `;
   return (
@@ -18,27 +18,27 @@ const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
             className="w-full aspect-square object-cover rounded-lg"
           />
         ) : (
-          <div className="w-full aspect-square bg-black/30 rounded-lg flex items-center justify-center">
-            <ImageIcon className="text-brand-secondary" size={48} />
+          <div className="w-full aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+            <ImageIcon className="text-text-light" size={48} />
           </div>
         )}
         <div className="flex justify-between items-start gap-2 mt-3">
-          <h3 className="text-lg font-bold text-brand-primary flex-1 break-words">{product.name}</h3>
+          <h3 className="text-lg font-bold text-text-dark flex-1 break-words">{product.name}</h3>
           <div className="flex items-center gap-3 flex-shrink-0">
-            <button onClick={() => onEdit(product)} className="text-brand-secondary hover:text-brand-primary transition-colors">
+            <button onClick={() => onEdit(product)} className="text-text-light hover:text-brand-purple transition-colors">
               <Edit size={18} />
             </button>
-            <button onClick={() => onDelete(product.id)} className="text-brand-secondary hover:text-red-500 transition-colors">
+            <button onClick={() => onDelete(product.id)} className="text-text-light hover:text-stock-red transition-colors">
               <Trash2 size={18} />
             </button>
           </div>
         </div>
-        <p className="text-sm text-brand-secondary mt-2 line-clamp-2">{product.description}</p>
+        <p className="text-sm text-text-light mt-2 line-clamp-2">{product.description}</p>
         <div className="mt-3 space-y-2 text-sm">
-          <div className="flex items-center gap-2 text-brand-secondary">
+          <div className="flex items-center gap-2 text-text-light">
             <span>{product.price} د.ب</span>
           </div>
-          <div className="flex items-center gap-2 text-brand-secondary">
+          <div className="flex items-center gap-2 text-text-light">
             <Package size={14} />
             <span>المخزون: {product.stock_quantity}</span>
           </div>

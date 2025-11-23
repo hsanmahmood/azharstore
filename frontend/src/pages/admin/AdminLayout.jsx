@@ -42,7 +42,7 @@ const AdminLayoutContent = () => {
   const getNavLinkClasses = (isOpen) => (to) => {
     const isActive = location.pathname === to;
     return `flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 ${
-      isActive ? 'bg-brand-primary/10 text-brand-primary' : 'text-brand-secondary hover:bg-brand-primary/5 hover:text-brand-primary'
+      isActive ? 'bg-brand-purple/10 text-brand-purple' : 'text-text-light hover:bg-brand-purple/5 hover:text-brand-purple'
     } ${!isOpen ? 'justify-center' : ''}`;
   };
 
@@ -51,9 +51,9 @@ const AdminLayoutContent = () => {
 
     return (
       <div className="flex flex-col h-full">
-        <div className="flex items-center justify-between p-4 mb-4 border-b border-brand-border/50">
+        <div className="flex items-center justify-between p-4 mb-4 border-b border-soft-border">
           <div className={`transition-all duration-300 ${!isOpen ? 'opacity-0 w-0' : 'opacity-100'}`}>
-            <span className="text-lg font-bold">AzharStore</span>
+            <span className="text-lg font-bold text-text-dark">AzharStore</span>
           </div>
         </div>
 
@@ -71,21 +71,21 @@ const AdminLayoutContent = () => {
         </nav>
 
         <div className="px-2 py-4 mt-auto">
-          <div className="border-t border-brand-border pt-4 space-y-2">
+          <div className="border-t border-soft-border pt-4 space-y-2">
             <NavLink to="/settings" className={getNavLinkClasses(isDesktopSidebarOpen)('/settings')} title={isDesktopSidebarOpen ? '' : t('settings.title')}>
               <Settings className={`h-5 w-5 ${isDesktopSidebarOpen ? 'ml-3' : ''}`} />
               <span className={`transition-opacity duration-200 ${!isDesktopSidebarOpen ? 'hidden' : 'delay-200'}`}>{t('settings.title')}</span>
             </NavLink>
             <button
               onClick={() => setIsDesktopSidebarOpen(!isOpen)}
-              className={`flex items-center w-full px-4 py-2.5 text-sm font-medium text-brand-secondary hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg transition-colors ${!isOpen ? 'justify-center' : ''}`}
+              className={`flex items-center w-full px-4 py-2.5 text-sm font-medium text-text-light hover:bg-brand-purple/5 hover:text-brand-purple rounded-lg transition-colors ${!isOpen ? 'justify-center' : ''}`}
             >
               <PanelLeft className={`h-5 w-5 ${isOpen ? 'ml-3' : ''}`} />
               <span className={`transition-opacity duration-200 ${!isOpen ? 'hidden' : 'delay-200'}`}>طي القائمة</span>
             </button>
             <button
               onClick={handleLogout}
-              className={`flex items-center w-full px-4 py-2.5 text-sm font-medium text-brand-secondary hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg transition-colors ${!isOpen ? 'justify-center' : ''}`}
+              className={`flex items-center w-full px-4 py-2.5 text-sm font-medium text-text-light hover:bg-brand-purple/5 hover:text-brand-purple rounded-lg transition-colors ${!isOpen ? 'justify-center' : ''}`}
             >
               <LogOut className={`h-5 w-5 ${isOpen ? 'ml-3' : ''}`} />
               <span className={`transition-opacity duration-200 ${!isOpen ? 'hidden' : 'delay-200'}`}>{t('Logout')}</span>
@@ -97,7 +97,7 @@ const AdminLayoutContent = () => {
   };
 
   return (
-    <div dir="rtl" className="flex h-screen bg-brand-background text-brand-primary font-arabic">
+    <div dir="rtl" className="flex h-screen bg-primary-background text-text-dark font-arabic">
       <MobileAdminSidebar
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}
@@ -105,13 +105,13 @@ const AdminLayoutContent = () => {
         handleLogout={handleLogout}
       />
 
-      <aside className={`hidden md:flex md:flex-shrink-0 bg-black/20 border-l border-brand-border transition-all duration-300 ${isDesktopSidebarOpen ? 'w-64' : 'w-20'}`}>
+      <aside className={`hidden md:flex md:flex-shrink-0 bg-card-background border-l border-soft-border transition-all duration-300 ${isDesktopSidebarOpen ? 'w-64' : 'w-20'}`}>
         <DesktopSidebarContent />
       </aside>
 
       <div className="flex flex-col flex-1">
-        <header className="sticky top-0 bg-brand-background/80 backdrop-blur-lg flex items-center justify-between">
-          <button onClick={() => setIsMobileSidebarOpen(true)} className="text-brand-primary md:hidden p-4">
+        <header className="sticky top-0 bg-primary-background/80 backdrop-blur-lg flex items-center justify-between">
+          <button onClick={() => setIsMobileSidebarOpen(true)} className="text-text-dark md:hidden p-4">
             <Menu size={24} />
           </button>
         </header>

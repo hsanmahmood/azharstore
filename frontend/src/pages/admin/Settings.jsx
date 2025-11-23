@@ -128,8 +128,8 @@ const Settings = () => {
       onClick={() => setActiveTab(tabName)}
       className={`py-2 px-4 text-lg font-semibold transition-colors duration-200 ${
         activeTab === tabName
-          ? 'text-brand-primary border-b-2 border-brand-primary'
-          : 'text-brand-secondary hover:text-brand-primary'
+          ? 'text-brand-purple border-b-2 border-brand-purple'
+          : 'text-text-light hover:text-brand-purple'
       }`}
     >
       {label}
@@ -138,33 +138,33 @@ const Settings = () => {
 
   return (
     <>
-      <h1 className="text-3xl font-bold text-brand-primary mb-8">{t('settings.title')}</h1>
+      <h1 className="text-3xl font-bold text-text-dark mb-8">{t('settings.title')}</h1>
 
-      <div className="mb-8 border-b border-brand-border">
+      <div className="mb-8 border-b border-soft-border">
         <nav className="flex space-x-4">
           <TabButton tabName="delivery" label={t('settings.delivery')} />
           <TabButton tabName="messages" label={t('settings.messages')} />
         </nav>
       </div>
 
-      {error && <div className="text-red-500 mb-6 bg-red-900/20 p-3 rounded-lg">{error}</div>}
+      {error && <div className="text-red-500 mb-6 bg-red-500/10 p-3 rounded-lg">{error}</div>}
 
       {activeTab === 'delivery' && (
         <div>
-          <div className="bg-black/20 border border-brand-border rounded-20 p-6 mb-8">
-            <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.deliverySettings')}</h2>
+          <div className="bg-card-background border border-soft-border rounded-20 p-6 mb-8">
+            <h2 className="text-2xl font-bold text-text-dark mb-4">{t('settings.deliverySettings')}</h2>
             <div className="flex items-center gap-4">
-              <label htmlFor="freeDeliveryThreshold" className="text-brand-secondary">{t('settings.freeDeliveryThreshold')}</label>
+              <label htmlFor="freeDeliveryThreshold" className="text-text-light">{t('settings.freeDeliveryThreshold')}</label>
               <input
                 id="freeDeliveryThreshold"
                 type="number"
                 value={freeDeliveryThreshold}
                 onChange={(e) => setFreeDeliveryThreshold(e.target.value)}
-                className="w-40 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                className="w-40 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
               />
                <button
                 onClick={handleDeliverySettingsSave}
-                className="bg-brand-primary text-brand-background font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all duration-200"
+                className="bg-brand-purple text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all duration-200"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? <Loader2 className="animate-spin" /> : t('common.save')}
@@ -172,10 +172,10 @@ const Settings = () => {
             </div>
           </div>
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold text-brand-primary">{t('settings.deliveryAreas')}</h2>
+            <h2 className="text-2xl font-bold text-text-dark">{t('settings.deliveryAreas')}</h2>
             <button
               onClick={() => openModal()}
-              className="flex items-center gap-2 bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
+              className="flex items-center gap-2 bg-brand-purple text-white font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
             >
               <Plus size={20} /> {t('settings.addArea')}
             </button>
@@ -183,14 +183,14 @@ const Settings = () => {
           {dataError && !isModalOpen && <div className="text-red-500 mb-6">{dataError}</div>}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {deliveryAreas.map((area) => (
-              <div key={area.id} className="bg-black/20 border border-brand-border rounded-20 p-5 flex justify-between items-center">
+              <div key={area.id} className="bg-card-background border border-soft-border rounded-20 p-5 flex justify-between items-center">
                 <div>
-                  <span className="text-lg font-semibold">{area.name}</span>
-                  <p className="text-brand-secondary">{area.price} {t('common.currency')}</p>
+                  <span className="text-lg font-semibold text-text-dark">{area.name}</span>
+                  <p className="text-text-light">{area.price} {t('common.currency')}</p>
                 </div>
                 <div className="flex gap-3">
-                  <button onClick={() => openModal(area)} className="text-brand-secondary hover:text-brand-primary"><Edit size={20} /></button>
-                  <button onClick={() => openDeleteConfirm(area.id)} className="text-brand-secondary hover:text-red-500"><Trash2 size={20} /></button>
+                  <button onClick={() => openModal(area)} className="text-text-light hover:text-brand-purple"><Edit size={20} /></button>
+                  <button onClick={() => openDeleteConfirm(area.id)} className="text-text-light hover:text-stock-red"><Trash2 size={20} /></button>
                 </div>
               </div>
             ))}
@@ -201,14 +201,14 @@ const Settings = () => {
       {activeTab === 'messages' && (
         <div className="space-y-8">
           <div>
-            <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.deliveryMessage')}</h2>
+            <h2 className="text-2xl font-bold text-text-dark mb-4">{t('settings.deliveryMessage')}</h2>
             <SimpleRichTextEditor
               initialValue={deliveryMessage}
               onChange={(content) => setDeliveryMessage(content)}
             />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.pickupMessage')}</h2>
+            <h2 className="text-2xl font-bold text-text-dark mb-4">{t('settings.pickupMessage')}</h2>
             <SimpleRichTextEditor
               initialValue={pickupMessage}
               onChange={(content) => setPickupMessage(content)}
@@ -217,7 +217,7 @@ const Settings = () => {
           <div className="flex justify-end">
             <button
               onClick={handleMessagesSave}
-              className="bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95 flex items-center"
+              className="bg-brand-purple text-white font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95 flex items-center"
               disabled={isSubmitting}
             >
               {isSubmitting ? <Loader2 className="animate-spin" /> : t('common.saveChanges')}
@@ -229,21 +229,21 @@ const Settings = () => {
       <Modal isOpen={isModalOpen} onClose={closeModal} title={editingArea ? t('settings.editArea') : t('settings.addArea')}>
         <form onSubmit={handleFormSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-brand-secondary mb-2">{t('settings.areaName')}</label>
-            <input type="text" name="name" value={formData.name} onChange={handleFormChange} required className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg" />
+            <label className="block text-sm font-medium text-text-light mb-2">{t('settings.areaName')}</label>
+            <input type="text" name="name" value={formData.name} onChange={handleFormChange} required className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-brand-secondary mb-2">{t('settings.deliveryPrice')}</label>
+            <label className="block text-sm font-medium text-text-light mb-2">{t('settings.deliveryPrice')}</label>
             <div className="relative">
-              <input type="number" name="price" value={formData.price} onChange={handleFormChange} required className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg pl-12" />
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-secondary">
+              <input type="number" name="price" value={formData.price} onChange={handleFormChange} required className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg pl-12 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light" />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light">
                 {t('common.currency')}
               </span>
             </div>
           </div>
           <div className="flex justify-end gap-4 pt-4">
-            <button type="button" onClick={closeModal} className="bg-brand-border/10 text-brand-primary font-bold py-2 px-4 rounded-lg">{t('common.cancel')}</button>
-            <button type="submit" className="bg-brand-primary text-brand-background font-bold py-2 px-4 rounded-lg" disabled={isSubmitting}>
+            <button type="button" onClick={closeModal} className="bg-gray-200 text-text-dark font-bold py-2 px-4 rounded-lg">{t('common.cancel')}</button>
+            <button type="submit" className="bg-brand-purple text-white font-bold py-2 px-4 rounded-lg" disabled={isSubmitting}>
               {isSubmitting ? <Loader2 className="animate-spin" /> : t('common.save')}
             </button>
           </div>

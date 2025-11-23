@@ -510,11 +510,11 @@ const ProductManagement = () => {
 
         <div className={`${activeTab === 'variants' ? '' : 'hidden'} variants-container`}>
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-brand-primary">{t('productManagement.form.variants')}</h3>
+            <h3 className="text-lg font-medium text-brand-purple">{t('productManagement.form.variants')}</h3>
             <button
               type="button"
               onClick={addVariant}
-              className="flex items-center gap-2 text-sm text-brand-primary bg-brand-primary/10 hover:bg-brand-primary/20 px-3 py-2 rounded-lg transition-colors"
+              className="flex items-center gap-2 text-sm text-brand-purple bg-brand-purple/10 hover:bg-brand-purple/20 px-3 py-2 rounded-lg transition-colors"
             >
               <Plus size={16} /> {t('productManagement.form.addVariant')}
             </button>
@@ -522,7 +522,7 @@ const ProductManagement = () => {
 
           <div className="space-y-4">
             {/* Header */}
-            <div className="variant-item header">
+            <div className="variant-item header text-text-light">
               <div className="w-20 text-center">{t('productManagement.form.image')}</div>
               <div className="flex-1 px-2">{t('productManagement.form.variantName')}</div>
               <div className="w-32 px-2">{t('productManagement.form.stock')}</div>
