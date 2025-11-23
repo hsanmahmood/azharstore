@@ -441,12 +441,12 @@ const ProductManagement = () => {
                 value={formData.name}
                 onChange={handleFormChange}
                 required
-                className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
               />
             </div>
 
             <div className="relative">
-              <label className="block text-sm font-medium text-brand-secondary mb-2">
+              <label className="block text-sm font-medium text-text-light mb-2">
                 {t('productManagement.form.category')}
               </label>
               <Dropdown
@@ -459,7 +459,7 @@ const ProductManagement = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-brand-secondary mb-2">
+            <label className="block text-sm font-medium text-text-light mb-2">
               {t('productManagement.form.description')}
             </label>
             <textarea
@@ -467,13 +467,13 @@ const ProductManagement = () => {
               value={formData.description}
               onChange={handleFormChange}
               rows="3"
-              className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+              className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-brand-secondary mb-2">
+              <label className="block text-sm font-medium text-text-light mb-2">
                 {t('productManagement.form.price')}
               </label>
               <div className="relative">
@@ -484,16 +484,16 @@ const ProductManagement = () => {
                   value={formData.price}
                   onChange={handleFormChange}
                   required
-                  className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50 pl-12"
+                  className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 pl-12 placeholder-text-light"
                 />
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-secondary">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light">
                   د.ب
                 </span>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-brand-secondary mb-2">
+              <label className="block text-sm font-medium text-text-light mb-2">
                 {t('productManagement.form.stock')}
               </label>
               <input
@@ -501,7 +501,7 @@ const ProductManagement = () => {
                 name="stock_quantity"
                 value={formData.stock_quantity}
                 onChange={handleFormChange}
-                className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
                 disabled={variants.length > 0}
               />
             </div>
@@ -545,14 +545,14 @@ const ProductManagement = () => {
                   placeholder={t('productManagement.form.variantName')}
                   value={variant.name}
                   onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
-                  className="flex-1 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                  className="flex-1 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
                 />
                 <input
                   type="number"
                   placeholder={t('productManagement.form.stock')}
                   value={variant.stock_quantity}
                   onChange={(e) => handleVariantChange(index, 'stock_quantity', parseInt(e.target.value) || 0)}
-                  className="w-32 bg-black/30 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                  className="w-32 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
                 />
                 <div className="w-28 flex justify-center items-center gap-2">
                   <button type="button" onClick={() => handleSaveVariant(index)} className="text-green-500 hover:text-green-400 bg-green-500/10 hover:bg-green-500/20 p-2 rounded-lg relative">
