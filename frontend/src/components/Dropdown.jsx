@@ -39,24 +39,24 @@ const Dropdown = ({ options, value, onChange, placeholder }) => {
     <div className="relative" ref={dropdownRef}>
       <button
         type="button"
-        className="w-full bg-black/30 border border-brand-border text-brand-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/50 flex justify-between items-center"
+        className="w-full bg-card-background border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 flex justify-between items-center"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span>{selectedOption ? selectedOption.label : placeholder}</span>
         <ChevronDown
-          className={`h-5 w-5 text-brand-secondary transition-transform ${
+          className={`h-5 w-5 text-text-light transition-transform ${
             isOpen ? 'transform rotate-180' : ''
           }`}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-2 bg-background-dark border border-brand-border rounded-lg shadow-lg">
+        <div className="absolute z-10 w-full mt-2 bg-primary-background border border-soft-border rounded-lg shadow-lg">
           <div className="p-2">
             <input
               type="text"
               placeholder={t('common.search')}
-              className="w-full bg-black/20 border border-brand-border text-brand-primary p-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
+              className="w-full bg-card-background border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-purple/50"
               onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
@@ -64,7 +64,7 @@ const Dropdown = ({ options, value, onChange, placeholder }) => {
             {filteredOptions.map((option) => (
               <li
                 key={option.value}
-                className="px-4 py-2 text-brand-primary hover:bg-brand-border/20 cursor-pointer"
+                className="px-4 py-2 text-text-dark hover:bg-gray-100 cursor-pointer"
                 onClick={() => handleSelect(option)}
               >
                 {option.label}
