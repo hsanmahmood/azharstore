@@ -6,7 +6,7 @@ import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
-import { Editor } from '@tinymce/tinymce-react';
+import EditorWithLoading from '../../components/EditorWithLoading';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -217,7 +217,7 @@ const Settings = () => {
         <div className="space-y-8">
           <div>
             <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.deliveryMessage')}</h2>
-            <Editor
+            <EditorWithLoading
               apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
               onInit={(_evt, editor) => editorDeliveryRef.current = editor}
               initialValue={deliveryMessage}
@@ -235,7 +235,7 @@ const Settings = () => {
           </div>
           <div>
             <h2 className="text-2xl font-bold text-brand-primary mb-4">{t('settings.pickupMessage')}</h2>
-            <Editor
+            <EditorWithLoading
               apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
               onInit={(_evt, editor) => editorPickupRef.current = editor}
               initialValue={pickupMessage}
