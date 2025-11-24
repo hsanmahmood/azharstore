@@ -14,7 +14,6 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
 
   const applyStyle = (command, value = null) => {
     document.execCommand(command, false, value);
-    editorRef.current.focus();
   };
 
   const changeFontSize = (direction) => {
@@ -35,7 +34,7 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
   };
 
   return (
-    <div className="border border-soft-border rounded-lg bg-brand-white text-text-dark">
+    <div className="border border-soft-border rounded-lg bg-brand-white text-text-dark" dir="rtl">
       <div className="flex items-center p-2 border-b border-soft-border">
         <button
           type="button"
@@ -96,6 +95,7 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
         dangerouslySetInnerHTML={{ __html: content }}
         className="w-full h-48 p-2 resize-y overflow-auto focus:outline-none"
         style={{ fontFamily: 'Tajawal, sans-serif' }}
+        dir="rtl"
       />
     </div>
   );
