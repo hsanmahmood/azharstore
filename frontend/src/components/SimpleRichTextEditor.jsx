@@ -35,13 +35,13 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
   };
 
   return (
-    <div className="border border-brand-border rounded-lg">
-      <div className="flex items-center p-2 border-b border-brand-border">
+    <div className="border border-soft-border rounded-lg bg-brand-white text-text-dark">
+      <div className="flex items-center p-2 border-b border-soft-border">
         <button
           type="button"
           onMouseDown={handleMouseDown}
           onClick={() => applyStyle('bold')}
-          className="p-2 rounded hover:bg-black/20 focus:outline-none"
+          className="p-2 rounded hover:bg-gray-100 focus:outline-none"
         >
           <Bold size={20} />
         </button>
@@ -49,7 +49,7 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
           type="button"
           onMouseDown={handleMouseDown}
           onClick={() => changeFontSize('increase')}
-          className="p-2 rounded hover:bg-black/20 focus:outline-none"
+          className="p-2 rounded hover:bg-gray-100 focus:outline-none"
         >
           <Plus size={20} />
         </button>
@@ -57,7 +57,7 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
           type="button"
           onMouseDown={handleMouseDown}
           onClick={() => changeFontSize('decrease')}
-          className="p-2 rounded hover:bg-black/20 focus:outline-none"
+          className="p-2 rounded hover:bg-gray-100 focus:outline-none"
         >
           <Minus size={20} />
         </button>
@@ -66,12 +66,12 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
             type="button"
             onMouseDown={handleMouseDown}
             onClick={() => setShowColorPalette(!showColorPalette)}
-            className="p-2 rounded hover:bg-black/20 focus:outline-none"
+            className="p-2 rounded hover:bg-gray-100 focus:outline-none"
           >
             <Palette size={20} />
           </button>
           {showColorPalette && (
-            <div className="absolute z-10 grid grid-cols-5 gap-2 p-2 bg-black/30 border border-brand-border rounded-lg">
+            <div className="absolute z-10 grid grid-cols-5 gap-2 p-2 bg-card-background border border-soft-border rounded-lg">
               {colors.map((color) => (
                 <button
                   key={color}
