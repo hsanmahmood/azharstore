@@ -56,14 +56,12 @@ def delete_category(category_id: int, supabase: Client = Depends(get_supabase_cl
     return bool(response.data)
 
 def get_products(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Product]:
-    response = supabase.table("products").select("*, category:categories(*), product_images(*), product_variants(*)").execute()
+    response = supabase.table("products").select("*, category:categories(*), product_images(*), product_variants(*)").order("created_at", foreign_table="product_images").execute()
     
     # Transform the data to include primary_image_url and images array
     products = response.data
     for product in products:
         if product.get('product_images'):
-            # Sort images by created_at to ensure consistent fallback
-            product['product_images'].sort(key=lambda img: img['created_at'])
             # Extract image URLs
             product['images'] = [img['image_url'] for img in product['product_images']]
             # Find primary image
@@ -82,7 +80,7 @@ def get_products(supabase: Client = Depends(get_supabase_client)) -> list[schema
     return products
 
 def get_product(product_id: int, supabase: Client = Depends(get_supabase_client)) -> schemas.Product | None:
-    response = supabase.table("products").select("*, category:categories(*), product_images(*), product_variants(*)").eq("id", product_id).execute()
+    response = supabase.table("products").select("*, category:categories(*), product_images(*), product_variants(*)").eq("id", product_id).order("created_at", foreign_table="product_images").execute()
     if not response.data:
         return None
     
@@ -90,8 +88,6 @@ def get_product(product_id: int, supabase: Client = Depends(get_supabase_client)
     
     # Transform the data to include primary_image_url and images array
     if product.get('product_images'):
-        # Sort images by created_at to ensure consistent fallback
-        product['product_images'].sort(key=lambda img: img['created_at'])
         # Extract image URLs
         product['images'] = [img['image_url'] for img in product['product_images']]
         # Find primary image
@@ -154,19 +150,32 @@ def update_product(product_id: int, product: schemas.ProductUpdate, supabase: Cl
             # Delete from database
             supabase.table("product_images").delete().in_("id", image_ids_to_delete).execute()
 
-        # Reset all is_primary flags for the product
-        supabase.table("product_images").update({"is_primary": False}).eq("product_id", product_id).execute()
+        # Check if a primary image is specified in the request
+        primary_image_in_request = next((img for img in images_data if img.get('is_primary')), None)
 
-        # Set the new primary image
-        primary_image = next((img for img in images_data if img.get('is_primary')), None)
-        if primary_image:
-            supabase.table("product_images").update({"is_primary": True}).eq("id", primary_image['id']).execute()
+        if primary_image_in_request:
+            # If a new primary image is set, reset all flags and then set the new one.
+            new_primary_id = primary_image_in_request['id']
+            supabase.table("product_images").update({"is_primary": False}).eq("product_id", product_id).execute()
+            supabase.table("product_images").update({"is_primary": True}).eq("id", new_primary_id).execute()
         else:
-            # If no primary is specified, make the first image primary
-            remaining_images_response = supabase.table("product_images").select("id").eq("product_id", product_id).order("created_at").execute()
-            if remaining_images_response.data:
-                first_image_id = remaining_images_response.data[0]['id']
-                supabase.table("product_images").update({"is_primary": True}).eq("id", first_image_id).execute()
+            # If no new primary is set, check if an existing one was removed.
+            remaining_image_ids = {img['id'] for img in images_data}
+            if remaining_image_ids:
+                existing_primary_res = supabase.table("product_images").select("id")\
+                    .eq("product_id", product_id)\
+                    .in_("id", list(remaining_image_ids))\
+                    .eq("is_primary", True).execute()
+
+                # If no primary exists among remaining images, set the oldest as primary.
+                if not existing_primary_res.data:
+                    oldest_image_res = supabase.table("product_images").select("id")\
+                        .in_("id", list(remaining_image_ids)).order("created_at").limit(1).execute()
+
+                    if oldest_image_res.data:
+                        new_primary_id = oldest_image_res.data[0]['id']
+                        supabase.table("product_images").update({"is_primary": False}).eq("product_id", product_id).execute()
+                        supabase.table("product_images").update({"is_primary": True}).eq("id", new_primary_id).execute()
 
     # Handle product_variants update
     if "product_variants" in product_data:
