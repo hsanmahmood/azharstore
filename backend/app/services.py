@@ -81,7 +81,29 @@ def get_products(supabase: Client = Depends(get_supabase_client)) -> list[schema
 
 def get_product(product_id: int, supabase: Client = Depends(get_supabase_client)) -> schemas.Product | None:
     response = supabase.table("products").select("*, category:categories(*), product_images(*), product_variants(*)").eq("id", product_id).execute()
-    return response.data[0] if response.data else None
+    if not response.data:
+        return None
+    
+    product = response.data[0]
+    
+    # Transform the data to include primary_image_url and images array
+    if product.get('product_images'):
+        # Extract image URLs
+        product['images'] = [img['image_url'] for img in product['product_images']]
+        # Find primary image
+        primary_img = next((img for img in product['product_images'] if img.get('is_primary')), None)
+        if primary_img:
+            product['primary_image_url'] = primary_img['image_url']
+        elif product['product_images']:
+            # If no primary, use first image
+            product['primary_image_url'] = product['product_images'][0]['image_url']
+        else:
+            product['primary_image_url'] = None
+    else:
+        product['images'] = []
+        product['primary_image_url'] = None
+    
+    return product
 
 def create_product(product: schemas.ProductCreate, supabase: Client = Depends(get_supabase_client)) -> schemas.Product:
     # Insert the new product

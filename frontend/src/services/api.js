@@ -141,9 +141,11 @@ export const apiService = {
   getAppSettings: () => api.get('/admin/settings'),
   updateAppSettings: (data) => api.patch('/admin/settings', data),
 
-  // General
-  uploadImage: (formData) => {
-    return api.post('/admin/upload-image', formData, {
+  // General (deprecated, use product upload)
+  uploadImage: (productId, file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post(`/admin/products/${productId}/images`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }).then(res => res.data);
   },

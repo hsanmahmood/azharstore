@@ -271,9 +271,10 @@ const ProductManagement = () => {
         id: img.id,
         is_primary: primaryImage ? img.image_url === primaryImage : img.is_primary,
       })) || [],
-      product_variants: variants.map(({ id, name, stock_quantity, image_url }) => ({
+      product_variants: variants.map(({ id, name, stock_quantity, image_url, price }) => ({
         id,
         name,
+        price: price !== undefined ? price : 0,
         stock_quantity,
         image_url,
       })),
@@ -433,199 +434,199 @@ const ProductManagement = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-brand-secondary mb-2">
-                {t('productManagement.form.name')}
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleFormChange}
-                required
-                className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
-              />
-            </div>
-
-            <div className="relative">
-              <label className="block text-sm font-medium text-text-light mb-2">
-                {t('productManagement.form.category')}
-              </label>
-              <Dropdown
-                options={categories.filter(cat => cat && cat.name).map((cat) => ({ value: cat.id, label: cat.name }))}
-                value={formData.category_id}
-                onChange={(option) => handleFormChange({ target: { name: 'category_id', value: option.value } })}
-                placeholder={t('productManagement.form.selectCategory')}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-text-light mb-2">
-              {t('productManagement.form.description')}
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleFormChange}
-              rows="3"
-              className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-text-light mb-2">
-                {t('productManagement.form.price')}
-              </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  step="0.01"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleFormChange}
-                  required
-                  className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 pl-12 placeholder-text-light"
-                />
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light">
-                  د.ب
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-text-light mb-2">
-                {t('productManagement.form.stock')}
-              </label>
-              <input
-                type="number"
-                name="stock_quantity"
-                value={formData.stock_quantity}
-                onChange={handleFormChange}
-                className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
-                disabled={variants.length > 0}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className={`${activeTab === 'variants' ? '' : 'hidden'} variants-container`}>
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-brand-purple">{t('productManagement.form.variants')}</h3>
-            <button
-              type="button"
-              onClick={addVariant}
-              className="flex items-center gap-2 text-sm text-brand-purple bg-brand-purple/10 hover:bg-brand-purple/20 px-3 py-2 rounded-lg transition-colors"
-            >
-              <Plus size={16} /> {t('productManagement.form.addVariant')}
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            {/* Header */}
-            <div className="variant-item header text-text-light">
-              <div className="w-20 text-center">{t('productManagement.form.image')}</div>
-              <div className="flex-1 px-2">{t('productManagement.form.variantName')}</div>
-              <div className="w-32 px-2">{t('productManagement.form.stock')}</div>
-              <div className="w-28 text-center">{t('common.actions')}</div>
-            </div>
-
-            {/* Variant Rows */}
-            {variants.map((variant, index) => (
-              <div key={index} className="variant-item">
-                <div className="w-20 flex justify-center">
-                  <ImageUploader
-                    onUpload={(e) => handleVariantImageUpload(index, e)}
-                    preview={variant.image_url}
-                    uploading={uploadingImages}
-                    size="h-12 w-12"
-                  />
-                </div>
+                  {t('productManagement.form.name')}
+                </label>
                 <input
                   type="text"
-                  placeholder={t('productManagement.form.variantName')}
-                  value={variant.name}
-                  onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
-                  className="flex-1 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleFormChange}
+                  required
+                  className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
                 />
-                <input
-                  type="number"
-                  placeholder={t('productManagement.form.stock')}
-                  value={variant.stock_quantity}
-                  onChange={(e) => handleVariantChange(index, 'stock_quantity', parseInt(e.target.value) || 0)}
-                  className="w-32 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
+              </div>
+
+              <div className="relative">
+                <label className="block text-sm font-medium text-text-light mb-2">
+                  {t('productManagement.form.category')}
+                </label>
+                <Dropdown
+                  options={categories.filter(cat => cat && cat.name).map((cat) => ({ value: cat.id, label: cat.name }))}
+                  value={formData.category_id}
+                  onChange={(option) => handleFormChange({ target: { name: 'category_id', value: option.value } })}
+                  placeholder={t('productManagement.form.selectCategory')}
                 />
-                <div className="w-28 flex justify-center items-center gap-2">
-                  <button type="button" onClick={() => handleSaveVariant(index)} className="text-green-500 hover:text-green-400 bg-green-500/10 hover:bg-green-500/20 p-2 rounded-lg relative">
-                    {variant.id && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-green-500"></span>}
-                    <Save size={18} />
-                  </button>
-                  <button type="button" onClick={() => removeVariant(index)} className="text-red-500 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 p-2 rounded-lg">
-                    <Trash2 size={18} />
-                  </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-text-light mb-2">
+                {t('productManagement.form.description')}
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleFormChange}
+                rows="3"
+                className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-text-light mb-2">
+                  {t('productManagement.form.price')}
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleFormChange}
+                    required
+                    className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 pl-12 placeholder-text-light"
+                  />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light">
+                    د.ب
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
 
-          {variants.length > 0 && (
-            <div className="mt-4 text-right">
-              <span className="text-sm font-medium text-brand-secondary">
-                {t('productManagement.form.totalStock')}:{' '}
-              </span>
-              <span className="font-bold text-brand-primary">
-                {variants.reduce((acc, v) => acc + (v.stock_quantity || 0), 0)}
-              </span>
-            </div>
-          )}
-        </div>
-
-        <div className={activeTab === 'images' ? '' : 'hidden'}>
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-lg font-medium text-brand-purple mb-4">{t('productManagement.form.primaryImage')}</h3>
-              <div className="relative w-40 h-40">
-                <ImageUploader
-                  onUpload={handlePrimaryImageUpload}
-                  preview={primaryImage}
-                  uploading={uploadingImages}
-                  size="h-40 w-40"
+              <div>
+                <label className="block text-sm font-medium text-text-light mb-2">
+                  {t('productManagement.form.stock')}
+                </label>
+                <input
+                  type="number"
+                  name="stock_quantity"
+                  value={formData.stock_quantity}
+                  onChange={handleFormChange}
+                  className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
+                  disabled={variants.length > 0}
                 />
-                {primaryImage && (
-                  <button
-                    type="button"
-                    onClick={() => removeImage(primaryImage, true)}
-                    className="absolute -top-2 -right-2 bg-stock-red rounded-full p-1 text-white shadow-lg"
-                    aria-label={t('common.remove')}
-                  >
-                    <X size={14} />
-                  </button>
-                )}
               </div>
             </div>
+          </div>
 
-            <hr className="border-soft-border" />
+          <div className={`${activeTab === 'variants' ? '' : 'hidden'} variants-container`}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-brand-purple">{t('productManagement.form.variants')}</h3>
+              <button
+                type="button"
+                onClick={addVariant}
+                className="flex items-center gap-2 text-sm text-brand-purple bg-brand-purple/10 hover:bg-brand-purple/20 px-3 py-2 rounded-lg transition-colors"
+              >
+                <Plus size={16} /> {t('productManagement.form.addVariant')}
+              </button>
+            </div>
 
-            <div>
-              <h3 className="text-lg font-medium text-brand-purple mb-4">{t('productManagement.form.galleryImages')}</h3>
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                {imagePreviews.map((preview, index) => (
-                  <div key={index} className="relative w-24 h-24">
-                    <img src={preview} alt={`Preview ${index}`} className="w-full h-full object-cover rounded-lg" />
-                    <button type="button" onClick={() => removeImage(preview)} className="absolute -top-2 -right-2 bg-stock-red rounded-full p-1 text-white shadow-lg">
-                      <X size={14} />
+            <div className="space-y-4">
+              {/* Header */}
+              <div className="variant-item header text-text-light">
+                <div className="w-20 text-center">{t('productManagement.form.image')}</div>
+                <div className="flex-1 px-2">{t('productManagement.form.variantName')}</div>
+                <div className="w-32 px-2">{t('productManagement.form.stock')}</div>
+                <div className="w-28 text-center">{t('common.actions')}</div>
+              </div>
+
+              {/* Variant Rows */}
+              {variants.map((variant, index) => (
+                <div key={index} className="variant-item">
+                  <div className="w-20 flex justify-center">
+                    <ImageUploader
+                      onUpload={(e) => handleVariantImageUpload(index, e)}
+                      preview={variant.image_url}
+                      uploading={uploadingImages}
+                      size="h-12 w-12"
+                    />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder={t('productManagement.form.variantName')}
+                    value={variant.name}
+                    onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
+                    className="flex-1 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
+                  />
+                  <input
+                    type="number"
+                    placeholder={t('productManagement.form.stock')}
+                    value={variant.stock_quantity}
+                    onChange={(e) => handleVariantChange(index, 'stock_quantity', parseInt(e.target.value) || 0)}
+                    className="w-32 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
+                  />
+                  <div className="w-28 flex justify-center items-center gap-2">
+                    <button type="button" onClick={() => handleSaveVariant(index)} className="text-green-500 hover:text-green-400 bg-green-500/10 hover:bg-green-500/20 p-2 rounded-lg relative">
+                      {variant.id && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-green-500"></span>}
+                      <Save size={18} />
+                    </button>
+                    <button type="button" onClick={() => removeVariant(index)} className="text-red-500 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 p-2 rounded-lg">
+                      <Trash2 size={18} />
                     </button>
                   </div>
-                ))}
-                <ImageUploader
-                  onUpload={handleImageUpload}
-                  uploading={uploadingImages}
-                  multiple
-                  size="h-24 w-24"
-                />
+                </div>
+              ))}
+            </div>
+
+            {variants.length > 0 && (
+              <div className="mt-4 text-right">
+                <span className="text-sm font-medium text-brand-secondary">
+                  {t('productManagement.form.totalStock')}:{' '}
+                </span>
+                <span className="font-bold text-brand-primary">
+                  {variants.reduce((acc, v) => acc + (v.stock_quantity || 0), 0)}
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div className={activeTab === 'images' ? '' : 'hidden'}>
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-lg font-medium text-brand-purple mb-4">{t('productManagement.form.primaryImage')}</h3>
+                <div className="relative w-40 h-40">
+                  <ImageUploader
+                    onUpload={handlePrimaryImageUpload}
+                    preview={primaryImage}
+                    uploading={uploadingImages}
+                    size="h-40 w-40"
+                  />
+                  {primaryImage && (
+                    <button
+                      type="button"
+                      onClick={() => removeImage(primaryImage, true)}
+                      className="absolute -top-2 -right-2 bg-stock-red rounded-full p-1 text-white shadow-lg"
+                      aria-label={t('common.remove')}
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <hr className="border-soft-border" />
+
+              <div>
+                <h3 className="text-lg font-medium text-brand-purple mb-4">{t('productManagement.form.galleryImages')}</h3>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative w-24 h-24">
+                      <img src={preview} alt={`Preview ${index}`} className="w-full h-full object-cover rounded-lg" />
+                      <button type="button" onClick={() => removeImage(preview)} className="absolute -top-2 -right-2 bg-stock-red rounded-full p-1 text-white shadow-lg">
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                  <ImageUploader
+                    onUpload={handleImageUpload}
+                    uploading={uploadingImages}
+                    multiple
+                    size="h-24 w-24"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
           <div className="flex justify-end gap-4 pt-4">
             {!isSubmitting && (

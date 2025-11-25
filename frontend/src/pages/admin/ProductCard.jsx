@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit, Trash2, DollarSign, Package, ImageIcon } from 'lucide-react';
+import { Edit, Trash2, Package, ImageIcon } from 'lucide-react';
 import TransformedImage from '../../components/TransformedImage';
 
 const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
@@ -11,7 +11,13 @@ const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
   return (
     <div className={cardClasses}>
       <div className="flex flex-col h-full">
-        {product.product_images?.[0] ? (
+        {product.primary_image_url ? (
+          <TransformedImage
+            url={product.primary_image_url}
+            alt={product.name}
+            className="w-full aspect-square object-cover rounded-lg"
+          />
+        ) : product.product_images?.[0] ? (
           <TransformedImage
             url={product.product_images[0].image_url}
             alt={product.name}
