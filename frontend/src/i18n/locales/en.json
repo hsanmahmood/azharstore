@@ -78,6 +78,12 @@
       "downloadImage": "Download Image",
       "removeImage": "Remove Image"
     },
+    "actions": {
+      "view": "View",
+      "setAsPrimary": "Set as Primary",
+      "download": "Download",
+      "remove": "Remove"
+    },
     "tabs": {
       "details": "Details",
       "images": "Images",
