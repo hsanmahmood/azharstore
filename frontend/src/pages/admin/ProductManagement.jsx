@@ -4,13 +4,17 @@ import { DataContext } from '../../context/DataContext';
 import { SearchContext } from '../../context/SearchContext';
 import { apiService } from '../../services/api';
 import SearchBar from '../../components/SearchBar';
-import { Plus, Loader2, Upload, X, Image as ImageIcon, ChevronDown, Trash2, Save } from 'lucide-react';
+import { Plus, Loader2, X, Trash2, Save, Upload, FileArchive, Eye, Star, Download, CheckCircle } from 'lucide-react';
 import Modal from '../../components/Modal';
 import Dropdown from '../../components/Dropdown';
 import ProductCard from './ProductCard';
 import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import ImageUploader from '../../components/ImageUploader';
+import ProductImage from '../../components/ProductImage';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+
 
 const ProductManagement = () => {
   const { t } = useTranslation();
@@ -36,6 +40,9 @@ const ProductManagement = () => {
   const [deletingProductId, setDeletingProductId] = useState(null);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxImageUrl, setLightboxImageUrl] = useState('');
+
 
   const initialFormState = {
     name: '',
@@ -45,59 +52,11 @@ const ProductManagement = () => {
     stock_quantity: '',
   };
   const [formData, setFormData] = useState(initialFormState);
-  const [imagePreviews, setImagePreviews] = useState([]);
-  const [primaryImage, setPrimaryImage] = useState(null);
   const variants = editingProduct ? editingProduct.product_variants || [] : [];
 
   const setVariants = (newVariants) => {
     if (editingProduct) {
       setEditingProduct({ ...editingProduct, product_variants: newVariants });
-    }
-  };
-
-  const handlePrimaryImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setUploadingImages(true);
-    setError('');
-
-    let currentProductId = editingProduct ? editingProduct.id : null;
-
-    if (!currentProductId) {
-      try {
-        const draftPayload = {
-          name: formData.name || t('productManagement.form.draftName'),
-          price: parseFloat(formData.price) || 0,
-        };
-        const productResponse = await apiService.createProduct(draftPayload);
-        currentProductId = productResponse.data.id;
-        setEditingProduct(productResponse.data);
-        addProduct(productResponse.data);
-      } catch (err) {
-        setError(t('productManagement.errors.draftError'));
-        setUploadingImages(false);
-        return;
-      }
-    }
-
-    try {
-      await apiService.uploadImage(currentProductId, file);
-
-      // Fetch the updated product to get all images, including the new primary one
-      const updatedProductResponse = await apiService.getProduct(currentProductId);
-      const updatedImages = updatedProductResponse.data.product_images;
-
-      const primaryImg = updatedImages.find(img => img.is_primary);
-      setPrimaryImage(primaryImg ? primaryImg.image_url : null);
-
-      // Update the gallery previews as well
-      setImagePreviews(updatedImages.filter(img => !img.is_primary).map(img => img.image_url));
-
-    } catch (err) {
-      setError(t('productManagement.errors.uploadError'));
-    } finally {
-      setUploadingImages(false);
     }
   };
 
@@ -155,8 +114,12 @@ const ProductManagement = () => {
   };
 
   const openModal = (product = null) => {
-    setEditingProduct(product);
     if (product) {
+      setEditingProduct({
+        ...product,
+        product_images: product.product_images || [],
+        product_variants: product.product_variants || []
+      });
       setFormData({
         name: product.name,
         description: product.description || '',
@@ -164,39 +127,13 @@ const ProductManagement = () => {
         category_id: product.category_id || '',
         stock_quantity: product.stock_quantity || '',
       });
-      const primaryImg = product.product_images.find(img => img.is_primary);
-      setPrimaryImage(primaryImg ? primaryImg.image_url : null);
-      setImagePreviews(product.product_images.filter(img => !img.is_primary).map(img => img.image_url));
     } else {
-      setEditingProduct({ product_variants: [] }); // Initialize with empty variants
+      setEditingProduct({ product_images: [], product_variants: [] });
       setFormData(initialFormState);
-      setImagePreviews([]);
     }
     setIsModalOpen(true);
-  };
-
-  const removeImage = async (imageUrlToRemove, isPrimary = false) => {
-    if (!editingProduct || !editingProduct.product_images) return;
-
-    const imageToRemove = editingProduct.product_images.find(img => img.image_url === imageUrlToRemove);
-    if (!imageToRemove) return;
-
-    try {
-      await apiService.deleteImage(imageToRemove.id);
-
-      const updatedImages = editingProduct.product_images.filter(img => img.id !== imageToRemove.id);
-
-      if (isPrimary) {
-        setPrimaryImage(null);
-      }
-
-      setEditingProduct({ ...editingProduct, product_images: updatedImages });
-      setImagePreviews(updatedImages.filter(img => !img.is_primary).map(img => img.image_url));
-
-    } catch (err) {
-      setError(t('productManagement.errors.deleteImageError'));
-      console.error("Failed to delete image:", err);
-    }
+    setActiveTab('details');
+    setError('');
   };
 
   const closeModal = () => {
@@ -211,50 +148,75 @@ const ProductManagement = () => {
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
-    if (files.length === 0) return;
+    if (files.length === 0 || !editingProduct) return;
 
-    setUploadingImages(true);
-    setError('');
+    const newImages = files.map(file => ({
+      id: `new_${Date.now()}_${Math.random()}`,
+      file: file,
+      image_url: URL.createObjectURL(file),
+      is_primary: false
+    }));
 
-    let currentProductId = editingProduct ? editingProduct.id : null;
+    // Add new images for preview
+    const updatedImages = [...editingProduct.product_images, ...newImages];
 
-    // If it's a new product, create a draft first
-    if (!currentProductId) {
-      try {
-        const draftPayload = {
-          name: formData.name || t('productManagement.form.draftName'),
-          price: parseFloat(formData.price) || 0,
-        };
-        const productResponse = await apiService.createProduct(draftPayload);
-        currentProductId = productResponse.data.id;
-        setEditingProduct(productResponse.data);
-        addProduct(productResponse.data);
-      } catch (err) {
-        setError(t('productManagement.errors.draftError'));
-        setUploadingImages(false);
-        return;
-      }
+    // If no primary image exists, set the first new one as primary
+    if (!updatedImages.some(img => img.is_primary)) {
+      updatedImages[0].is_primary = true;
     }
 
-    // Upload images one by one
-    try {
-      const uploadPromises = files.map(file => apiService.uploadImage(currentProductId, file));
-      const responses = await Promise.all(uploadPromises);
-      const newImages = responses.map(res => res.data);
+    setEditingProduct(prev => ({ ...prev, product_images: updatedImages }));
+  };
 
-      const updatedProduct = await apiService.getProduct(currentProductId);
-      setEditingProduct(updatedProduct.data);
 
-      const updatedImages = updatedProduct.data.product_images;
-      const primaryImg = updatedImages.find(img => img.is_primary);
+  const handleRemoveImage = (imageToRemove) => {
+    if (!editingProduct) return;
+    const updatedImages = editingProduct.product_images.filter(img => img.id !== imageToRemove.id);
 
-      setPrimaryImage(primaryImg ? primaryImg.image_url : null);
-      setImagePreviews(updatedImages.filter(img => !img.is_primary).map(img => img.image_url));
-    } catch (err) {
-      setError(t('productManagement.errors.uploadError'));
-    } finally {
-      setUploadingImages(false);
+    // If the removed image was primary, set a new primary if possible
+    if (imageToRemove.is_primary && updatedImages.length > 0) {
+      updatedImages[0].is_primary = true;
     }
+
+    setEditingProduct({ ...editingProduct, product_images: updatedImages });
+  };
+
+  const handleSetPrimary = (imageToSet) => {
+    if (!editingProduct) return;
+    const updatedImages = editingProduct.product_images.map(img => ({
+      ...img,
+      is_primary: img.id === imageToSet.id
+    }));
+    setEditingProduct({ ...editingProduct, product_images: updatedImages });
+  };
+
+  const handleViewImage = (imageUrl) => {
+    setLightboxImageUrl(imageUrl);
+    setIsLightboxOpen(true);
+  };
+
+  const handleDownloadImage = async (image) => {
+    const imageUrl = image.file ? URL.createObjectURL(image.file) : image.image_url;
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+    const fileName = image.image_url ? image.image_url.split('/').pop() : image.file.name;
+    saveAs(blob, fileName);
+  };
+
+  const handleDownloadAll = async () => {
+    if (!editingProduct || editingProduct.product_images.length === 0) return;
+    const zip = new JSZip();
+    const promises = editingProduct.product_images.map(async (image) => {
+      const imageUrl = image.file ? URL.createObjectURL(image.file) : image.image_url;
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const fileName = image.image_url ? image.image_url.split('/').pop() : image.file.name;
+      zip.file(fileName, blob);
+    });
+    await Promise.all(promises);
+    zip.generateAsync({ type: 'blob' }).then((content) => {
+      saveAs(content, `${formData.name || 'product'}_images.zip`);
+    });
   };
 
   const handleFormSubmit = async (e) => {
@@ -262,45 +224,77 @@ const ProductManagement = () => {
     setIsSubmitting(true);
     setError('');
 
-    const payload = {
-      ...formData,
-      price: parseFloat(formData.price),
-      stock_quantity: parseInt(formData.stock_quantity) || 0,
-      category_id: formData.category_id ? parseInt(formData.category_id) : null,
-      product_images: editingProduct?.product_images?.map(img => ({
-        id: img.id,
-        is_primary: primaryImage ? img.image_url === primaryImage : img.is_primary,
-      })) || [],
-      product_variants: variants.map(({ id, name, stock_quantity, image_url, price }) => ({
-        id,
-        name,
-        price: price !== undefined ? price : 0,
-        stock_quantity,
-        image_url,
-      })),
-    };
+    let currentProductId = editingProduct?.id;
 
-    console.log('Submitting product data:', payload);
-
+    // 1. Create or Update Product Details
     try {
-      if (editingProduct && editingProduct.id) {
-        const updatedProduct = await apiService.updateProduct(editingProduct.id, payload);
-        updateProduct(updatedProduct.data);
+      const payload = {
+        ...formData,
+        price: parseFloat(formData.price),
+        stock_quantity: parseInt(formData.stock_quantity) || 0,
+        category_id: formData.category_id ? parseInt(formData.category_id) : null,
+      };
+
+      if (currentProductId) {
+        const updated = await apiService.updateProduct(currentProductId, payload);
+        updateProduct(updated.data);
       } else {
-        const newProduct = await apiService.createProduct(payload);
-        addProduct(newProduct.data);
+        const newProd = await apiService.createProduct(payload);
+        addProduct(newProd.data);
+        currentProductId = newProd.data.id;
       }
-      closeModal();
     } catch (err) {
-      if (err.response && err.response.status === 409) {
-        setError(t('productManagement.errors.variantInUse'));
-      } else {
-        const errorMsg = err.response?.data?.detail || (editingProduct ? t('productManagement.errors.update') : t('productManagement.errors.add'));
-        setError(errorMsg);
-      }
-    } finally {
+      setError(err.response?.data?.detail || 'Failed to save product details.');
       setIsSubmitting(false);
+      return;
     }
+
+    // 2. Upload New Images
+    try {
+      const newImageFiles = editingProduct.product_images.filter(img => img.file);
+      if (newImageFiles.length > 0) {
+        setUploadingImages(true);
+        const uploadPromises = newImageFiles.map(img => apiService.uploadImage(currentProductId, img.file));
+        await Promise.all(uploadPromises);
+      }
+    } catch (err) {
+      setError('Failed to upload new images.');
+      // Continue to update other things
+    } finally {
+      setUploadingImages(false);
+    }
+
+    // 3. Update Image Metadata (Primary status and removals)
+    try {
+      const finalProductState = await apiService.getProduct(currentProductId);
+      const existingImages = finalProductState.data.product_images;
+      const clientImageIds = editingProduct.product_images.filter(img => !img.file).map(img => img.id);
+
+      const imagesToUpdate = editingProduct.product_images
+        .filter(img => !img.file)
+        .map(img => ({ id: img.id, is_primary: img.is_primary }));
+
+      // Add a default primary if none is set
+      if (imagesToUpdate.length > 0 && !imagesToUpdate.some(img => img.is_primary)) {
+        imagesToUpdate[0].is_primary = true;
+      }
+
+      const updatePayload = {
+        product_images: imagesToUpdate,
+        // Also send variant updates
+        product_variants: variants.map(({ id, name, stock_quantity, image_url, price }) => ({
+            id, name, price: price ?? 0, stock_quantity, image_url,
+        })),
+      };
+
+      const updatedProduct = await apiService.updateProduct(currentProductId, updatePayload);
+      updateProduct(updatedProduct.data);
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to update image metadata.');
+    }
+
+    setIsSubmitting(false);
+    closeModal();
   };
 
   const openDeleteConfirm = (id) => {
@@ -312,8 +306,6 @@ const ProductManagement = () => {
     if (!deletingProductId) return;
 
     const originalProducts = [...products];
-    const productToDelete = products.find(p => p.id === deletingProductId);
-
     // Optimistically remove the product from the UI
     removeProduct(deletingProductId);
     setIsConfirmModalOpen(false);
@@ -395,7 +387,7 @@ const ProductManagement = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         title={editingProduct ? t('productManagement.editProduct') : t('productManagement.addProduct')}
-        maxWidth="max-w-2xl"
+        maxWidth="max-w-3xl"
       >
         <form onSubmit={handleFormSubmit} className="space-y-6">
           {error && (
@@ -405,24 +397,24 @@ const ProductManagement = () => {
           )}
 
           <div className="tabs-container">
-            <nav className="flex space-x-4" aria-label="Tabs">
+            <nav className="flex space-x-4 border-b border-soft-border" aria-label="Tabs">
               <button
                 type="button"
-                className={`py-2 px-4 text-lg font-semibold transition-colors duration-200 ${activeTab === 'details' ? 'text-brand-purple border-b-2 border-brand-purple' : 'text-text-light hover:text-brand-purple'}`}
+                className={`py-2 px-4 text-base font-semibold transition-colors duration-200 ${activeTab === 'details' ? 'text-brand-purple border-b-2 border-brand-purple' : 'text-text-light hover:text-brand-purple'}`}
                 onClick={() => setActiveTab('details')}
               >
                 {t('productManagement.tabs.details')}
               </button>
               <button
                 type="button"
-                className={`py-2 px-4 text-lg font-semibold transition-colors duration-200 ${activeTab === 'images' ? 'text-brand-purple border-b-2 border-brand-purple' : 'text-text-light hover:text-brand-purple'}`}
+                className={`py-2 px-4 text-base font-semibold transition-colors duration-200 ${activeTab === 'images' ? 'text-brand-purple border-b-2 border-brand-purple' : 'text-text-light hover:text-brand-purple'}`}
                 onClick={() => setActiveTab('images')}
               >
                 {t('productManagement.tabs.images')}
               </button>
               <button
                 type="button"
-                className={`py-2 px-4 text-lg font-semibold transition-colors duration-200 ${activeTab === 'variants' ? 'text-brand-purple border-b-2 border-brand-purple' : 'text-text-light hover:text-brand-purple'}`}
+                className={`py-2 px-4 text-base font-semibold transition-colors duration-200 ${activeTab === 'variants' ? 'text-brand-purple border-b-2 border-brand-purple' : 'text-text-light hover:text-brand-purple'}`}
                 onClick={() => setActiveTab('variants')}
               >
                 {t('productManagement.tabs.variants')}
@@ -430,8 +422,10 @@ const ProductManagement = () => {
             </nav>
           </div>
 
-          <div className={`${activeTab === 'details' ? '' : 'hidden'} space-y-6`}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="pt-4">
+            <div className={`${activeTab === 'details' ? '' : 'hidden'} space-y-6`}>
+              {/* DETAILS FORM */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-brand-secondary mb-2">
                   {t('productManagement.form.name')}
@@ -507,10 +501,46 @@ const ProductManagement = () => {
                 />
               </div>
             </div>
-          </div>
+            </div>
 
-          <div className={`${activeTab === 'variants' ? '' : 'hidden'} variants-container`}>
-            <div className="flex justify-between items-center mb-4">
+            <div className={`${activeTab === 'images' ? '' : 'hidden'}`}>
+              {/* IMAGES FORM */}
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium text-brand-purple">{t('productManagement.form.galleryImages')}</h3>
+                <button
+                    type="button"
+                    onClick={handleDownloadAll}
+                    disabled={!editingProduct?.product_images || editingProduct.product_images.length === 0}
+                    className="flex items-center gap-2 text-sm text-brand-purple bg-brand-purple/10 hover:bg-brand-purple/20 px-3 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <FileArchive size={16} />
+                    {t('productManagement.form.downloadAll')}
+                </button>
+              </div>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                {editingProduct?.product_images.map((image) => (
+                  <ProductImage
+                    key={image.id}
+                    image={image}
+                    isPrimary={image.is_primary}
+                    onRemove={handleRemoveImage}
+                    onSetPrimary={handleSetPrimary}
+                    onView={handleViewImage}
+                    onDownload={handleDownloadImage}
+                  />
+                ))}
+                <ImageUploader
+                  onUpload={handleImageUpload}
+                  uploading={uploadingImages}
+                  multiple
+                  size="aspect-square w-full"
+                />
+              </div>
+            </div>
+
+            <div className={`${activeTab === 'variants' ? '' : 'hidden'} variants-container`}>
+             {/* VARIANTS FORM */}
+             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium text-brand-purple">{t('productManagement.form.variants')}</h3>
               <button
                 type="button"
@@ -578,55 +608,9 @@ const ProductManagement = () => {
                 </span>
               </div>
             )}
-          </div>
-
-          <div className={activeTab === 'images' ? '' : 'hidden'}>
-            <div className="space-y-8">
-              <div>
-                <h3 className="text-lg font-medium text-brand-purple mb-4">{t('productManagement.form.primaryImage')}</h3>
-                <div className="relative w-40 h-40">
-                  <ImageUploader
-                    onUpload={handlePrimaryImageUpload}
-                    preview={primaryImage}
-                    uploading={uploadingImages}
-                    size="h-40 w-40"
-                  />
-                  {primaryImage && (
-                    <button
-                      type="button"
-                      onClick={() => removeImage(primaryImage, true)}
-                      className="absolute -top-2 -right-2 bg-stock-red rounded-full p-1 text-white shadow-lg"
-                      aria-label={t('common.remove')}
-                    >
-                      <X size={14} />
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <hr className="border-soft-border" />
-
-              <div>
-                <h3 className="text-lg font-medium text-brand-purple mb-4">{t('productManagement.form.galleryImages')}</h3>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                  {imagePreviews.map((preview, index) => (
-                    <div key={index} className="relative w-24 h-24">
-                      <img src={preview} alt={`Preview ${index}`} className="w-full h-full object-cover rounded-lg" />
-                      <button type="button" onClick={() => removeImage(preview)} className="absolute -top-2 -right-2 bg-stock-red rounded-full p-1 text-white shadow-lg">
-                        <X size={14} />
-                      </button>
-                    </div>
-                  ))}
-                  <ImageUploader
-                    onUpload={handleImageUpload}
-                    uploading={uploadingImages}
-                    multiple
-                    size="h-24 w-24"
-                  />
-                </div>
-              </div>
             </div>
           </div>
+
 
           <div className="flex justify-end gap-4 pt-4">
             {!isSubmitting && (
@@ -645,7 +629,7 @@ const ProductManagement = () => {
             >
               {isSubmitting || uploadingImages ? (
                 <>
-                  <Loader2 className="animate-spin ml-2" />
+                  <Loader2 className="animate-spin mr-2" />
                   <span>{uploadingImages ? t('productManagement.uploadingImages') : t('productManagement.saving')}</span>
                 </>
               ) : (
@@ -655,6 +639,21 @@ const ProductManagement = () => {
           </div>
         </form>
       </Modal>
+
+      {isLightboxOpen && (
+        <div
+            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
+            onClick={() => setIsLightboxOpen(false)}
+        >
+            <img src={lightboxImageUrl} alt="Product full view" className="max-w-[90vw] max-h-[90vh] object-contain"/>
+            <button
+                onClick={() => setIsLightboxOpen(false)}
+                className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2"
+            >
+                <X size={24} />
+            </button>
+        </div>
+      )}
 
       <ConfirmationModal
         isOpen={isConfirmModalOpen}
