@@ -56,12 +56,14 @@ def delete_category(category_id: int, supabase: Client = Depends(get_supabase_cl
     return bool(response.data)
 
 def get_products(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Product]:
-    response = supabase.table("products").select("*, category:categories(*), product_images(*), product_variants(*)").order("created_at", foreign_table="product_images").execute()
+    response = supabase.table("products").select("*, category:categories(*), product_images(*), product_variants(*)").execute()
     
     # Transform the data to include primary_image_url and images array
     products = response.data
     for product in products:
         if product.get('product_images'):
+            # Safely sort images by created_at to ensure consistent fallback
+            product['product_images'].sort(key=lambda img: img.get('created_at', ''))
             # Extract image URLs
             product['images'] = [img['image_url'] for img in product['product_images']]
             # Find primary image
@@ -80,7 +82,7 @@ def get_products(supabase: Client = Depends(get_supabase_client)) -> list[schema
     return products
 
 def get_product(product_id: int, supabase: Client = Depends(get_supabase_client)) -> schemas.Product | None:
-    response = supabase.table("products").select("*, category:categories(*), product_images(*), product_variants(*)").eq("id", product_id).order("created_at", foreign_table="product_images").execute()
+    response = supabase.table("products").select("*, category:categories(*), product_images(*), product_variants(*)").eq("id", product_id).execute()
     if not response.data:
         return None
     
@@ -88,6 +90,8 @@ def get_product(product_id: int, supabase: Client = Depends(get_supabase_client)
     
     # Transform the data to include primary_image_url and images array
     if product.get('product_images'):
+        # Safely sort images by created_at to ensure consistent fallback
+        product['product_images'].sort(key=lambda img: img.get('created_at', ''))
         # Extract image URLs
         product['images'] = [img['image_url'] for img in product['product_images']]
         # Find primary image
