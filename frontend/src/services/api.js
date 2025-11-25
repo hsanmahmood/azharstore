@@ -138,7 +138,7 @@ export const apiService = {
   deleteDeliveryArea: (id) => api.delete(`/admin/delivery-areas/${id}`),
 
   // App Settings
-  getAppSettings: () => api.get('/admin/settings'),
+  getAppSettings: () => api.get('/settings'),
   updateAppSettings: (data) => api.patch('/admin/settings', data),
 
   // General (deprecated, use product upload)

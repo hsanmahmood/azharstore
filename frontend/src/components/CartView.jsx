@@ -15,11 +15,10 @@ const CartView = ({ isOpen, onClose }) => {
 
         const orderData = {
             customer: checkoutData.customer,
-            items: cartItems.map(item => ({
+            order_items: cartItems.map(item => ({
                 product_id: item.product.id,
-                variant_id: item.variant?.id,
+                product_variant_id: item.variant?.id,
                 quantity: item.quantity,
-                price: item.variant?.price || item.product.price,
             })),
             total_price: finalTotal,
             delivery_method: checkoutData.deliveryMethod,

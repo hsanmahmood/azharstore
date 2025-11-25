@@ -61,6 +61,10 @@ def list_delivery_areas_public(supabase: Client = Depends(get_supabase_client)):
 def create_order_public(order: schemas.OrderCreate, supabase: Client = Depends(get_supabase_client)):
     return services.create_order(order=order, supabase=supabase)
 
+@router.get("/settings", response_model=schemas.AppSettings, tags=["Settings"])
+def get_settings_public(supabase: Client = Depends(get_supabase_client)):
+    return services.get_app_settings(supabase=supabase)
+
 @admin_router.post("/products", response_model=schemas.Product, tags=["Admin - Products"])
 def create_product(product: schemas.ProductCreate, supabase: Client = Depends(get_supabase_client)):
     return services.create_product(product=product, supabase=supabase)
