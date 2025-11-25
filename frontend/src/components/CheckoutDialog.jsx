@@ -63,15 +63,16 @@ const DeliveryMethodStep = ({ onNext, onBack, onSelect, selectedMethod }) => (
 const DeliveryAreaStep = ({ onNext, onBack, onSelect, selectedArea, deliveryAreas }) => (
     <div className="p-4" dir="rtl">
         <h2 className="text-xl font-semibold mb-4 text-right">اختر منطقة التوصيل</h2>
-        <div className="space-y-2">
+        <div className="grid grid-cols-2 gap-4">
             {deliveryAreas && deliveryAreas.length > 0 ? (
                 deliveryAreas.map(area => (
-                    <button key={area.id} onClick={() => onSelect(area)} className={`w-full p-4 border rounded-lg text-right ${selectedArea?.id === area.id ? 'border-brand-purple' : ''}`}>
-                        {area.name} - {area.price} د.ب
+                    <button key={area.id} onClick={() => onSelect(area)} className={`p-4 border-2 rounded-lg flex flex-col items-center justify-center transition-all ${selectedArea?.id === area.id ? 'border-brand-purple bg-purple-50' : 'hover:border-purple-300'}`}>
+                        <span className="font-semibold">{area.name}</span>
+                        <span className="text-sm text-text-light">{area.price} د.ب</span>
                     </button>
                 ))
             ) : (
-                <p className="text-center text-text-light">لا توجد مناطق توصيل متاحة حالياً.</p>
+                <p className="col-span-2 text-center text-text-light">لا توجد مناطق توصيل متاحة حالياً.</p>
             )}
         </div>
         <div className="flex justify-between mt-6">
@@ -133,6 +134,14 @@ const OrderSummaryStep = ({ onBack, onSubmit, data, cartItems, totalPrice, isSub
     );
 };
 
+const ThankYouStep = ({ onClose, message }) => (
+    <div className="p-4 text-center" dir="rtl">
+        <h2 className="text-2xl font-bold mb-4">شكراً لك!</h2>
+        <div className="prose" dangerouslySetInnerHTML={{ __html: message }} />
+        <button onClick={onClose} className="mt-6 bg-brand-primary text-brand-background font-bold py-2 px-4 rounded-md">إغلاق</button>
+    </div>
+);
+
 const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) => {
     const [step, setStep] = useState(1);
     const [checkoutData, setCheckoutData] = useState({
@@ -141,20 +150,25 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
         deliveryArea: null,
     });
     const [deliveryAreas, setDeliveryAreas] = useState([]);
+    const [appSettings, setAppSettings] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
 
     useEffect(() => {
         if (isOpen) {
-            const fetchDeliveryAreas = async () => {
+            const fetchInitialData = async () => {
                 try {
-                    const response = await apiService.getAllDeliveryAreas();
-                    setDeliveryAreas(response.data);
+                    const [areasResponse, settingsResponse] = await Promise.all([
+                        apiService.getAllDeliveryAreas(),
+                        apiService.getAppSettings(),
+                    ]);
+                    setDeliveryAreas(areasResponse.data);
+                    setAppSettings(settingsResponse.data);
                 } catch (err) {
-                    console.error('Failed to fetch delivery areas', err);
+                    console.error('Failed to fetch initial data', err);
                 }
             };
-            fetchDeliveryAreas();
+            fetchInitialData();
         }
     }, [isOpen]);
 
@@ -199,12 +213,19 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
         setError('');
         try {
             await onSubmit(checkoutData);
-            onClose();
+            setStep(5); // Move to thank you step
         } catch (err) {
             setError('Failed to create order. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    const getThankYouMessage = () => {
+        if (!appSettings) return '';
+        return checkoutData.deliveryMethod === 'pickup'
+            ? appSettings.pickup_message
+            : appSettings.delivery_message;
     };
 
     const renderStep = () => {
@@ -217,6 +238,8 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
                 return <DeliveryAreaStep onNext={handleNext} onBack={handleBack} onSelect={handleSelectArea} selectedArea={checkoutData.deliveryArea} deliveryAreas={deliveryAreas} />;
             case 4:
                 return <OrderSummaryStep onBack={handleBack} onSubmit={handleSubmit} data={checkoutData} cartItems={cartItems} totalPrice={totalPrice} isSubmitting={isSubmitting} />;
+            case 5:
+                return <ThankYouStep onClose={onClose} message={getThankYouMessage()} />;
             default:
                 return <div>خطوة غير معروفة</div>;
         }
@@ -225,6 +248,9 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="إتمام الطلب" maxWidth="max-w-2xl">
             <div className="p-4">
+                <div className="text-center text-sm text-text-light mb-2">
+                    خطوة {step} من 4
+                </div>
                 <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
                     <div className="bg-brand-purple h-2.5 rounded-full" style={{ width: `${(step / 4) * 100}%` }}></div>
                 </div>

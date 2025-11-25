@@ -93,7 +93,7 @@ const SimpleRichTextEditor = ({ initialValue, onChange }) => {
         contentEditable
         onInput={handleContentChange}
         dangerouslySetInnerHTML={{ __html: content }}
-        className="w-full h-48 p-2 resize-y overflow-auto focus:outline-none"
+        className="w-full h-48 p-2 resize-y overflow-auto focus:outline-none text-right"
         style={{ fontFamily: 'Tajawal, sans-serif' }}
         dir="rtl"
       />
