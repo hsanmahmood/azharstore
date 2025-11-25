@@ -62,11 +62,15 @@ const DeliveryAreaStep = ({ onNext, onBack, onSelect, selectedArea, deliveryArea
     <div className="p-4" dir="rtl">
         <h2 className="text-xl font-semibold mb-4 text-right">اختر منطقة التوصيل</h2>
         <div className="space-y-2">
-            {deliveryAreas.map(area => (
-                <button key={area.id} onClick={() => onSelect(area)} className={`w-full p-4 border rounded-lg text-right ${selectedArea?.id === area.id ? 'border-brand-purple' : ''}`}>
-                    {area.name} - {area.price} د.ب
-                </button>
-            ))}
+            {deliveryAreas && deliveryAreas.length > 0 ? (
+                deliveryAreas.map(area => (
+                    <button key={area.id} onClick={() => onSelect(area)} className={`w-full p-4 border rounded-lg text-right ${selectedArea?.id === area.id ? 'border-brand-purple' : ''}`}>
+                        {area.name} - {area.price} د.ب
+                    </button>
+                ))
+            ) : (
+                <p className="text-center text-text-light">لا توجد مناطق توصيل متاحة حالياً.</p>
+            )}
         </div>
         <div className="flex justify-between mt-6">
             <button onClick={onBack} className="bg-gray-200 text-text-dark font-bold py-2 px-4 rounded-md">السابق</button>
@@ -218,7 +222,14 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="إتمام الطلب" maxWidth="max-w-2xl">
-            {renderStep()}
+            <div className="p-4">
+                <div className="text-center text-sm text-text-light mb-4">
+                    خطوة {step} من 4
+                </div>
+                <div style={{ minHeight: '350px' }}>
+                    {renderStep()}
+                </div>
+            </div>
         </Modal>
     );
 };
