@@ -62,6 +62,8 @@ def get_products(supabase: Client = Depends(get_supabase_client)) -> list[schema
     products = response.data
     for product in products:
         if product.get('product_images'):
+            # Sort images by created_at to ensure consistent fallback
+            product['product_images'].sort(key=lambda img: img['created_at'])
             # Extract image URLs
             product['images'] = [img['image_url'] for img in product['product_images']]
             # Find primary image
@@ -88,6 +90,8 @@ def get_product(product_id: int, supabase: Client = Depends(get_supabase_client)
     
     # Transform the data to include primary_image_url and images array
     if product.get('product_images'):
+        # Sort images by created_at to ensure consistent fallback
+        product['product_images'].sort(key=lambda img: img['created_at'])
         # Extract image URLs
         product['images'] = [img['image_url'] for img in product['product_images']]
         # Find primary image
