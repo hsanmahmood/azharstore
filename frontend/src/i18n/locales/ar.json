@@ -67,7 +67,16 @@
       "totalStock": "إجمالي المخزون",
       "imagesSelected": "{{count}} صور مختارة",
       "clickToUpload": "انقر لتحميل الصور",
-      "draftName": "منتج جديد (مسودة)"
+      "draftName": "منتج جديد (مسودة)",
+      "downloadAll": "تحميل الكل"
+    },
+    "imageAlt": "صورة المنتج",
+    "primaryBadge": "الأساسية",
+    "tooltips": {
+      "viewImage": "عرض الصورة",
+      "setAsPrimary": "تعيين كأساسية",
+      "downloadImage": "تحميل الصورة",
+      "removeImage": "إزالة الصورة"
     },
     "tabs": {
       "details": "التفاصيل",
