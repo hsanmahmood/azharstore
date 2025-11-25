@@ -3,23 +3,28 @@ import { Edit, Trash2, Package, ImageIcon } from 'lucide-react';
 import TransformedImage from '../../components/TransformedImage';
 
 const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
+  // Find the primary image or use the first available image
+  const primaryImage = product.primary_image_url ||
+    product.product_images?.find(img => img.is_primary)?.image_url ||
+    product.product_images?.[0]?.image_url;
+
+  // Calculate total stock: if variants exist, sum their quantities; otherwise use product stock
+  const totalStock = product.product_variants && product.product_variants.length > 0
+    ? product.product_variants.reduce((sum, variant) => sum + (variant.stock_quantity || 0), 0)
+    : product.stock_quantity || 0;
+
   const cardClasses = `
     bg-card-background border border-soft-border rounded-2xl p-4 flex flex-col
     transition-all duration-300 hover:border-brand-purple/50 hover:-translate-y-1
     ${optimistic ? 'opacity-50 animate-pulse' : ''}
   `;
+
   return (
     <div className={cardClasses}>
       <div className="flex flex-col h-full">
-        {product.primary_image_url ? (
+        {primaryImage ? (
           <TransformedImage
-            url={product.primary_image_url}
-            alt={product.name}
-            className="w-full aspect-square object-cover rounded-lg"
-          />
-        ) : product.product_images?.[0] ? (
-          <TransformedImage
-            url={product.product_images[0].image_url}
+            url={primaryImage}
             alt={product.name}
             className="w-full aspect-square object-cover rounded-lg"
           />
@@ -46,7 +51,7 @@ const ProductCard = ({ product, onEdit, onDelete, optimistic }) => {
           </div>
           <div className="flex items-center gap-2 text-text-light">
             <Package size={14} />
-            <span>المخزون: {product.stock_quantity}</span>
+            <span>المخزون: {totalStock}</span>
           </div>
         </div>
       </div>

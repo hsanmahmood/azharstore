@@ -79,22 +79,22 @@ const StoreFront = () => {
           </div>
 
           {/* Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-12">
             {/* Instagram */}
-            <button className="inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200">
-              <span className="text-sm font-bold">Instagram</span>
+            <button className="inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200 scale-[1.3]">
+              <span className="text-sm font-medium">Instagram</span>
               <Instagram className="h-4 w-4" />
             </button>
 
             {/* Language */}
-            <button className="inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200">
-              <span className="text-sm font-bold">العربية</span>
+            <button className="inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200 scale-[1.3]">
+              <span className="text-sm font-medium">العربية</span>
               <Globe className="h-4 w-4" />
             </button>
 
             {/* Cart */}
-            <button className="relative inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200">
-              <span className="text-sm font-bold">السلة</span>
+            <button className="relative inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200 scale-[1.3]">
+              <span className="text-sm font-medium">السلة</span>
               <ShoppingCart className="h-4 w-4" />
               <span className="absolute -top-2 -right-1 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">
                 3

@@ -12,6 +12,7 @@ import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import ImageUploader from '../../components/ImageUploader';
 import ProductImage from '../../components/ProductImage';
+import ImageLightbox from '../../components/ImageLightbox';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
@@ -85,16 +86,35 @@ const ProductManagement = () => {
 
   const handleSaveVariant = async (index) => {
     const variant = variants[index];
+
+    if (!variant.name || variant.name.trim() === '') {
+      setError(t('productManagement.errors.variantNameRequired') || 'Variant name is required');
+      return;
+    }
+
     try {
       if (variant.id) {
-        await apiService.updateVariant(variant.id, { name: variant.name, stock_quantity: variant.stock_quantity });
+        await apiService.updateVariant(variant.id, {
+          name: variant.name,
+          price: variant.price || editingProduct.price,
+          stock_quantity: variant.stock_quantity
+        });
       } else {
-        await apiService.createVariant(editingProduct.id, { name: variant.name, stock_quantity: variant.stock_quantity });
+        const response = await apiService.createVariant(editingProduct.id, {
+          name: variant.name,
+          price: variant.price || editingProduct.price,
+          stock_quantity: variant.stock_quantity
+        });
+        // Update the variant with the new ID
+        const newVariants = [...variants];
+        newVariants[index] = { ...newVariants[index], id: response.data.id };
+        setVariants(newVariants);
       }
       const updatedProduct = await apiService.getProduct(editingProduct.id);
       setEditingProduct(updatedProduct.data);
+      setError(''); // Clear any previous errors
     } catch (err) {
-      setError(t('productManagement.errors.updateVariantError'));
+      setError(t('productManagement.errors.updateVariantError') || 'Failed to save variant');
     }
   };
 
@@ -105,7 +125,7 @@ const ProductManagement = () => {
   };
 
   const addVariant = () => {
-    setVariants([...variants, { name: '', stock_quantity: 0 }]);
+    setVariants([...variants, { name: '', price: editingProduct?.price || 0, stock_quantity: 0 }]);
   };
 
   const removeVariant = (index) => {
@@ -196,28 +216,106 @@ const ProductManagement = () => {
     setIsLightboxOpen(true);
   };
 
+  const getFileNameFromUrl = (url, fallbackName = 'image') => {
+    try {
+      // Remove query parameters
+      const cleanUrl = url.split('?')[0];
+      // Get the last part of the path
+      let fileName = cleanUrl.split('/').pop();
+
+      // If filename is empty or just an extension, use fallback
+      if (!fileName || fileName.startsWith('.')) {
+        return `${fallbackName}.jpg`; // Default extension
+      }
+
+      // Decode URI component to handle special characters
+      fileName = decodeURIComponent(fileName);
+
+      return fileName;
+    } catch (e) {
+      console.error("Error parsing filename:", e);
+      return `${fallbackName}.jpg`;
+    }
+  };
+
   const handleDownloadImage = async (image) => {
-    const imageUrl = image.file ? URL.createObjectURL(image.file) : image.image_url;
-    const response = await fetch(imageUrl);
-    const blob = await response.blob();
-    const fileName = image.image_url ? image.image_url.split('/').pop() : image.file.name;
-    saveAs(blob, fileName);
+    try {
+      const imageUrl = image.file ? URL.createObjectURL(image.file) : image.image_url;
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+
+      let fileName;
+      if (image.file) {
+        fileName = image.file.name;
+      } else {
+        fileName = getFileNameFromUrl(image.image_url, 'product-image');
+      }
+
+      saveAs(blob, fileName);
+    } catch (error) {
+      console.error("Download failed:", error);
+      setError(t('productManagement.errors.downloadFailed') || "Download failed");
+    }
   };
 
   const handleDownloadAll = async () => {
     if (!editingProduct || editingProduct.product_images.length === 0) return;
-    const zip = new JSZip();
-    const promises = editingProduct.product_images.map(async (image) => {
-      const imageUrl = image.file ? URL.createObjectURL(image.file) : image.image_url;
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const fileName = image.image_url ? image.image_url.split('/').pop() : image.file.name;
-      zip.file(fileName, blob);
-    });
-    await Promise.all(promises);
-    zip.generateAsync({ type: 'blob' }).then((content) => {
+
+    try {
+      const zip = new JSZip();
+      const usedNames = new Set();
+
+      const promises = editingProduct.product_images.map(async (image, index) => {
+        try {
+          const imageUrl = image.file ? URL.createObjectURL(image.file) : image.image_url;
+          const response = await fetch(imageUrl);
+
+          if (!response.ok) {
+            console.warn(`Failed to fetch image: ${imageUrl}`);
+            return;
+          }
+
+          const blob = await response.blob();
+
+          let fileName;
+          if (image.file) {
+            fileName = image.file.name;
+          } else {
+            fileName = getFileNameFromUrl(image.image_url, `image-${index}`);
+          }
+
+          // Ensure unique filenames
+          let uniqueName = fileName;
+          let counter = 1;
+          while (usedNames.has(uniqueName)) {
+            const nameParts = fileName.split('.');
+            const ext = nameParts.length > 1 ? nameParts.pop() : '';
+            const name = nameParts.join('.');
+            uniqueName = `${name}(${counter}).${ext}`;
+            counter++;
+          }
+          usedNames.add(uniqueName);
+
+          zip.file(uniqueName, blob);
+        } catch (err) {
+          console.error("Error processing image for zip:", err);
+        }
+      });
+
+      await Promise.all(promises);
+
+      // Check if zip has files
+      if (Object.keys(zip.files).length === 0) {
+        setError(t('productManagement.errors.noImagesToDownload') || "No valid images to download");
+        return;
+      }
+
+      const content = await zip.generateAsync({ type: 'blob' });
       saveAs(content, `${formData.name || 'product'}_images.zip`);
-    });
+    } catch (error) {
+      console.error("Bulk download failed:", error);
+      setError(t('productManagement.errors.downloadFailed') || "Download failed");
+    }
   };
 
   const handleFormSubmit = async (e) => {
@@ -228,6 +326,7 @@ const ProductManagement = () => {
     try {
       // Step 1: Create or Update Product
       let productData;
+      let isNewProduct = false;
       const productPayload = {
         name: formData.name,
         description: formData.description,
@@ -242,6 +341,7 @@ const ProductManagement = () => {
       } else {
         const response = await apiService.createProduct(productPayload);
         productData = response.data;
+        isNewProduct = true;
       }
 
       // Step 2: Upload New Images
@@ -253,20 +353,27 @@ const ProductManagement = () => {
         setUploadingImages(false);
       }
 
-      // Step 3: Update image metadata (primary status, removals) and variants
-      const finalProduct = await apiService.getProduct(productData.id);
-      const existingImageIds = finalProduct.data.product_images.map(img => img.id);
+      // Step 3: Refresh product data to get the newly uploaded images with their IDs
+      const refreshedProduct = await apiService.getProduct(productData.id);
 
-      const clientImages = editingProduct.product_images
-        .filter(img => !img.file)
-        .map(img => ({ id: img.id, is_primary: img.is_primary }));
+      // Step 4: Update image metadata (primary status) and variants
+      const currentImages = refreshedProduct.data.product_images || [];
 
-      // Filter out images that were deleted on the client but still exist on the server
-      const imagesToUpdate = clientImages.filter(img => existingImageIds.includes(img.id));
+      // Map client-side primary status to server images
+      const imagesToUpdate = currentImages.map(serverImg => {
+        // Find matching image in client state (by URL or ID)
+        const clientImg = editingProduct.product_images.find(
+          img => img.id === serverImg.id || img.image_url === serverImg.image_url
+        );
+        return {
+          id: serverImg.id,
+          is_primary: clientImg ? clientImg.is_primary : serverImg.is_primary
+        };
+      });
 
       // Ensure one image is primary if there are any
       if (imagesToUpdate.length > 0 && !imagesToUpdate.some(img => img.is_primary)) {
-          imagesToUpdate[0].is_primary = true;
+        imagesToUpdate[0].is_primary = true;
       }
 
       const updatePayload = {
@@ -282,8 +389,12 @@ const ProductManagement = () => {
 
       const updatedProductResponse = await apiService.updateProduct(productData.id, updatePayload);
 
-      // Final state update
-      await refreshData();
+      // Update local state immediately instead of refreshing all data
+      if (isNewProduct) {
+        addProduct(updatedProductResponse.data);
+      } else {
+        updateProduct(updatedProductResponse.data);
+      }
 
       closeModal();
     } catch (err) {
@@ -424,81 +535,81 @@ const ProductManagement = () => {
             <div className={`${activeTab === 'details' ? '' : 'hidden'} space-y-8`}>
               {/* DETAILS FORM */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-brand-secondary mb-2">
-                  {t('productManagement.form.name')}
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleFormChange}
-                  required
-                  className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
-                />
-              </div>
-
-              <div className="relative">
-                <label className="block text-sm font-medium text-text-light mb-2">
-                  {t('productManagement.form.category')}
-                </label>
-                <Dropdown
-                  options={categories.filter(cat => cat && cat.name).map((cat) => ({ value: cat.id, label: cat.name }))}
-                  value={formData.category_id}
-                  onChange={(option) => handleFormChange({ target: { name: 'category_id', value: option.value } })}
-                  placeholder={t('productManagement.form.selectCategory')}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-text-light mb-2">
-                {t('productManagement.form.description')}
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleFormChange}
-                rows="3"
-                className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-text-light mb-2">
-                  {t('productManagement.form.price')}
-                </label>
-                <div className="relative">
+                <div>
+                  <label className="block text-sm font-medium text-brand-secondary mb-2">
+                    {t('productManagement.form.name')}
+                  </label>
                   <input
-                    type="number"
-                    step="0.01"
-                    name="price"
-                    value={formData.price}
+                    type="text"
+                    name="name"
+                    value={formData.name}
                     onChange={handleFormChange}
                     required
-                    className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 pl-12 placeholder-text-light"
+                    className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
                   />
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light">
-                    د.ب
-                  </span>
+                </div>
+
+                <div className="relative">
+                  <label className="block text-sm font-medium text-text-light mb-2">
+                    {t('productManagement.form.category')}
+                  </label>
+                  <Dropdown
+                    options={categories.filter(cat => cat && cat.name).map((cat) => ({ value: cat.id, label: cat.name }))}
+                    value={formData.category_id}
+                    onChange={(option) => handleFormChange({ target: { name: 'category_id', value: option.value } })}
+                    placeholder={t('productManagement.form.selectCategory')}
+                  />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-text-light mb-2">
-                  {t('productManagement.form.stock')}
+                  {t('productManagement.form.description')}
                 </label>
-                <input
-                  type="number"
-                  name="stock_quantity"
-                  value={formData.stock_quantity}
+                <textarea
+                  name="description"
+                  value={formData.description}
                   onChange={handleFormChange}
+                  rows="3"
                   className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
-                  disabled={variants.length > 0}
                 />
               </div>
-            </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-text-light mb-2">
+                    {t('productManagement.form.price')}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      step="0.01"
+                      name="price"
+                      value={formData.price}
+                      onChange={handleFormChange}
+                      required
+                      className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 pl-12 placeholder-text-light"
+                    />
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light">
+                      د.ب
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-light mb-2">
+                    {t('productManagement.form.stock')}
+                  </label>
+                  <input
+                    type="number"
+                    name="stock_quantity"
+                    value={formData.stock_quantity}
+                    onChange={handleFormChange}
+                    className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
+                    disabled={variants.length > 0}
+                  />
+                </div>
+              </div>
             </div>
 
             <div className={`${activeTab === 'images' ? '' : 'hidden'}`}>
@@ -506,13 +617,13 @@ const ProductManagement = () => {
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-medium text-brand-purple">{t('productManagement.form.galleryImages')}</h3>
                 <button
-                    type="button"
-                    onClick={handleDownloadAll}
-                    disabled={!editingProduct?.product_images || editingProduct.product_images.length === 0}
-                    className="flex items-center gap-2 text-sm text-brand-purple bg-brand-purple/10 hover:bg-brand-purple/20 px-3 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  type="button"
+                  onClick={handleDownloadAll}
+                  disabled={!editingProduct?.product_images || editingProduct.product_images.length === 0}
+                  className="flex items-center gap-2 text-sm text-brand-purple bg-brand-purple/10 hover:bg-brand-purple/20 px-3 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    <FileArchive size={16} />
-                    {t('productManagement.form.downloadAll')}
+                  <FileArchive size={16} />
+                  {t('productManagement.form.downloadAll')}
                 </button>
               </div>
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
@@ -537,79 +648,77 @@ const ProductManagement = () => {
             </div>
 
             <div className={`${activeTab === 'variants' ? '' : 'hidden'} variants-container`}>
-             {/* VARIANTS FORM */}
-             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-brand-purple">{t('productManagement.form.variants')}</h3>
-              <button
-                type="button"
-                onClick={addVariant}
-                className="flex items-center gap-2 text-sm text-brand-purple bg-brand-purple/10 hover:bg-brand-purple/20 px-3 py-2 rounded-lg transition-colors"
-              >
-                <Plus size={16} /> {t('productManagement.form.addVariant')}
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {/* Header */}
-              <div className="variant-item header text-text-light">
-                <div className="w-20 text-center">{t('productManagement.form.image')}</div>
-                <div className="flex-1 px-2">{t('productManagement.form.variantName')}</div>
-                <div className="w-32 px-2">{t('productManagement.form.stock')}</div>
-                <div className="w-28 text-center">{t('common.actions')}</div>
+              {/* VARIANTS FORM */}
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium text-brand-purple">{t('productManagement.form.variants')}</h3>
+                <button
+                  type="button"
+                  onClick={addVariant}
+                  className="flex items-center gap-2 text-sm text-brand-purple bg-brand-purple/10 hover:bg-brand-purple/20 px-3 py-2 rounded-lg transition-colors"
+                >
+                  <Plus size={16} /> {t('productManagement.form.addVariant')}
+                </button>
               </div>
 
-              {/* Variant Rows */}
-              {variants.map((variant, index) => (
-                <div key={index} className="variant-item">
-                  <div className="w-20 flex justify-center">
-                    <ImageUploader
-                      onUpload={(e) => handleVariantImageUpload(index, e)}
-                      preview={variant.image_url}
-                      uploading={uploadingImages}
-                      size="h-12 w-12"
-                    />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder={t('productManagement.form.variantName')}
-                    value={variant.name}
-                    onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
-                    className="flex-1 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
-                  />
-                  <input
-                    type="number"
-                    placeholder={t('productManagement.form.stock')}
-                    value={variant.stock_quantity}
-                    onChange={(e) => handleVariantChange(index, 'stock_quantity', parseInt(e.target.value) || 0)}
-                    className="w-32 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
-                  />
-                  <div className="w-28 flex justify-center items-center gap-2">
-                    <button type="button" onClick={() => handleSaveVariant(index)} className="text-green-500 hover:text-green-400 bg-green-500/10 hover:bg-green-500/20 p-2 rounded-lg relative">
-                      {variant.id && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-green-500"></span>}
-                      <Save size={18} />
-                    </button>
-                    <button type="button" onClick={() => removeVariant(index)} className="text-red-500 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 p-2 rounded-lg">
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+              <div className="space-y-4">
+                {/* Header */}
+                <div className="variant-item header text-text-light">
+                  <div className="w-20 text-center">{t('productManagement.form.image')}</div>
+                  <div className="flex-1 px-2">{t('productManagement.form.variantName')}</div>
+                  <div className="w-32 px-2">{t('productManagement.form.stock')}</div>
+                  <div className="w-28 text-center">{t('common.actions')}</div>
                 </div>
-              ))}
-            </div>
 
-            {variants.length > 0 && (
-              <div className="mt-4 text-right">
-                <span className="text-sm font-medium text-brand-secondary">
-                  {t('productManagement.form.totalStock')}:{' '}
-                </span>
-                <span className="font-bold text-brand-primary">
-                  {variants.reduce((acc, v) => acc + (v.stock_quantity || 0), 0)}
-                </span>
+                {/* Variant Rows */}
+                {variants.map((variant, index) => (
+                  <div key={index} className="variant-item">
+                    <div className="w-20 flex justify-center">
+                      <ImageUploader
+                        onUpload={(e) => handleVariantImageUpload(index, e)}
+                        preview={variant.image_url}
+                        uploading={uploadingImages}
+                        size="h-12 w-12"
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder={t('productManagement.form.variantName')}
+                      value={variant.name}
+                      onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
+                      className="flex-1 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
+                    />
+                    <input
+                      type="number"
+                      placeholder={t('productManagement.form.stock')}
+                      value={variant.stock_quantity}
+                      onChange={(e) => handleVariantChange(index, 'stock_quantity', parseInt(e.target.value) || 0)}
+                      className="w-32 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
+                    />
+                    <div className="w-28 flex justify-center items-center gap-2">
+                      <button type="button" onClick={() => handleSaveVariant(index)} className="text-green-500 hover:text-green-400 bg-green-500/10 hover:bg-green-500/20 p-2 rounded-lg relative">
+                        {variant.id && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-green-500"></span>}
+                        <Save size={18} />
+                      </button>
+                      <button type="button" onClick={() => removeVariant(index)} className="text-red-500 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 p-2 rounded-lg">
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            )}
+
+              {variants.length > 0 && (
+                <div className="mt-4 text-right">
+                  <span className="text-sm font-medium text-brand-secondary">
+                    {t('productManagement.form.totalStock')}:{' '}
+                  </span>
+                  <span className="font-bold text-brand-primary">
+                    {variants.reduce((acc, v) => acc + (v.stock_quantity || 0), 0)}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
-
-
           <div className="flex justify-end gap-4 pt-4">
             {!isSubmitting && (
               <button
@@ -638,16 +747,12 @@ const ProductManagement = () => {
         </form>
       </Modal>
 
-      <Modal
+      <ImageLightbox
         isOpen={isLightboxOpen}
         onClose={() => setIsLightboxOpen(false)}
-        title={t('productManagement.imagePreview')}
-        maxWidth="max-w-xl"
-      >
-        <div className="p-4">
-            <img src={lightboxImageUrl} alt={t('productManagement.imageAlt')} className="w-full h-auto object-contain rounded-lg"/>
-        </div>
-      </Modal>
+        imageUrl={lightboxImageUrl}
+        altText={t('productManagement.imageAlt')}
+      />
 
       <ConfirmationModal
         isOpen={isConfirmModalOpen}
