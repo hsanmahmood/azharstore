@@ -27,7 +27,8 @@ const ProductManagement = () => {
     addProduct,
     updateProduct,
     removeProduct,
-    setProducts // Keep for error recovery on delete
+    setProducts, // Keep for error recovery on delete
+    refreshData
   } = useContext(DataContext);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [error, setError] = useState('');
@@ -282,11 +283,7 @@ const ProductManagement = () => {
       const updatedProductResponse = await apiService.updateProduct(productData.id, updatePayload);
 
       // Final state update
-      if (editingProduct && editingProduct.id) {
-        updateProduct(updatedProductResponse.data);
-      } else {
-        addProduct(updatedProductResponse.data);
-      }
+      await refreshData();
 
       closeModal();
     } catch (err) {
