@@ -223,8 +223,8 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="إتمام الطلب" maxWidth="max-w-2xl">
             <div className="p-4">
-                <div className="text-center text-sm text-text-light mb-4">
-                    خطوة {step} من 4
+                <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                    <div className="bg-brand-purple h-2.5 rounded-full" style={{ width: `${(step / 4) * 100}%` }}></div>
                 </div>
                 <div style={{ minHeight: '350px' }}>
                     {renderStep()}
