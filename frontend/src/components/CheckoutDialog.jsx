@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Truck, Package } from 'lucide-react';
 import { apiService } from '../services/api';
 
 const CustomerDetailsStep = ({ data, handleChange, onNext, error }) => (
@@ -43,12 +43,14 @@ const CustomerDetailsStep = ({ data, handleChange, onNext, error }) => (
 const DeliveryMethodStep = ({ onNext, onBack, onSelect, selectedMethod }) => (
     <div className="p-4" dir="rtl">
         <h2 className="text-xl font-semibold mb-4 text-right">اختر طريقة الاستلام</h2>
-        <div className="flex gap-4">
-            <button onClick={() => onSelect('delivery')} className={`flex-1 p-4 border rounded-lg ${selectedMethod === 'delivery' ? 'border-brand-purple' : ''}`}>
-                توصيل
+        <div className="grid grid-cols-2 gap-4">
+            <button onClick={() => onSelect('delivery')} className={`p-6 border-2 rounded-lg flex flex-col items-center justify-center transition-all ${selectedMethod === 'delivery' ? 'border-brand-purple bg-purple-50' : 'hover:border-purple-300'}`}>
+                <Truck className="w-12 h-12 mb-2 text-brand-purple" />
+                <span className="font-semibold">توصيل</span>
             </button>
-            <button onClick={() => onSelect('pickup')} className={`flex-1 p-4 border rounded-lg ${selectedMethod === 'pickup' ? 'border-brand-purple' : ''}`}>
-                استلام من المتجر
+            <button onClick={() => onSelect('pickup')} className={`p-6 border-2 rounded-lg flex flex-col items-center justify-center transition-all ${selectedMethod === 'pickup' ? 'border-brand-purple bg-purple-50' : 'hover:border-purple-300'}`}>
+                <Package className="w-12 h-12 mb-2 text-brand-purple" />
+                <span className="font-semibold">استلام من المتجر</span>
             </button>
         </div>
         <div className="flex justify-between mt-6">
@@ -226,7 +228,7 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
                 <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
                     <div className="bg-brand-purple h-2.5 rounded-full" style={{ width: `${(step / 4) * 100}%` }}></div>
                 </div>
-                <div style={{ minHeight: '350px' }}>
+                <div className="h-[400px]">
                     {renderStep()}
                 </div>
             </div>

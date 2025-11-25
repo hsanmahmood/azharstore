@@ -53,6 +53,10 @@ def get_category(category_id: int, supabase: Client = Depends(get_supabase_clien
         raise HTTPException(status_code=404, detail="Category not found")
     return db_category
 
+@router.get("/delivery-areas", response_model=List[schemas.DeliveryArea], tags=["Delivery Areas"])
+def list_delivery_areas_public(supabase: Client = Depends(get_supabase_client)):
+    return services.get_delivery_areas(supabase=supabase)
+
 @admin_router.post("/products", response_model=schemas.Product, tags=["Admin - Products"])
 def create_product(product: schemas.ProductCreate, supabase: Client = Depends(get_supabase_client)):
     return services.create_product(product=product, supabase=supabase)
