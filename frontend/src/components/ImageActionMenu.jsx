@@ -25,38 +25,41 @@ const ImageActionMenu = ({ isPrimary, onRemove, onSetPrimary, onView, onDownload
   };
 
   return (
-    <div className="absolute top-1.5 right-1.5" ref={menuRef}>
+    <div className="absolute top-1 right-1" ref={menuRef}>
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
         className="p-1 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
       >
-        <MoreVertical size={14} />
+        <MoreVertical size={12} />
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg z-10 border border-soft-border">
-          <ul className="py-1 text-xs text-text-dark">
+        <div className="absolute right-0 mt-1 w-28 bg-white rounded-md shadow-lg z-10 border border-soft-border">
+          <ul className="py-1 text-2xs text-text-dark">
             <li>
-              <button type="button" onClick={() => handleAction(onView)} className="w-full text-left px-3 py-1.5 hover:bg-gray-100 flex items-center gap-2">
-                <Eye size={14} /> {t('productManagement.actions.view')}
-              </button>
+              <div role="button" onClick={() => handleAction(onView)} className="w-full text-left px-2 py-1 hover:bg-gray-100 cursor-pointer">
+                {t('productManagement.actions.view')}
+              </div>
             </li>
             {!isPrimary && (
               <li>
-                <button type="button" onClick={() => handleAction(onSetPrimary)} className="w-full text-left px-3 py-1.5 hover:bg-gray-100 flex items-center gap-2">
-                  <Star size={14} /> {t('productManagement.actions.setAsPrimary')}
-                </button>
+                <div role="button" onClick={() => handleAction(onSetPrimary)} className="w-full text-left px-2 py-1 hover:bg-gray-100 cursor-pointer">
+                  {t('productManagement.actions.setAsPrimary')}
+                </div>
               </li>
             )}
             <li>
-              <button type="button" onClick={() => handleAction(onDownload)} className="w-full text-left px-3 py-1.5 hover:bg-gray-100 flex items-center gap-2">
-                <Download size={14} /> {t('productManagement.actions.download')}
-              </button>
+              <div role="button" onClick={() => handleAction(onDownload)} className="w-full text-left px-2 py-1 hover:bg-gray-100 cursor-pointer">
+                {t('productManagement.actions.download')}
+              </div>
             </li>
             <li>
-              <button type="button" onClick={() => handleAction(onRemove)} className="w-full text-left px-3 py-1.5 hover:bg-gray-100 flex items-center gap-2 text-red-600">
-                <Trash2 size={14} /> {t('productManagement.actions.remove')}
-              </button>
+              <div role="button" onClick={() => handleAction(onRemove)} className="w-full text-left px-2 py-1 hover:bg-gray-100 text-red-600 cursor-pointer">
+                {t('productManagement.actions.remove')}
+              </div>
             </li>
           </ul>
         </div>
