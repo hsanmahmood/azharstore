@@ -127,12 +127,12 @@ export const apiService = {
 
   // Orders
   getAllOrders: () => api.get('/admin/orders'),
-  createOrder: (data) => api.post('/admin/orders', data),
+  createOrder: (data) => api.post('/orders', data),
   updateOrder: (id, data) => api.patch(`/admin/orders/${id}`, data),
   deleteOrder: (id) => api.delete(`/admin/orders/${id}`),
 
   // Delivery Areas
-  getAllDeliveryAreas: () => api.get('/admin/delivery-areas'),
+  getAllDeliveryAreas: () => api.get('/delivery-areas'),
   createDeliveryArea: (data) => api.post('/admin/delivery-areas', data),
   updateDeliveryArea: (id, data) => api.patch(`/admin/delivery-areas/${id}`, data),
   deleteDeliveryArea: (id) => api.delete(`/admin/delivery-areas/${id}`),
