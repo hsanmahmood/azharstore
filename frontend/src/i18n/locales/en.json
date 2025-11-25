@@ -67,7 +67,16 @@
       "totalStock": "Total Stock",
       "imagesSelected": "{{count}} images selected",
       "clickToUpload": "Click to upload images",
-      "draftName": "New Product (Draft)"
+      "draftName": "New Product (Draft)",
+      "downloadAll": "Download All"
+    },
+    "imageAlt": "Product Image",
+    "primaryBadge": "Primary",
+    "tooltips": {
+      "viewImage": "View Image",
+      "setAsPrimary": "Set as Primary",
+      "downloadImage": "Download Image",
+      "removeImage": "Remove Image"
     },
     "tabs": {
       "details": "Details",

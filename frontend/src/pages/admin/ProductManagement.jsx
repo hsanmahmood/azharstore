@@ -387,7 +387,7 @@ const ProductManagement = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         title={editingProduct ? t('productManagement.editProduct') : t('productManagement.addProduct')}
-        maxWidth="max-w-3xl"
+        maxWidth="max-w-5xl"
       >
         <form onSubmit={handleFormSubmit} className="space-y-6">
           {error && (
@@ -517,7 +517,7 @@ const ProductManagement = () => {
                     {t('productManagement.form.downloadAll')}
                 </button>
               </div>
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-4">
                 {editingProduct?.product_images.map((image) => (
                   <ProductImage
                     key={image.id}
