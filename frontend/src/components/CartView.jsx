@@ -6,22 +6,28 @@ import CheckoutDialog from './CheckoutDialog';
 import { apiService } from '../services/api';
 
 const CartView = ({ isOpen, onClose }) => {
-    const { cartItems, removeFromCart, updateQuantity, totalPrice } = useCart();
+    const { cartItems, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
-    const handleCheckout = async (customerData) => {
+    const handleCheckout = async (checkoutData) => {
+        const deliveryCost = checkoutData.deliveryMethod === 'delivery' ? checkoutData.deliveryArea.price : 0;
+        const finalTotal = totalPrice + deliveryCost;
+
         const orderData = {
-            customer: customerData,
+            customer: checkoutData.customer,
             items: cartItems.map(item => ({
                 product_id: item.product.id,
                 variant_id: item.variant?.id,
                 quantity: item.quantity,
                 price: item.variant?.price || item.product.price,
             })),
-            total_price: totalPrice,
+            total_price: finalTotal,
+            delivery_method: checkoutData.deliveryMethod,
+            delivery_area_id: checkoutData.deliveryArea?.id,
         };
 
         await apiService.createOrder(orderData);
+        clearCart();
     };
 
     return (
@@ -77,6 +83,8 @@ const CartView = ({ isOpen, onClose }) => {
             isOpen={isCheckoutOpen}
             onClose={() => setIsCheckoutOpen(false)}
             onSubmit={handleCheckout}
+            cartItems={cartItems}
+            totalPrice={totalPrice}
         />
     </>
     );
