@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://api.azhar.store/api';
+// Use environment variable for API URL, fallback to production
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.azhar.store/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

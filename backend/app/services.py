@@ -57,7 +57,27 @@ def delete_category(category_id: int, supabase: Client = Depends(get_supabase_cl
 
 def get_products(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Product]:
     response = supabase.table("products").select("*, category:categories(*), product_images(*), product_variants(*)").execute()
-    return response.data
+    
+    # Transform the data to include primary_image_url and images array
+    products = response.data
+    for product in products:
+        if product.get('product_images'):
+            # Extract image URLs
+            product['images'] = [img['image_url'] for img in product['product_images']]
+            # Find primary image
+            primary_img = next((img for img in product['product_images'] if img.get('is_primary')), None)
+            if primary_img:
+                product['primary_image_url'] = primary_img['image_url']
+            elif product['product_images']:
+                # If no primary, use first image
+                product['primary_image_url'] = product['product_images'][0]['image_url']
+            else:
+                product['primary_image_url'] = None
+        else:
+            product['images'] = []
+            product['primary_image_url'] = None
+    
+    return products
 
 def get_product(product_id: int, supabase: Client = Depends(get_supabase_client)) -> schemas.Product | None:
     response = supabase.table("products").select("*, category:categories(*), product_images(*), product_variants(*)").eq("id", product_id).execute()

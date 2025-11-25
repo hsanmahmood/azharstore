@@ -32,18 +32,20 @@ const AdminLayoutContent = () => {
     navigate('/login');
   };
 
+  // Detect if we're using /admin prefix (localhost) or root (admin.azhar.store)
+  const adminBasePath = location.pathname.startsWith('/admin') ? '/admin' : '';
+
   const navLinks = [
-    { to: '/products', text: t('admin.nav.products'), icon: Package },
-    { to: '/categories', text: t('admin.nav.categories'), icon: Layers },
-    { to: '/customers', text: t('admin.nav.customers'), icon: Users },
-    { to: '/orders', text: t('orderManagement.title'), icon: ShoppingCart },
+    { to: `${adminBasePath}/products`, text: t('admin.nav.products'), icon: Package },
+    { to: `${adminBasePath}/categories`, text: t('admin.nav.categories'), icon: Layers },
+    { to: `${adminBasePath}/customers`, text: t('admin.nav.customers'), icon: Users },
+    { to: `${adminBasePath}/orders`, text: t('orderManagement.title'), icon: ShoppingCart },
   ];
 
   const getNavLinkClasses = (isOpen) => (to) => {
     const isActive = location.pathname === to;
-    return `flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 ${
-      isActive ? 'bg-brand-purple/10 text-brand-purple' : 'text-text-light hover:bg-brand-purple/5 hover:text-brand-purple'
-    } ${!isOpen ? 'justify-center' : ''}`;
+    return `flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 ${isActive ? 'bg-brand-purple/10 text-brand-purple' : 'text-text-light hover:bg-brand-purple/5 hover:text-brand-purple'
+      } ${!isOpen ? 'justify-center' : ''}`;
   };
 
   const DesktopSidebarContent = () => {
@@ -72,7 +74,7 @@ const AdminLayoutContent = () => {
 
         <div className="px-2 py-4 mt-auto">
           <div className="border-t border-soft-border pt-4 space-y-2">
-            <NavLink to="/settings" className={getNavLinkClasses(isDesktopSidebarOpen)('/settings')} title={isDesktopSidebarOpen ? '' : t('settings.title')}>
+            <NavLink to={`${adminBasePath}/settings`} className={getNavLinkClasses(isDesktopSidebarOpen)(`${adminBasePath}/settings`)} title={isDesktopSidebarOpen ? '' : t('settings.title')}>
               <Settings className={`h-5 w-5 ${isDesktopSidebarOpen ? 'ml-3' : ''}`} />
               <span className={`transition-opacity duration-200 ${!isDesktopSidebarOpen ? 'hidden' : 'delay-200'}`}>{t('settings.title')}</span>
             </NavLink>

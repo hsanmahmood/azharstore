@@ -20,6 +20,10 @@ export default {
         "category-blue": "#C0C0E0",
         "card-background": "rgba(255, 255, 255, 0.6)",
         "soft-border": "#dcd9dc",
+        // Exact screenshot colors
+        "border-gray": "rgb(229, 231, 235)", // gray-300
+        "text-gray": "rgb(17, 24, 39)",     // gray-900
+        "soft-hover": "rgb(243, 244, 246)",  // gray-100
         brand: {
           background: "#f4f0f4",
           gray: "#6e6c6f",

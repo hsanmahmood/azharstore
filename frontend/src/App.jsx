@@ -15,7 +15,16 @@ import Settings from './pages/admin/Settings';
 const App = () => {
   const { token } = useContext(AuthContext);
   const location = useLocation();
-  const isAdminSite = window.location.hostname.startsWith('admin');
+
+  // Dual routing: support both hostname-based (admin.azhar.store) and path-based (localhost/admin)
+  const isAdminSite = React.useMemo(() => {
+    return (
+      window.location.hostname.startsWith('admin') || // Production: admin.azhar.store
+      (window.location.hostname.includes('localhost') && location.pathname.startsWith('/admin')) || // Local dev
+      (window.location.hostname.includes('127.0.0.1') && location.pathname.startsWith('/admin')) // Local dev alternative
+    );
+  }, [location.pathname]);
+
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -26,7 +35,22 @@ const App = () => {
     return (
       <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col">
         <Routes>
-          <Route path="/login" element={token ? <Navigate to="/" /> : <Login />} />
+          <Route path="/login" element={token ? <Navigate to="/admin" /> : <Login />} />
+          <Route path="/admin/login" element={token ? <Navigate to="/admin" /> : <Login />} />
+
+          {/* Admin routes with /admin prefix for local development */}
+          <Route path="/admin" element={<ProtectedRoute />}>
+            <Route element={<AdminLayout />}>
+              <Route index element={<Navigate to="products" />} />
+              <Route path="products" element={<ProductManagement />} />
+              <Route path="categories" element={<CategoryManagement />} />
+              <Route path="customers" element={<CustomerManagement />} />
+              <Route path="orders" element={<OrderManagement />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
+          </Route>
+
+          {/* Admin routes at root for admin.azhar.store */}
           <Route path="/" element={<ProtectedRoute />}>
             <Route element={<AdminLayout />}>
               <Route index element={<Navigate to="products" />} />
@@ -37,7 +61,8 @@ const App = () => {
               <Route path="settings" element={<Settings />} />
             </Route>
           </Route>
-          <Route path="*" element={<Navigate to="/" />} />
+
+          <Route path="*" element={<Navigate to="/admin" />} />
         </Routes>
       </div>
     );
