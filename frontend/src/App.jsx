@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import StoreFront from './pages/StoreFront';
 import ProductDetail from './pages/ProductDetail';
 import Login from './pages/Login';
@@ -70,15 +71,17 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col">
-      <Routes>
-        <Route path="/" element={<StoreFront />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/login" element={token ? <Navigate to="/" /> : <Login />} />
-        <Route path="/admin/*" element={<Navigate to="/" />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </div>
+    <CartProvider>
+      <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col">
+        <Routes>
+          <Route path="/" element={<StoreFront />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/login" element={token ? <Navigate to="/" /> : <Login />} />
+          <Route path="/admin/*" element={<Navigate to="/" />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </div>
+    </CartProvider>
   );
 };
 

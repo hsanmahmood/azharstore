@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ShoppingCart, ArrowLeft } from 'lucide-react';
 import { apiService } from '../services/api';
 import TransformedImage from '../components/TransformedImage';
+import AddToCartDialog from '../components/AddToCartDialog';
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -11,6 +12,7 @@ const ProductDetail = () => {
     const [loading, setLoading] = useState(true);
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [isCartDialogOpen, setIsCartDialogOpen] = useState(false);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -166,13 +168,23 @@ const ProductDetail = () => {
                         )}
 
                         {/* Add to Cart Button */}
-                        <button className="w-full bg-brand-purple text-white font-semibold py-2 px-4 rounded-[12px] hover:bg-brand-purple/90 transition-all duration-200 flex items-center justify-center gap-2 mt-4">
+                        <button
+                            onClick={() => setIsCartDialogOpen(true)}
+                            className="w-full bg-brand-purple text-white font-semibold py-2 px-4 rounded-[12px] hover:bg-brand-purple/90 transition-all duration-200 flex items-center justify-center gap-2 mt-4"
+                        >
                             <ShoppingCart className="h-5 w-5" />
                             <span>إضافة إلى السلة</span>
                         </button>
                     </div>
                 </div>
             </main>
+            {isCartDialogOpen && (
+                <AddToCartDialog
+                    isOpen={isCartDialogOpen}
+                    onClose={() => setIsCartDialogOpen(false)}
+                    product={product}
+                />
+            )}
         </div>
     );
 };

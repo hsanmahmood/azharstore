@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Plus, Globe, Search, X, Instagram } from 'lucide-react';
+import { ShoppingCart, Globe, Search, X, Instagram } from 'lucide-react';
 import CategorySlider from '../components/CategorySlider';
 import ProductGrid from '../components/ProductGrid';
 import { apiService } from '../services/api';
+import { useCart } from '../context/CartContext';
+import CartView from '../components/CartView';
 
 const StoreFront = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [categories, setCategories] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [loading, setLoading] = useState(true);
+    const { cartCount } = useCart();
+    const [isCartViewOpen, setIsCartViewOpen] = useState(false);
 
   // Fetch categories and products on mount
   useEffect(() => {
@@ -79,30 +83,36 @@ const StoreFront = () => {
           </div>
 
           {/* Buttons */}
-          <div className="flex items-center gap-12">
+          <div className="flex items-center gap-4">
             {/* Instagram */}
-            <button className="inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200 scale-[1.3]">
+            <button className="inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200">
               <span className="text-sm font-medium">Instagram</span>
               <Instagram className="h-4 w-4" />
             </button>
 
             {/* Language */}
-            <button className="inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200 scale-[1.3]">
+            <button className="inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200">
               <span className="text-sm font-medium">العربية</span>
               <Globe className="h-4 w-4" />
             </button>
 
             {/* Cart */}
-            <button className="relative inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200 scale-[1.3]">
+            <button
+              onClick={() => setIsCartViewOpen(true)}
+              className="relative inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200"
+            >
               <span className="text-sm font-medium">السلة</span>
               <ShoppingCart className="h-4 w-4" />
-              <span className="absolute -top-2 -right-1 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">
-                3
-              </span>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-1 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
             </button>
           </div>
         </div>
       </header>
+      <CartView isOpen={isCartViewOpen} onClose={() => setIsCartViewOpen(false)} />
 
       {/* Search + Categories */}
       <div className="border-b bg-gray-50/50">

@@ -1,16 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
+import AddToCartDialog from './AddToCartDialog';
 
 const ProductGrid = ({ products = [] }) => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
-  return (
-    <>
-      {products.map((product) => (
-        <div
-          key={product.id}
-          onClick={() => navigate(`/product/${product.id}`)}
+    const handleAddToCartClick = (e, product) => {
+        e.stopPropagation();
+        setSelectedProduct(product);
+    };
+
+    const closeDialog = () => {
+        setSelectedProduct(null);
+    };
+
+    return (
+        <>
+            {products.map((product) => (
+                <div
+                    key={product.id}
+                    onClick={() => navigate(`/product/${product.id}`)}
           className="bg-white rounded-xl border border-border-gray shadow-sm hover:shadow-lg hover:border-brand-purple hover:scale-[1.02] transition-all duration-200 overflow-hidden cursor-pointer"
         >
           {/* Image */}
@@ -66,19 +77,29 @@ const ProductGrid = ({ products = [] }) => {
             </p>
 
             <div className="flex items-center justify-between">
-              <span className="text-base font-bold text-brand-purple">
-                {product.price} د.ب
-              </span>
+                            <span className="text-base font-bold text-brand-purple">
+                                {product.price} د.ب
+                            </span>
 
-              <button className="h-8 w-8 p-0 bg-brand-purple text-white rounded-lg hover:bg-brand-purple/90 hover:scale-110 transition-all duration-200 flex items-center justify-center">
-                <Plus className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      ))}
-    </>
-  );
+                            <button
+                                onClick={(e) => handleAddToCartClick(e, product)}
+                                className="h-8 w-8 p-0 bg-brand-purple text-white rounded-lg hover:bg-brand-purple/90 hover:scale-110 transition-all duration-200 flex items-center justify-center"
+                            >
+                                <Plus className="h-4 w-4" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ))}
+            {selectedProduct && (
+                <AddToCartDialog
+                    isOpen={!!selectedProduct}
+                    onClose={closeDialog}
+                    product={selectedProduct}
+                />
+            )}
+        </>
+    );
 };
 
 export default ProductGrid;
