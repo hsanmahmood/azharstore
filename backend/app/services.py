@@ -290,7 +290,7 @@ def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supa
         order_data["customer_id"] = customer_id
         order_response = supabase.table("orders").insert(order_data).execute()
         if not order_response.data:
-            raise HTTPException(status_code=500, detail=f"Failed to create order: {order_response}")
+            raise HTTPException(status_code=500, detail=f"Failed to create order: {str(order_response)}")
 
         new_order = order_response.data[0]
 
