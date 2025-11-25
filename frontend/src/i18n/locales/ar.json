@@ -78,6 +78,12 @@
       "downloadImage": "تحميل الصورة",
       "removeImage": "إزالة الصورة"
     },
+    "actions": {
+      "view": "عرض",
+      "setAsPrimary": "تعيين كأساسية",
+      "download": "تحميل",
+      "remove": "إزالة"
+    },
     "tabs": {
       "details": "التفاصيل",
       "images": "الصور",

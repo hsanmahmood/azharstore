@@ -12,6 +12,7 @@ import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import ImageUploader from '../../components/ImageUploader';
 import ProductImage from '../../components/ProductImage';
+import Lightbox from '../../components/Lightbox';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
@@ -387,7 +388,7 @@ const ProductManagement = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         title={editingProduct ? t('productManagement.editProduct') : t('productManagement.addProduct')}
-        maxWidth="max-w-5xl"
+        maxWidth="max-w-3xl"
       >
         <form onSubmit={handleFormSubmit} className="space-y-6">
           {error && (
@@ -422,8 +423,8 @@ const ProductManagement = () => {
             </nav>
           </div>
 
-          <div className="pt-4">
-            <div className={`${activeTab === 'details' ? '' : 'hidden'} space-y-6`}>
+          <div className="py-6">
+            <div className={`${activeTab === 'details' ? '' : 'hidden'} space-y-8`}>
               {/* DETAILS FORM */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -517,7 +518,7 @@ const ProductManagement = () => {
                     {t('productManagement.form.downloadAll')}
                 </button>
               </div>
-              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
                 {editingProduct?.product_images.map((image) => (
                   <ProductImage
                     key={image.id}
@@ -641,18 +642,7 @@ const ProductManagement = () => {
       </Modal>
 
       {isLightboxOpen && (
-        <div
-            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
-            onClick={() => setIsLightboxOpen(false)}
-        >
-            <img src={lightboxImageUrl} alt="Product full view" className="max-w-[90vw] max-h-[90vh] object-contain"/>
-            <button
-                onClick={() => setIsLightboxOpen(false)}
-                className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2"
-            >
-                <X size={24} />
-            </button>
-        </div>
+        <Lightbox imageUrl={lightboxImageUrl} onClose={() => setIsLightboxOpen(false)} />
       )}
 
       <ConfirmationModal
