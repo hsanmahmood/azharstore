@@ -224,77 +224,78 @@ const ProductManagement = () => {
     setIsSubmitting(true);
     setError('');
 
-    let currentProductId = editingProduct?.id;
-
-    // 1. Create or Update Product Details
     try {
-      const payload = {
-        ...formData,
-        price: parseFloat(formData.price),
-        stock_quantity: parseInt(formData.stock_quantity) || 0,
-        category_id: formData.category_id ? parseInt(formData.category_id) : null,
+      // Step 1: Create or Update Product
+      let productData;
+      const productPayload = {
+        name: formData.name,
+        description: formData.description,
+        price: parseFloat(formData.price) || 0,
+        stock_quantity: parseInt(formData.stock_quantity) || null,
+        category_id: formData.category_id || null,
       };
 
-      if (currentProductId) {
-        const updated = await apiService.updateProduct(currentProductId, payload);
-        updateProduct(updated.data);
+      if (editingProduct && editingProduct.id) {
+        const response = await apiService.updateProduct(editingProduct.id, productPayload);
+        productData = response.data;
       } else {
-        const newProd = await apiService.createProduct(payload);
-        addProduct(newProd.data);
-        currentProductId = newProd.data.id;
+        const response = await apiService.createProduct(productPayload);
+        productData = response.data;
       }
-    } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to save product details.');
-      setIsSubmitting(false);
-      return;
-    }
 
-    // 2. Upload New Images
-    try {
-      const newImageFiles = editingProduct.product_images.filter(img => img.file);
-      if (newImageFiles.length > 0) {
+      // Step 2: Upload New Images
+      const newImages = editingProduct.product_images.filter(img => img.file);
+      if (newImages.length > 0) {
         setUploadingImages(true);
-        const uploadPromises = newImageFiles.map(img => apiService.uploadImage(currentProductId, img.file));
+        const uploadPromises = newImages.map(img => apiService.uploadImage(productData.id, img.file));
         await Promise.all(uploadPromises);
+        setUploadingImages(false);
       }
-    } catch (err) {
-      setError('Failed to upload new images.');
-      // Continue to update other things
-    } finally {
-      setUploadingImages(false);
-    }
 
-    // 3. Update Image Metadata (Primary status and removals)
-    try {
-      const finalProductState = await apiService.getProduct(currentProductId);
-      const existingImages = finalProductState.data.product_images;
-      const clientImageIds = editingProduct.product_images.filter(img => !img.file).map(img => img.id);
+      // Step 3: Update image metadata (primary status, removals) and variants
+      const finalProduct = await apiService.getProduct(productData.id);
+      const existingImageIds = finalProduct.data.product_images.map(img => img.id);
 
-      const imagesToUpdate = editingProduct.product_images
+      const clientImages = editingProduct.product_images
         .filter(img => !img.file)
         .map(img => ({ id: img.id, is_primary: img.is_primary }));
 
-      // Add a default primary if none is set
+      // Filter out images that were deleted on the client but still exist on the server
+      const imagesToUpdate = clientImages.filter(img => existingImageIds.includes(img.id));
+
+      // Ensure one image is primary if there are any
       if (imagesToUpdate.length > 0 && !imagesToUpdate.some(img => img.is_primary)) {
-        imagesToUpdate[0].is_primary = true;
+          imagesToUpdate[0].is_primary = true;
       }
 
       const updatePayload = {
         product_images: imagesToUpdate,
-        // Also send variant updates
-        product_variants: variants.map(({ id, name, stock_quantity, image_url, price }) => ({
-            id, name, price: price ?? 0, stock_quantity, image_url,
+        product_variants: variants.map(v => ({
+          id: v.id,
+          name: v.name,
+          price: v.price || 0,
+          stock_quantity: v.stock_quantity || 0,
+          image_url: v.image_url,
         })),
       };
 
-      const updatedProduct = await apiService.updateProduct(currentProductId, updatePayload);
-      updateProduct(updatedProduct.data);
-    } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to update image metadata.');
-    }
+      const updatedProductResponse = await apiService.updateProduct(productData.id, updatePayload);
 
-    setIsSubmitting(false);
-    closeModal();
+      // Final state update
+      if (editingProduct && editingProduct.id) {
+        updateProduct(updatedProductResponse.data);
+      } else {
+        addProduct(updatedProductResponse.data);
+      }
+
+      closeModal();
+    } catch (err) {
+      const errorMsg = err.response?.data?.detail || 'An unexpected error occurred.';
+      setError(errorMsg);
+    } finally {
+      setIsSubmitting(false);
+      setUploadingImages(false);
+    }
   };
 
   const openDeleteConfirm = (id) => {
