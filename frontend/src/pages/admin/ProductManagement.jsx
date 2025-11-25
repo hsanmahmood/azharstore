@@ -12,7 +12,6 @@ import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import ImageUploader from '../../components/ImageUploader';
 import ProductImage from '../../components/ProductImage';
-import Lightbox from '../../components/Lightbox';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
@@ -641,9 +640,16 @@ const ProductManagement = () => {
         </form>
       </Modal>
 
-      {isLightboxOpen && (
-        <Lightbox imageUrl={lightboxImageUrl} onClose={() => setIsLightboxOpen(false)} />
-      )}
+      <Modal
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        title={t('productManagement.imagePreview')}
+        maxWidth="max-w-xl"
+      >
+        <div className="p-4">
+            <img src={lightboxImageUrl} alt={t('productManagement.imageAlt')} className="w-full h-auto object-contain rounded-lg"/>
+        </div>
+      </Modal>
 
       <ConfirmationModal
         isOpen={isConfirmModalOpen}
