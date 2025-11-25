@@ -82,13 +82,14 @@ const DeliveryAreaStep = ({ onNext, onBack, onSelect, selectedArea, deliveryArea
     </div>
 );
 
-const OrderSummaryStep = ({ onBack, onSubmit, data, cartItems, totalPrice, isSubmitting }) => {
+const OrderSummaryStep = ({ onBack, onSubmit, data, cartItems, totalPrice, isSubmitting, error }) => {
     const deliveryCost = data.deliveryMethod === 'delivery' ? data.deliveryArea?.price || 0 : 0;
     const finalTotal = totalPrice + deliveryCost;
 
     return (
         <div className="p-4" dir="rtl">
             <h2 className="text-xl font-semibold mb-4 text-right">ملخص الطلب</h2>
+            {error && <div className="text-red-500 text-sm text-center mb-4">{error}</div>}
             <div className="space-y-4">
                 <div>
                     <h3 className="font-semibold">المنتجات</h3>
@@ -215,7 +216,7 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
             await onSubmit(checkoutData);
             setStep(5); // Move to thank you step
         } catch (err) {
-            setError('Failed to create order. Please try again.');
+            setError(err.response?.data?.detail || 'Failed to create order. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -237,7 +238,7 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
             case 3:
                 return <DeliveryAreaStep onNext={handleNext} onBack={handleBack} onSelect={handleSelectArea} selectedArea={checkoutData.deliveryArea} deliveryAreas={deliveryAreas} />;
             case 4:
-                return <OrderSummaryStep onBack={handleBack} onSubmit={handleSubmit} data={checkoutData} cartItems={cartItems} totalPrice={totalPrice} isSubmitting={isSubmitting} />;
+                return <OrderSummaryStep onBack={handleBack} onSubmit={handleSubmit} data={checkoutData} cartItems={cartItems} totalPrice={totalPrice} isSubmitting={isSubmitting} error={error} />;
             case 5:
                 return <ThankYouStep onClose={onClose} message={getThankYouMessage()} />;
             default:
