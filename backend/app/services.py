@@ -291,6 +291,18 @@ def create_public_order(order: schemas.PublicOrderCreate, supabase: Client = Dep
         # Create order
         order_data = order.model_dump(exclude={"order_items", "customer"})
         order_data["customer_id"] = customer_id
+
+        # Calculate delivery_fee
+        if order.shipping_method == 'delivery' and order.delivery_area_id:
+            delivery_area_response = supabase.table("delivery_areas").select("price").eq("id", order.delivery_area_id).execute()
+            if delivery_area_response.data:
+                order_data["delivery_fee"] = delivery_area_response.data[0]["price"]
+            else:
+                # Handle case where delivery_area_id is invalid
+                raise HTTPException(status_code=400, detail=f"Invalid delivery_area_id: {order.delivery_area_id}")
+        else:
+            order_data["delivery_fee"] = 0
+
         order_response = supabase.table("orders").insert(order_data).execute()
         if not order_response.data:
             logging.error(f"Failed to create order: {order_response}")
