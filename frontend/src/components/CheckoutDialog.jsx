@@ -49,7 +49,7 @@ const DeliveryMethodStep = ({ onNext, onBack, onSelect, selectedMethod }) => (
                 <Truck className="w-12 h-12 mb-2 text-brand-purple" />
                 <span className="font-semibold">توصيل</span>
             </button>
-            <button onClick={() => onSelect('pickup')} className={`p-6 border-2 rounded-lg flex flex-col items-center justify-center transition-all ${selectedMethod === 'pickup' ? 'border-brand-purple bg-purple-50' : 'hover:border-purple-300'}`}>
+            <button onClick={() => onSelect('pick_up')} className={`p-6 border-2 rounded-lg flex flex-col items-center justify-center transition-all ${selectedMethod === 'pick_up' ? 'border-brand-purple bg-purple-50' : 'hover:border-purple-300'}`}>
                 <Package className="w-12 h-12 mb-2 text-brand-purple" />
                 <span className="font-semibold">استلام من المتجر</span>
             </button>
@@ -200,7 +200,7 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
             return;
         }
 
-        if (step === 2 && checkoutData.deliveryMethod === 'pickup') {
+        if (step === 2 && checkoutData.deliveryMethod === 'pick_up') {
             setStep(4); // Skip to summary
         } else {
             setStep(step + 1);
@@ -208,7 +208,7 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
     };
 
     const handleBack = () => {
-        if (step === 4 && checkoutData.deliveryMethod === 'pickup') {
+        if (step === 4 && checkoutData.deliveryMethod === 'pick_up') {
             setStep(2);
         } else {
             setStep(step - 1);
@@ -240,7 +240,7 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
 
     const getThankYouMessage = () => {
         if (!appSettings) return '';
-        return checkoutData.deliveryMethod === 'pickup'
+        return checkoutData.deliveryMethod === 'pick_up'
             ? appSettings.pickup_message
             : appSettings.delivery_message;
     };
