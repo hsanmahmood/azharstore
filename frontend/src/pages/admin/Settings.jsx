@@ -6,7 +6,6 @@ import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
-import SimpleRichTextEditor from '../../components/SimpleRichTextEditor';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -202,16 +201,20 @@ const Settings = () => {
         <div className="space-y-8">
           <div>
             <h2 className="text-2xl font-bold text-text-dark mb-4">{t('settings.deliveryMessage')}</h2>
-            <SimpleRichTextEditor
-              initialValue={deliveryMessage}
-              onChange={(content) => setDeliveryMessage(content)}
+            <textarea
+              value={deliveryMessage}
+              onChange={(e) => setDeliveryMessage(e.target.value)}
+              className="w-full h-48 p-2 border border-soft-border rounded-lg bg-brand-white text-text-dark focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
+              dir="rtl"
             />
           </div>
           <div>
             <h2 className="text-2xl font-bold text-text-dark mb-4">{t('settings.pickupMessage')}</h2>
-            <SimpleRichTextEditor
-              initialValue={pickupMessage}
-              onChange={(content) => setPickupMessage(content)}
+            <textarea
+              value={pickupMessage}
+              onChange={(e) => setPickupMessage(e.target.value)}
+              className="w-full h-48 p-2 border border-soft-border rounded-lg bg-brand-white text-text-dark focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
+              dir="rtl"
             />
           </div>
           <div className="flex justify-end">
