@@ -6,6 +6,9 @@ import { AuthContext } from '../../context/AuthContext';
 import MobileAdminSidebar from './MobileAdminSidebar';
 import { SearchProvider, SearchContext } from '../../context/SearchContext';
 import SearchBar from '../../components/SearchBar';
+import { NotificationProvider } from '../../context/NotificationContext';
+import { Toaster } from 'react-hot-toast';
+
 
 const AdminLayoutContent = () => {
   const { t } = useTranslation();
@@ -100,6 +103,7 @@ const AdminLayoutContent = () => {
 
   return (
     <div dir="rtl" className="flex h-screen bg-primary-background text-text-dark font-arabic">
+      <Toaster position="top-center" reverseOrder={false} />
       <MobileAdminSidebar
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}
@@ -128,9 +132,11 @@ const AdminLayoutContent = () => {
 };
 
 const AdminLayout = () => (
-  <SearchProvider>
-    <AdminLayoutContent />
-  </SearchProvider>
+  <NotificationProvider>
+    <SearchProvider>
+      <AdminLayoutContent />
+    </SearchProvider>
+  </NotificationProvider>
 );
 
 export default AdminLayout;

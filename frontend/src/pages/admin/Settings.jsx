@@ -3,16 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
 import { apiService } from '../../services/api';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
+import { useNotifier } from '../../context/NotificationContext';
 import Modal from '../../components/Modal';
 import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
 
 const Settings = () => {
   const { t } = useTranslation();
+  const notify = useNotifier();
   const { deliveryAreas, appSettings, isLoading, error: dataError, addDeliveryArea, updateDeliveryArea, deleteDeliveryArea, updateAppSettings } = useContext(DataContext);
 
   const [activeTab, setActiveTab] = useState('delivery');
-  const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingArea, setEditingArea] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,18 +53,19 @@ const Settings = () => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.price) return;
     setIsSubmitting(true);
-    setError('');
     try {
       if (editingArea) {
         const updatedArea = await apiService.updateDeliveryArea(editingArea.id, formData);
         updateDeliveryArea(updatedArea);
+        notify(t('settings.areaUpdatedSuccess'));
       } else {
         const newArea = await apiService.createDeliveryArea(formData);
         addDeliveryArea(newArea);
+        notify(t('settings.areaAddedSuccess'));
       }
       closeModal();
     } catch (err) {
-      setError('Failed to save delivery area.');
+      notify(t('settings.areaSaveError'), 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -80,8 +82,9 @@ const Settings = () => {
     try {
       await apiService.deleteDeliveryArea(deletingAreaId);
       deleteDeliveryArea(deletingAreaId);
+      notify(t('settings.areaDeletedSuccess'));
     } catch (err) {
-      setError('Failed to delete delivery area.');
+      notify(t('settings.areaDeleteError'), 'error');
     } finally {
       setDeletingAreaId(null);
     }
@@ -89,15 +92,15 @@ const Settings = () => {
 
   const handleDeliverySettingsSave = async () => {
     setIsSubmitting(true);
-    setError('');
     try {
       const updatedSettings = {
         free_delivery_threshold: parseFloat(freeDeliveryThreshold) || 0,
       };
       const newSettings = await apiService.updateAppSettings(updatedSettings);
       updateAppSettings(newSettings);
+      notify(t('settings.deliverySettingsSaved'));
     } catch (err) {
-      setError('Failed to save delivery settings.');
+      notify(t('settings.deliverySettingsError'), 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -105,7 +108,6 @@ const Settings = () => {
 
   const handleMessagesSave = async () => {
     setIsSubmitting(true);
-    setError('');
     try {
       const updatedSettings = {
         delivery_message: deliveryMessage,
@@ -113,8 +115,9 @@ const Settings = () => {
       };
       const newSettings = await apiService.updateAppSettings(updatedSettings);
       updateAppSettings(newSettings);
+      notify(t('settings.messagesSaved'));
     } catch (err) {
-      setError('Failed to save messages.');
+      notify(t('settings.messagesError'), 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -145,8 +148,6 @@ const Settings = () => {
           <TabButton tabName="messages" label={t('settings.messages')} />
         </nav>
       </div>
-
-      {error && <div className="text-red-500 mb-6 bg-red-500/10 p-3 rounded-lg">{error}</div>}
 
       {activeTab === 'delivery' && (
         <div>
