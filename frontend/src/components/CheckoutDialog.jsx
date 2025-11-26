@@ -180,11 +180,20 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
 
     const handleNext = (e) => {
         e.preventDefault();
-        if (step === 1 && checkoutData.customer.phone_number.length !== 8) {
-            setError('رقم الهاتف يجب أن يتكون من 8 أرقام');
+        setError('');
+
+        if (step === 1) {
+            if (checkoutData.customer.phone_number.length !== 8) {
+                setError('رقم الهاتف يجب أن يتكون من 8 أرقام');
+                return;
+            }
+        }
+
+        if (step === 2 && checkoutData.deliveryMethod === 'delivery' && !checkoutData.deliveryArea) {
+            setError('الرجاء اختيار منطقة التوصيل');
             return;
         }
-        setError('');
+
         if (step === 2 && checkoutData.deliveryMethod === 'pickup') {
             setStep(4); // Skip to summary
         } else {
@@ -216,7 +225,8 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
             await onSubmit(checkoutData);
             setStep(5); // Move to thank you step
         } catch (err) {
-            setError(err.response?.data?.detail || 'Failed to create order. Please try again.');
+            const errorMessage = err.response?.data?.detail || 'Failed to create order. Please try again.';
+            setError(typeof errorMessage === 'object' ? JSON.stringify(errorMessage) : errorMessage);
         } finally {
             setIsSubmitting(false);
         }
@@ -258,6 +268,7 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
                 <div className="h-[400px]">
                     {renderStep()}
                 </div>
+                {error && <div className="text-red-500 text-sm text-center mt-4 p-2 bg-red-100 rounded-lg">{error}</div>}
             </div>
         </Modal>
     );

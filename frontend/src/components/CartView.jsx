@@ -25,6 +25,7 @@ const CartView = ({ isOpen, onClose }) => {
             delivery_area_id: checkoutData.deliveryArea?.id,
         };
 
+        console.log("Submitting order data:", orderData);
         await apiService.createOrder(orderData);
         clearCart();
     };

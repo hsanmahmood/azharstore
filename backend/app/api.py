@@ -57,9 +57,16 @@ def get_category(category_id: int, supabase: Client = Depends(get_supabase_clien
 def list_delivery_areas_public(supabase: Client = Depends(get_supabase_client)):
     return services.get_delivery_areas(supabase=supabase)
 
+import logging
+
 @router.post("/orders", response_model=schemas.Order, tags=["Orders"])
 def create_order_public(order: schemas.OrderCreate, supabase: Client = Depends(get_supabase_client)):
-    return services.create_order(order=order, supabase=supabase)
+    logging.info(f"Received order data: {order.model_dump_json()}")
+    try:
+        return services.create_order(order=order, supabase=supabase)
+    except HTTPException as e:
+        logging.error(f"Error creating order: {e.detail}")
+        raise e
 
 @router.get("/settings", response_model=schemas.AppSettings, tags=["Settings"])
 def get_settings_public(supabase: Client = Depends(get_supabase_client)):
