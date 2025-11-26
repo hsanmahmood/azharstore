@@ -276,12 +276,15 @@ def update_product_variant_image(variant_id: int, image_url: str, supabase: Clie
     response = supabase.table("product_variants").update({"image_url": image_url}).eq("id", variant_id).execute()
     return response.data[0] if response.data else None
 
+import logging
+
 def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order:
     try:
         # Create or update customer
         customer_data = order.customer.model_dump()
         customer_response = supabase.table("customers").upsert(customer_data, on_conflict="phone_number").execute()
         if not customer_response.data:
+            logging.error(f"Failed to create or update customer: {customer_response}")
             raise HTTPException(status_code=500, detail="Failed to create or update customer.")
         customer_id = customer_response.data[0]['id']
 
@@ -290,6 +293,7 @@ def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supa
         order_data["customer_id"] = customer_id
         order_response = supabase.table("orders").insert(order_data).execute()
         if not order_response.data:
+            logging.error(f"Failed to create order: {order_response}")
             raise HTTPException(status_code=500, detail=f"Failed to create order: {str(order_response)}")
 
         new_order = order_response.data[0]
