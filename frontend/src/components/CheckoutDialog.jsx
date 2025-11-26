@@ -195,11 +195,6 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
             }
         }
 
-        if (step === 2 && checkoutData.deliveryMethod === 'delivery' && !checkoutData.deliveryArea) {
-            setError({ detail: "الرجاء اختيار منطقة التوصيل" });
-            return;
-        }
-
         if (step === 2 && checkoutData.deliveryMethod === 'pick_up') {
             setStep(4); // Skip to summary
         } else {

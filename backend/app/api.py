@@ -8,6 +8,7 @@ from . import services, schemas, customer_services
 from .config import settings
 from .supabase_client import get_supabase_client
 
+main_router = APIRouter()
 
 router = APIRouter(prefix="/api")
 admin_router = APIRouter(
@@ -284,3 +285,8 @@ def upload_image(file: UploadFile = File(...), supabase: Client = Depends(get_su
         return {"location": image_url}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Image upload failed: {str(e)}")
+
+main_router.include_router(router)
+main_router.include_router(admin_router)
+main_router.include_router(customers_router)
+main_router.include_router(orders_router)
