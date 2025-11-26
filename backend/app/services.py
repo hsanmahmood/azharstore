@@ -278,6 +278,46 @@ def update_product_variant_image(variant_id: int, image_url: str, supabase: Clie
 
 import logging
 
+def create_public_order(order: schemas.PublicOrderCreate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order:
+    try:
+        # Create or update customer
+        customer_data = order.customer.model_dump()
+        customer_response = supabase.table("customers").upsert(customer_data, on_conflict="phone_number").execute()
+        if not customer_response.data:
+            logging.error(f"Failed to create or update customer: {customer_response}")
+            raise HTTPException(status_code=500, detail="Failed to create or update customer.")
+        customer_id = customer_response.data[0]['id']
+
+        # Create order
+        order_data = order.model_dump(exclude={"order_items", "customer"})
+        order_data["customer_id"] = customer_id
+        order_response = supabase.table("orders").insert(order_data).execute()
+        if not order_response.data:
+            logging.error(f"Failed to create order: {order_response}")
+            raise HTTPException(status_code=500, detail=f"Failed to create order: {str(order_response)}")
+
+        new_order = order_response.data[0]
+
+        order_items_data = []
+        for item in order.order_items:
+            item_data = item.model_dump()
+            if "price" in item_data:
+                del item_data["price"]
+            if item_data.get("product_variant_id"):
+                item_data["product_id"] = None
+            order_items_data.append({"order_id": new_order['id'], **item_data})
+
+        if order_items_data:
+            items_response = supabase.table("order_items").insert(order_items_data).execute()
+            if not items_response.data:
+                # Rollback order creation if items fail
+                supabase.table("orders").delete().eq("id", new_order['id']).execute()
+                raise HTTPException(status_code=500, detail="Failed to create order items.")
+
+        return get_order(new_order['id'], supabase)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order:
     try:
         # Create or update customer

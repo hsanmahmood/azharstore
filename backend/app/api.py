@@ -60,10 +60,10 @@ def list_delivery_areas_public(supabase: Client = Depends(get_supabase_client)):
 import logging
 
 @router.post("/orders", response_model=schemas.Order, tags=["Orders"])
-def create_order_public(order: schemas.OrderCreate, supabase: Client = Depends(get_supabase_client)):
+def create_order_public(order: schemas.PublicOrderCreate, supabase: Client = Depends(get_supabase_client)):
     logging.info(f"Received order data: {order.model_dump_json()}")
     try:
-        return services.create_order(order=order, supabase=supabase)
+        return services.create_public_order(order=order, supabase=supabase)
     except HTTPException as e:
         logging.error(f"Error creating order: {e.detail}")
         raise e

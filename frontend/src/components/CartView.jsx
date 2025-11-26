@@ -27,12 +27,12 @@ const CartView = ({ isOpen, onClose }) => {
                 return orderItem;
             }),
             total_price: finalTotal,
-            delivery_method: checkoutData.deliveryMethod,
+            shipping_method: checkoutData.deliveryMethod,
             delivery_area_id: checkoutData.deliveryArea?.id,
         };
 
         console.log("Submitting order data:", orderData);
-        await apiService.createCustomerAndOrder(orderData);
+        await apiService.createOrder(orderData);
         clearCart();
     };
 

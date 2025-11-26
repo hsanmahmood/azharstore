@@ -134,6 +134,15 @@ class OrderItem(OrderItemCreate):
     product_variant: Optional['ProductVariant'] = None
     product: Optional['Product'] = None
 
+class PublicOrderCreate(BaseModel):
+    customer: 'CustomerCreate'
+    shipping_method: ShippingMethod
+    status: OrderStatus = OrderStatus.processing
+    comments: Optional[str] = None
+    order_items: list[OrderItemCreate]
+    delivery_area_id: Optional[int] = None
+    delivery_fee: Optional[float] = None
+
 class OrderCreate(BaseModel):
     customer_id: int
     shipping_method: ShippingMethod
