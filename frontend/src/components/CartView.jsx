@@ -15,18 +15,24 @@ const CartView = ({ isOpen, onClose }) => {
 
         const orderData = {
             customer: checkoutData.customer,
-            order_items: cartItems.map(item => ({
-                product_id: item.product.id,
-                product_variant_id: item.variant?.id,
-                quantity: item.quantity,
-            })),
+            order_items: cartItems.map(item => {
+                const orderItem = {
+                    quantity: item.quantity,
+                };
+                if (item.variant) {
+                    orderItem.product_variant_id = item.variant.id;
+                } else {
+                    orderItem.product_id = item.product.id;
+                }
+                return orderItem;
+            }),
             total_price: finalTotal,
             delivery_method: checkoutData.deliveryMethod,
             delivery_area_id: checkoutData.deliveryArea?.id,
         };
 
         console.log("Submitting order data:", orderData);
-        await apiService.createOrder(orderData);
+        await apiService.createCustomerAndOrder(orderData);
         clearCart();
     };
 

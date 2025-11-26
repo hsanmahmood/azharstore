@@ -130,7 +130,21 @@ export const apiService = {
   createOrder: (data) => api.post('/orders', data),
   updateOrder: (id, data) => api.patch(`/admin/orders/${id}`, data),
   deleteOrder: (id) => api.delete(`/admin/orders/${id}`),
+  createCustomerAndOrder: async (orderData) => {
+    // 1. Create customer
+    const customerResponse = await api.post('/customers', orderData.customer);
+    const customerId = customerResponse.data.id;
 
+    // 2. Create order
+    const orderPayload = {
+      customer_id: customerId,
+      order_items: orderData.order_items,
+      total_price: orderData.total_price,
+      shipping_method: orderData.delivery_method,
+      delivery_area_id: orderData.delivery_area_id,
+    };
+    return api.post('/orders', orderPayload);
+  },
   // Delivery Areas
   getAllDeliveryAreas: () => api.get('/delivery-areas'),
   createDeliveryArea: (data) => api.post('/admin/delivery-areas', data),

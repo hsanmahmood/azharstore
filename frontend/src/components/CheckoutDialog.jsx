@@ -4,7 +4,7 @@ import { Loader2, Truck, Package } from 'lucide-react';
 import { apiService } from '../services/api';
 import ErrorDisplay from './ErrorDisplay';
 
-const CustomerDetailsStep = ({ data, handleChange, onNext, error }) => (
+const CustomerDetailsStep = ({ data, handleChange, onNext, error, deliveryMethod }) => (
     <form onSubmit={onNext} className="space-y-6 p-4" dir="rtl">
         <ErrorDisplay error={error} />
         <div className="space-y-2">
@@ -20,19 +20,19 @@ const CustomerDetailsStep = ({ data, handleChange, onNext, error }) => (
         <div className="grid grid-cols-2 gap-x-4 gap-y-6">
             <div className="space-y-2">
                 <label className="block text-xs font-medium text-text-light text-right">الشارع</label>
-                <input type="text" name="address_road" value={data.address_road} onChange={handleChange} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
+                <input type="text" name="address_road" value={data.address_road} onChange={handleChange} required={deliveryMethod === 'delivery'} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
             </div>
             <div className="space-y-2">
                 <label className="block text-xs font-medium text-text-light text-right">رقم المنزل</label>
-                <input type="text" name="address_home" value={data.address_home} onChange={handleChange} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
+                <input type="text" name="address_home" value={data.address_home} onChange={handleChange} required={deliveryMethod === 'delivery'} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
             </div>
             <div className="space-y-2">
                 <label className="block text-xs font-medium text-text-light text-right">رقم المجمع</label>
-                <input type="text" name="address_block" value={data.address_block} onChange={handleChange} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
+                <input type="text" name="address_block" value={data.address_block} onChange={handleChange} required={deliveryMethod === 'delivery'} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
             </div>
             <div className="space-y-2">
                 <label className="block text-xs font-medium text-text-light text-right">المدينة</label>
-                <input type="text" name="town" value={data.town} onChange={handleChange} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
+                <input type="text" name="town" value={data.town} onChange={handleChange} required={deliveryMethod === 'delivery'} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
             </div>
         </div>
         <div className="flex justify-start gap-4 pt-4">
@@ -193,12 +193,6 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
                 setError({ detail: "رقم الهاتف يجب أن يتكون من 8 أرقام" });
                 return;
             }
-            if (checkoutData.deliveryMethod === 'delivery') {
-                if (!town.trim() || !address_home.trim() || !address_road.trim() || !address_block.trim()) {
-                    setError({ detail: "جميع حقول العنوان مطلوبة للتوصيل" });
-                    return;
-                }
-            }
         }
 
         if (step === 2 && checkoutData.deliveryMethod === 'delivery' && !checkoutData.deliveryArea) {
@@ -254,7 +248,7 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
     const renderStep = () => {
         switch (step) {
             case 1:
-                return <CustomerDetailsStep data={checkoutData.customer} handleChange={handleChange} onNext={handleNext} error={error} />;
+                return <CustomerDetailsStep data={checkoutData.customer} handleChange={handleChange} onNext={handleNext} error={error} deliveryMethod={checkoutData.deliveryMethod} />;
             case 2:
                 return <DeliveryMethodStep onNext={handleNext} onBack={handleBack} onSelect={handleSelectMethod} selectedMethod={checkoutData.deliveryMethod} />;
             case 3:
