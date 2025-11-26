@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import { Loader2, Truck, Package } from 'lucide-react';
 import { apiService } from '../services/api';
+import ErrorDisplay from './ErrorDisplay';
 
 const CustomerDetailsStep = ({ data, handleChange, onNext, error }) => (
     <form onSubmit={onNext} className="space-y-6 p-4" dir="rtl">
-        {error && <div className="text-red-500 text-sm text-center mb-4">{error}</div>}
+        <ErrorDisplay error={error} />
         <div className="space-y-2">
             <label className="block text-sm font-medium text-text-light text-right">الاسم</label>
             <input type="text" name="name" value={data.name} onChange={handleChange} required className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 text-right" />
@@ -89,7 +90,7 @@ const OrderSummaryStep = ({ onBack, onSubmit, data, cartItems, totalPrice, isSub
     return (
         <div className="p-4" dir="rtl">
             <h2 className="text-xl font-semibold mb-4 text-right">ملخص الطلب</h2>
-            {error && <div className="text-red-500 text-sm text-center mb-4">{error}</div>}
+            <ErrorDisplay error={error} />
             <div className="space-y-4">
                 <div>
                     <h3 className="font-semibold">المنتجات</h3>
@@ -180,17 +181,28 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
 
     const handleNext = (e) => {
         e.preventDefault();
-        setError('');
+        setError(null);
 
         if (step === 1) {
-            if (checkoutData.customer.phone_number.length !== 8) {
-                setError('رقم الهاتف يجب أن يتكون من 8 أرقام');
+            const { name, phone_number, town, address_home, address_road, address_block } = checkoutData.customer;
+            if (!name.trim()) {
+                setError({ detail: "الاسم مطلوب" });
                 return;
+            }
+            if (phone_number.length !== 8 || !/^\d{8}$/.test(phone_number)) {
+                setError({ detail: "رقم الهاتف يجب أن يتكون من 8 أرقام" });
+                return;
+            }
+            if (checkoutData.deliveryMethod === 'delivery') {
+                if (!town.trim() || !address_home.trim() || !address_road.trim() || !address_block.trim()) {
+                    setError({ detail: "جميع حقول العنوان مطلوبة للتوصيل" });
+                    return;
+                }
             }
         }
 
         if (step === 2 && checkoutData.deliveryMethod === 'delivery' && !checkoutData.deliveryArea) {
-            setError('الرجاء اختيار منطقة التوصيل');
+            setError({ detail: "الرجاء اختيار منطقة التوصيل" });
             return;
         }
 
@@ -225,8 +237,8 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
             await onSubmit(checkoutData);
             setStep(5); // Move to thank you step
         } catch (err) {
-            const errorMessage = err.response?.data?.detail || 'Failed to create order. Please try again.';
-            setError(typeof errorMessage === 'object' ? JSON.stringify(errorMessage) : errorMessage);
+            const errorData = err.response?.data || { detail: 'Failed to create order. Please try again.' };
+            setError(errorData);
         } finally {
             setIsSubmitting(false);
         }
@@ -268,7 +280,6 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
                 <div className="h-[400px]">
                     {renderStep()}
                 </div>
-                {error && <div className="text-red-500 text-sm text-center mt-4 p-2 bg-red-100 rounded-lg">{error}</div>}
             </div>
         </Modal>
     );
