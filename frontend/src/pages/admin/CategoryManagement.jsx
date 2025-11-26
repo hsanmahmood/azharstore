@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
 import { SearchContext } from '../../context/SearchContext';
+import { useNotifier } from '../../context/NotificationContext';
 import { apiService } from '../../services/api';
 import SearchBar from '../../components/SearchBar';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
@@ -13,7 +14,7 @@ const CategoryManagement = () => {
   const { t } = useTranslation();
   const { categories, isLoading, error: dataError, addCategory, updateCategory, deleteCategory } = useContext(DataContext);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
-  const [error, setError] = useState('');
+  const notify = useNotifier();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,17 +42,16 @@ const CategoryManagement = () => {
     if (!formData.name.trim()) return;
 
     setIsSubmitting(true);
-    setError('');
-
-    console.log('Submitting category data:', formData);
 
     try {
       if (editingCategory) {
         const updatedCategory = await apiService.updateCategory(editingCategory.id, formData);
         updateCategory(updatedCategory);
+        notify(t('categoryManagement.notifications.updated'));
       } else {
         const newCategory = await apiService.createCategory(formData);
         addCategory(newCategory);
+        notify(t('categoryManagement.notifications.added'));
       }
       closeModal();
     } catch (err) {
@@ -59,7 +59,7 @@ const CategoryManagement = () => {
                      (editingCategory
                        ? t('categoryManagement.errors.update')
                        : t('categoryManagement.errors.add'));
-      setError(errorMsg);
+      notify(errorMsg, 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -77,8 +77,9 @@ const CategoryManagement = () => {
     try {
       await apiService.deleteCategory(deletingCategoryId);
       deleteCategory(deletingCategoryId);
+      notify(t('categoryManagement.notifications.deleted'));
     } catch (err) {
-      setError(t('categoryManagement.errors.delete'));
+      notify(t('categoryManagement.errors.delete'), 'error');
       console.error(err);
     } finally {
       setDeletingCategoryId(null);
@@ -145,12 +146,6 @@ const CategoryManagement = () => {
         maxWidth="max-w-md"
       >
         <form onSubmit={handleFormSubmit} className="space-y-4">
-          {error && (
-            <div className="bg-red-900/20 border border-red-500/30 text-red-300 p-3 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
-
           <div>
             <label className="block text-sm font-medium text-text-light mb-2">
               {t('categoryManagement.form.name')}

@@ -5,6 +5,7 @@ import { SearchContext } from '../../context/SearchContext';
 import { apiService } from '../../services/api';
 import SearchBar from '../../components/SearchBar';
 import { Plus, Loader2, X, Trash2, Save, Upload, FileArchive, Eye, Star, Download, CheckCircle } from 'lucide-react';
+import { useNotifier } from '../../context/NotificationContext';
 import Modal from '../../components/Modal';
 import Dropdown from '../../components/Dropdown';
 import ProductCard from './ProductCard';
@@ -32,7 +33,7 @@ const ProductManagement = () => {
     refreshData
   } = useContext(DataContext);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
-  const [error, setError] = useState('');
+  const notify = useNotifier();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [orderFilter, setOrderFilter] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,17 +69,18 @@ const ProductManagement = () => {
 
     const variant = variants[index];
     if (!variant.id) {
-      setError("Please save the variant before uploading an image.");
+      notify(t('productManagement.errors.saveVariantFirst'), 'error');
       return;
     }
 
     setUploadingImages(true);
     try {
-      const response = await apiService.uploadVariantImage(variant.id, file);
+      await apiService.uploadVariantImage(variant.id, file);
       const updatedProduct = await apiService.getProduct(editingProduct.id);
       setEditingProduct(updatedProduct.data);
+      notify(t('productManagement.notifications.variantImageUploaded'));
     } catch (err) {
-      setError(t('productManagement.errors.uploadError'));
+      notify(t('productManagement.errors.uploadError'), 'error');
     } finally {
       setUploadingImages(false);
     }
@@ -88,12 +90,13 @@ const ProductManagement = () => {
     const variant = variants[index];
 
     if (!variant.name || variant.name.trim() === '') {
-      setError(t('productManagement.errors.variantNameRequired') || 'Variant name is required');
+      notify(t('productManagement.errors.variantNameRequired'), 'error');
       return;
     }
 
     try {
-      if (variant.id) {
+      const isUpdating = !!variant.id;
+      if (isUpdating) {
         await apiService.updateVariant(variant.id, {
           name: variant.name,
           price: variant.price || editingProduct.price,
@@ -105,16 +108,15 @@ const ProductManagement = () => {
           price: variant.price || editingProduct.price,
           stock_quantity: variant.stock_quantity
         });
-        // Update the variant with the new ID
         const newVariants = [...variants];
         newVariants[index] = { ...newVariants[index], id: response.data.id };
         setVariants(newVariants);
       }
       const updatedProduct = await apiService.getProduct(editingProduct.id);
       setEditingProduct(updatedProduct.data);
-      setError(''); // Clear any previous errors
+      notify(isUpdating ? t('productManagement.notifications.variantUpdated') : t('productManagement.notifications.variantAdded'));
     } catch (err) {
-      setError(t('productManagement.errors.updateVariantError') || 'Failed to save variant');
+      notify(t('productManagement.errors.updateVariantError'), 'error');
     }
   };
 
@@ -254,7 +256,7 @@ const ProductManagement = () => {
       saveAs(blob, fileName);
     } catch (error) {
       console.error("Download failed:", error);
-      setError(t('productManagement.errors.downloadFailed') || "Download failed");
+      notify(t('productManagement.errors.downloadFailed'), 'error');
     }
   };
 
@@ -306,7 +308,7 @@ const ProductManagement = () => {
 
       // Check if zip has files
       if (Object.keys(zip.files).length === 0) {
-        setError(t('productManagement.errors.noImagesToDownload') || "No valid images to download");
+        notify(t('productManagement.errors.noImagesToDownload'), 'error');
         return;
       }
 
@@ -314,14 +316,13 @@ const ProductManagement = () => {
       saveAs(content, `${formData.name || 'product'}_images.zip`);
     } catch (error) {
       console.error("Bulk download failed:", error);
-      setError(t('productManagement.errors.downloadFailed') || "Download failed");
+      notify(t('productManagement.errors.downloadFailed'), 'error');
     }
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError('');
 
     try {
       // Step 1: Create or Update Product
@@ -397,9 +398,10 @@ const ProductManagement = () => {
       }
 
       closeModal();
+      notify(isNewProduct ? t('productManagement.notifications.productAdded') : t('productManagement.notifications.productUpdated'));
     } catch (err) {
-      const errorMsg = err.response?.data?.detail || 'An unexpected error occurred.';
-      setError(errorMsg);
+      const errorMsg = err.response?.data?.detail || t('productManagement.errors.unexpected');
+      notify(errorMsg, 'error');
     } finally {
       setIsSubmitting(false);
       setUploadingImages(false);
@@ -421,8 +423,9 @@ const ProductManagement = () => {
 
     try {
       await apiService.deleteProduct(deletingProductId);
+      notify(t('productManagement.notifications.productDeleted'));
     } catch (err) {
-      setError(t('productManagement.errors.delete'));
+      notify(t('productManagement.errors.delete'), 'error');
       console.error(err);
       // If the delete fails, revert the state
       setProducts(originalProducts);
@@ -499,12 +502,6 @@ const ProductManagement = () => {
         maxWidth="max-w-3xl"
       >
         <form onSubmit={handleFormSubmit} className="space-y-6">
-          {error && (
-            <div className="bg-red-900/20 border border-red-500/30 text-red-300 p-3 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
-
           <div className="tabs-container">
             <nav className="flex space-x-4 border-b border-soft-border" aria-label="Tabs">
               <button
