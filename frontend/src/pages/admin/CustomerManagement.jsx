@@ -7,6 +7,7 @@ import CustomerForm from './CustomerForm';
 import CustomerCard from './CustomerCard';
 import { DataContext } from '../../context/DataContext';
 import { SearchContext } from '../../context/SearchContext';
+import { useNotifier } from '../../context/NotificationContext';
 import LoadingScreen from '../../components/LoadingScreen';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import { apiService } from '../../services/api';
@@ -15,6 +16,7 @@ const CustomerManagement = () => {
   const { t } = useTranslation();
   const { customers, isLoading, error: dataError, addCustomer, updateCustomer, removeCustomer } = useContext(DataContext);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
+  const notify = useNotifier();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -49,8 +51,9 @@ const CustomerManagement = () => {
       try {
         await apiService.deleteCustomer(deletingCustomerId);
         removeCustomer(deletingCustomerId);
+        notify(t('customerManagement.notifications.deleted'));
       } catch (err) {
-        // TODO: Show an error notification to the user
+        notify(t('customerManagement.errors.delete'), 'error');
         console.error("Failed to delete customer", err);
       }
     }

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { apiService } from '../../services/api';
+import { useNotifier } from '../../context/NotificationContext';
 import { Loader2 } from 'lucide-react';
 
 const CustomerForm = ({ customer, onSuccess }) => {
   const { t } = useTranslation();
+  const notify = useNotifier();
   const [formData, setFormData] = useState({
     name: '',
     phone_number: '',
@@ -55,8 +57,10 @@ const CustomerForm = ({ customer, onSuccess }) => {
         response = await apiService.createCustomer(formData);
       }
       onSuccess(response.data);
+      notify(customer ? t('customerManagement.notifications.updated') : t('customerManagement.notifications.added'));
     } catch (err) {
       const errorMsg = err.response?.data?.detail || t('customerManagement.errors.submit');
+      notify(errorMsg, 'error');
       setError(errorMsg);
     } finally {
       setIsSubmitting(false);

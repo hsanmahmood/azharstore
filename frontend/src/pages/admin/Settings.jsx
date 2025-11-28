@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { toArabicNumerals } from '../../utils/numberUtils';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
 import { apiService } from '../../services/api';
@@ -129,11 +130,10 @@ const Settings = () => {
   const TabButton = ({ tabName, label }) => (
     <button
       onClick={() => setActiveTab(tabName)}
-      className={`py-2 px-4 text-lg font-semibold transition-colors duration-200 ${
-        activeTab === tabName
-          ? 'text-brand-purple border-b-2 border-brand-purple'
-          : 'text-text-light hover:text-brand-purple'
-      }`}
+      className={`py-2 px-4 text-lg font-semibold transition-colors duration-200 ${activeTab === tabName
+        ? 'text-brand-purple border-b-2 border-brand-purple'
+        : 'text-text-light hover:text-brand-purple'
+        }`}
     >
       {label}
     </button>
@@ -163,7 +163,7 @@ const Settings = () => {
                 onChange={(e) => setFreeDeliveryThreshold(e.target.value)}
                 className="w-40 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
               />
-               <button
+              <button
                 onClick={handleDeliverySettingsSave}
                 className="bg-brand-purple text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all duration-200"
                 disabled={isSubmitting}
@@ -187,7 +187,7 @@ const Settings = () => {
               <div key={area.id} className="bg-card-background border border-soft-border rounded-20 p-5 flex justify-between items-center">
                 <div>
                   <span className="text-lg font-semibold text-text-dark">{area.name}</span>
-                  <p className="text-text-light">{area.price} {t('common.currency')}</p>
+                  <p className="text-text-light">{toArabicNumerals(area.price)} {t('common.currency')}</p>
                 </div>
                 <div className="flex gap-3">
                   <button onClick={() => openModal(area)} className="text-text-light hover:text-brand-purple"><Edit size={20} /></button>
@@ -200,15 +200,15 @@ const Settings = () => {
       )}
 
       {activeTab === 'messages' && (
-        <div className="space-y-8">
-          <div>
+        <div className="space-y-8 overflow-visible">
+          <div className="overflow-visible">
             <h2 className="text-2xl font-bold text-text-dark mb-4">{t('settings.deliveryMessage')}</h2>
             <SimpleRichTextEditor
               initialValue={deliveryMessage}
               onChange={(content) => setDeliveryMessage(content)}
             />
           </div>
-          <div>
+          <div className="overflow-visible">
             <h2 className="text-2xl font-bold text-text-dark mb-4">{t('settings.pickupMessage')}</h2>
             <SimpleRichTextEditor
               initialValue={pickupMessage}

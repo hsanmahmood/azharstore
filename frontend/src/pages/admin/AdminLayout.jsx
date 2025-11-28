@@ -103,7 +103,7 @@ const AdminLayoutContent = () => {
 
   return (
     <div dir="rtl" className="flex h-screen bg-primary-background text-text-dark font-arabic">
-      <Toaster position="top-center" reverseOrder={false} />
+      <Toaster position="top-center" reverseOrder={false} containerStyle={{ zIndex: 99999 }} />
       <MobileAdminSidebar
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}

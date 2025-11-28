@@ -12,11 +12,13 @@ import ConfirmationModal from '../../components/ConfirmationModal';
 import Dropdown from '../../components/Dropdown';
 import { DataContext } from '../../context/DataContext';
 import { SearchContext } from '../../context/SearchContext';
+import { useNotifier } from '../../context/NotificationContext';
 
 const OrderManagement = () => {
   const { t } = useTranslation();
   const { orders, customers, products, isLoading, error: dataError, addOrder, updateOrder, removeOrder, setError, setOrders } = useContext(DataContext);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
+  const notify = useNotifier();
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,9 +36,10 @@ const OrderManagement = () => {
     try {
       await apiService.deleteOrder(orderId);
       removeOrder(orderId);
+      notify(t('orderManagement.notifications.deleted'));
     } catch (err) {
       const errorMsg = err.response?.data?.detail || t('orderManagement.errors.delete');
-      setError(errorMsg);
+      notify(errorMsg, 'error');
     }
   };
 
@@ -59,9 +62,10 @@ const OrderManagement = () => {
     try {
       const response = await apiService.getAllOrders();
       setOrders(response.data);
+      notify(editingOrder ? t('orderManagement.notifications.updated') : t('orderManagement.notifications.added'));
     } catch (error) {
       const errorMsg = error.response?.data?.detail || t('orderManagement.errors.fetch');
-      setError(errorMsg);
+      notify(errorMsg, 'error');
     } finally {
       closeModal();
     }

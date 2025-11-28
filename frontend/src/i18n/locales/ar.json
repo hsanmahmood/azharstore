@@ -43,7 +43,16 @@
     "delivery": "التوصيل",
     "messages": "الرسائل",
     "deliveryMessage": "رسالة التوصيل",
-    "pickupMessage": "رسالة الاستلام"
+    "pickupMessage": "رسالة الاستلام",
+    "areaUpdatedSuccess": "تم تحديث المنطقة بنجاح",
+    "areaAddedSuccess": "تم إضافة المنطقة بنجاح",
+    "areaSaveError": "فشل في حفظ المنطقة",
+    "areaDeletedSuccess": "تم حذف المنطقة بنجاح",
+    "areaDeleteError": "فشل في حذف المنطقة",
+    "deliverySettingsSaved": "تم حفظ إعدادات التوصيل",
+    "deliverySettingsError": "فشل في حفظ إعدادات التوصيل",
+    "messagesSaved": "تم حفظ الرسائل",
+    "messagesError": "فشل في حفظ الرسائل"
   },
   "productManagement": {
     "title": "إدارة المنتجات",
@@ -101,7 +110,20 @@
       "uploadError": "فشل في تحميل الصور",
       "addVariantError": "فشل في إضافة الخيار",
       "updateVariantError": "فشل في تحديث الخيار",
-      "variantInUse": "لا يمكن حذف الخيار لأنه مستخدم في طلب حالي."
+      "variantInUse": "لا يمكن حذف الخيار لأنه مستخدم في طلب حالي.",
+      "saveVariantFirst": "يرجى حفظ الخيار أولاً",
+      "variantNameRequired": "اسم الخيار مطلوب",
+      "downloadFailed": "فشل التحميل",
+      "noImagesToDownload": "لا توجد صور للتحميل",
+      "unexpected": "حدث خطأ غير متوقع"
+    },
+    "notifications": {
+      "productAdded": "تم إضافة المنتج بنجاح",
+      "productUpdated": "تم تحديث المنتج بنجاح",
+      "productDeleted": "تم حذف المنتج بنجاح",
+      "variantAdded": "تم إضافة الخيار بنجاح",
+      "variantUpdated": "تم تحديث الخيار بنجاح",
+      "variantImageUploaded": "تم رفع صورة الخيار بنجاح"
     }
   },
   "categoryManagement": {
@@ -117,6 +139,11 @@
       "add": "فشل في إضافة الفئة",
       "update": "فشل في تحديث الفئة",
       "delete": "فشل في حذف الفئة"
+    },
+    "notifications": {
+      "added": "تم إضافة الفئة بنجاح",
+      "updated": "تم تحديث الفئة بنجاح",
+      "deleted": "تم حذف الفئة بنجاح"
     }
   },
   "admin": {
@@ -151,7 +178,13 @@
     },
     "errors": {
       "fetch": "فشل في تحميل العملاء",
-      "submit": "فشل في حفظ العميل"
+      "submit": "فشل في حفظ العميل",
+      "delete": "فشل في حذف العميل"
+    },
+    "notifications": {
+      "added": "تم إضافة العميل بنجاح",
+      "updated": "تم تحديث العميل بنجاح",
+      "deleted": "تم حذف العميل بنجاح"
     }
   },
   "orderManagement": {
@@ -181,12 +214,12 @@
       "noVariants": "لا توجد خيارات",
       "selectProduct": "اختر منتج",
       "selectVariant": "اختر خيار",
-    "productNotFound": "المنتج غير موجود",
-    "total": "المجموع",
-    "subtotal": "المجموع الفرعي",
-    "freeDeliveryApplied": "تم تطبيق التوصيل المجاني",
-    "unitPrice": "سعر الوحدة",
-    "quantity": "الكمية"
+      "productNotFound": "المنتج غير موجود",
+      "total": "المجموع",
+      "subtotal": "المجموع الفرعي",
+      "freeDeliveryApplied": "تم تطبيق التوصيل المجاني",
+      "unitPrice": "سعر الوحدة",
+      "quantity": "الكمية"
     },
     "freeDeliveryApplied": "تم تطبيق التوصيل المجاني",
     "status": {

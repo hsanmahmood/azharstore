@@ -2,11 +2,13 @@ import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataContext } from '../../context/DataContext';
 import { apiService } from '../../services/api';
+import { useNotifier } from '../../context/NotificationContext';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import Dropdown from '../../components/Dropdown';
 
 const OrderForm = ({ order, onSuccess }) => {
   const { t } = useTranslation();
+  const notify = useNotifier();
   const { customers, products, deliveryAreas, appSettings, orders } = useContext(DataContext);
   const [formData, setFormData] = useState({
     customer_id: '',
@@ -157,6 +159,7 @@ const OrderForm = ({ order, onSuccess }) => {
       onSuccess();
     } catch (err) {
       const errorMsg = err.response?.data?.detail || t('orderManagement.errors.submit');
+      notify(errorMsg, 'error');
       setError(errorMsg);
     } finally {
       setIsSubmitting(false);
