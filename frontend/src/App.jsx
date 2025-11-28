@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { useLoading } from './context/LoadingContext';
 import StoreFront from './pages/StoreFront';
 import ProductDetail from './pages/ProductDetail';
 import Login from './pages/Login';
@@ -14,10 +15,12 @@ import CustomerManagement from './pages/admin/CustomerManagement';
 import OrderManagement from './pages/admin/OrderManagement';
 import Settings from './pages/admin/Settings';
 import Translations from './pages/admin/Translations';
+import LoadingScreen from './components/LoadingScreen';
 
 const App = () => {
   const { token } = useContext(AuthContext);
   const location = useLocation();
+  const { isLoading } = useLoading();
 
   // Dual routing: support both hostname-based (admin.azhar.store) and path-based (localhost/admin)
   const isAdminSite = React.useMemo(() => {
@@ -33,6 +36,10 @@ const App = () => {
   useEffect(() => {
     document.title = isAdminSite ? 'AzharStore Admin' : 'AzharStore';
   }, [location, t, isAdminSite]);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   if (isAdminSite) {
     return (
