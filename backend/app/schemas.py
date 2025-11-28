@@ -115,6 +115,20 @@ class AppSettings(BaseModel):
     delivery_message: Optional[str] = None
     pickup_message: Optional[str] = None
 
+class Translation(BaseModel):
+    id: int
+    lang: str
+    key: str
+    value: str
+
+class TranslationCreate(BaseModel):
+    lang: str
+    key: str
+    value: str
+
+class TranslationUpdate(BaseModel):
+    value: str
+
 class OrderItemCreate(BaseModel):
     product_id: Optional[int] = None
     product_variant_id: Optional[int] = None

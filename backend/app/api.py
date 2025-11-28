@@ -264,6 +264,17 @@ def get_settings(supabase: Client = Depends(get_supabase_client)):
 def update_settings(settings_data: schemas.AppSettings, supabase: Client = Depends(get_supabase_client)):
     return services.update_app_settings(settings_data=settings_data, supabase=supabase)
 
+@router.get("/translations", response_model=List[schemas.Translation], tags=["Translations"])
+def list_translations(supabase: Client = Depends(get_supabase_client)):
+    return services.get_translations(supabase=supabase)
+
+@admin_router.patch("/translations/{translation_id}", response_model=schemas.Translation, tags=["Admin - Translations"])
+def update_translation(translation_id: int, translation: schemas.TranslationUpdate, supabase: Client = Depends(get_supabase_client)):
+    db_translation = services.update_translation(translation_id=translation_id, translation=translation, supabase=supabase)
+    if db_translation is None:
+        raise HTTPException(status_code=404, detail="Translation not found")
+    return db_translation
+
 @admin_router.post("/upload-image", tags=["Admin - General"])
 def upload_image(file: UploadFile = File(...), supabase: Client = Depends(get_supabase_client)):
     file_path = f"messages/{uuid.uuid4()}_{file.filename}"

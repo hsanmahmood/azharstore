@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Package, Layers, LogOut, PanelLeft, Menu, Home, Users, ShoppingCart, Settings } from 'lucide-react';
+import { Package, Layers, LogOut, PanelLeft, Menu, Home, Users, ShoppingCart, Settings, Languages } from 'lucide-react';
 import { AuthContext } from '../../context/AuthContext';
 import MobileAdminSidebar from './MobileAdminSidebar';
 import { SearchProvider, SearchContext } from '../../context/SearchContext';
@@ -43,6 +43,7 @@ const AdminLayoutContent = () => {
     { to: `${adminBasePath}/categories`, text: t('admin.nav.categories'), icon: Layers },
     { to: `${adminBasePath}/customers`, text: t('admin.nav.customers'), icon: Users },
     { to: `${adminBasePath}/orders`, text: t('orderManagement.title'), icon: ShoppingCart },
+    { to: `${adminBasePath}/translations`, text: t('admin.nav.translations'), icon: Languages },
   ];
 
   const getNavLinkClasses = (isOpen) => (to) => {

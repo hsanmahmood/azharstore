@@ -32,6 +32,9 @@ api.interceptors.response.use(
   }
 );
 
+export const getTranslations = () => api.get('/translations').then(res => res.data);
+export const updateTranslation = ({ id, value }) => api.patch(`/admin/translations/${id}`, { value });
+
 // Product services
 export const productService = {
   getAllProducts: () => api.get('/products'),
@@ -140,6 +143,10 @@ export const apiService = {
   // App Settings
   getAppSettings: () => api.get('/settings'),
   updateAppSettings: (data) => api.patch('/admin/settings', data),
+
+  // Translations
+  getTranslations: () => api.get('/translations').then(res => res.data),
+  updateTranslation: ({ id, value }) => api.patch(`/admin/translations/${id}`, { value }),
 
   // General (deprecated, use product upload)
   uploadImage: (productId, file) => {

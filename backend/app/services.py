@@ -459,3 +459,11 @@ def update_app_settings(settings_data: schemas.AppSettings, supabase: Client = D
             supabase.table("app_settings").upsert({"key": key, "value": str(value)}).execute()
 
     return get_app_settings(supabase)
+
+def get_translations(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Translation]:
+    response = supabase.table("translations").select("*").execute()
+    return response.data
+
+def update_translation(translation_id: int, translation: schemas.TranslationUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Translation | None:
+    response = supabase.table("translations").update(translation.model_dump()).eq("id", translation_id).execute()
+    return response.data[0] if response.data else None
