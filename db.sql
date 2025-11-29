@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS translations (
     UNIQUE (lang, key)
 );
 
--- Insert new translations for the add/edit modal
+-- Insert new translations for the add/edit modal and language filter
 INSERT INTO translations (lang, key, value) VALUES
 ('en', 'admin.translations.addTitle', 'Add New Translation'),
 ('ar', 'admin.translations.addTitle', 'إضافة ترجمة جديدة'),
@@ -20,7 +20,17 @@ INSERT INTO translations (lang, key, value) VALUES
 ('en', 'admin.translations.addError', 'Failed to add translation'),
 ('ar', 'admin.translations.addError', 'فشل في إضافة الترجمة'),
 ('en', 'admin.translations.searchPlaceholder', 'Search translations...'),
-('ar', 'admin.translations.searchPlaceholder', 'ابحث في الترجمات...');
+('ar', 'admin.translations.searchPlaceholder', 'ابحث في الترجمات...'),
+('en', 'admin.translations.allLanguages', 'All Languages'),
+('ar', 'admin.translations.allLanguages', 'كل اللغات'),
+('en', 'admin.translations.english', 'English'),
+('ar', 'admin.translations.english', 'الإنجليزية'),
+('en', 'admin.translations.arabic', 'Arabic'),
+('ar', 'admin.translations.arabic', 'العربية'),
+('en', 'admin.translations.filterByLanguage', 'Filter by language'),
+('ar', 'admin.translations.filterByLanguage', 'تصفية حسب اللغة'),
+('en', 'admin.translations.selectLanguage', 'Select language'),
+('ar', 'admin.translations.selectLanguage', 'اختر اللغة');
 
 INSERT INTO translations (lang, key, value) VALUES ('ar', 'Login', 'تسجيل الدخول');
 INSERT INTO translations (lang, key, value) VALUES ('ar', 'Logout', 'تسجيل الخروج');
