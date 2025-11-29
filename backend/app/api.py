@@ -268,6 +268,10 @@ def update_settings(settings_data: schemas.AppSettings, supabase: Client = Depen
 def list_translations(supabase: Client = Depends(get_supabase_client)):
     return services.get_translations(supabase=supabase)
 
+@router.get("/translations/all", response_model=List[schemas.Translation], tags=["Translations"])
+def list_all_translations(supabase: Client = Depends(get_supabase_client)):
+    return services.get_all_translations(supabase=supabase)
+
 @admin_router.patch("/translations/{translation_id}", response_model=schemas.Translation, tags=["Admin - Translations"])
 def update_translation(translation_id: int, translation: schemas.TranslationUpdate, supabase: Client = Depends(get_supabase_client)):
     db_translation = services.update_translation(translation_id=translation_id, translation=translation, supabase=supabase)

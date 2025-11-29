@@ -464,6 +464,10 @@ def get_translations(supabase: Client = Depends(get_supabase_client)) -> list[sc
     response = supabase.table("translations").select("*").execute()
     return response.data
 
+def get_all_translations(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Translation]:
+    response = supabase.table("translations").select("*").execute()
+    return response.data
+
 def update_translation(translation_id: int, translation: schemas.TranslationUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Translation | None:
     response = supabase.table("translations").update(translation.model_dump()).eq("id", translation_id).execute()
     return response.data[0] if response.data else None

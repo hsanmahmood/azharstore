@@ -33,6 +33,7 @@ api.interceptors.response.use(
 );
 
 export const getTranslations = () => api.get('/translations').then(res => res.data);
+export const getAllTranslations = () => api.get('/translations/all').then(res => res.data);
 export const updateTranslation = ({ id, value }) => api.patch(`/admin/translations/${id}`, { value });
 
 // Product services

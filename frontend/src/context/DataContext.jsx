@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useCallback, useContext } from 'react';
-import { apiService, getTranslations } from '../services/api';
+import { apiService, getAllTranslations } from '../services/api';
 import { AuthContext } from './AuthContext';
 import { useLoading } from './LoadingContext';
 
@@ -25,7 +25,7 @@ export const DataProvider = ({ children }) => {
       const publicDataPromises = [
         apiService.getAllProducts(),
         apiService.getAllCategories(),
-        getTranslations(),
+        getAllTranslations(),
       ];
 
       const [productsRes, categoriesRes, translationsRes] = await Promise.all(publicDataPromises);
