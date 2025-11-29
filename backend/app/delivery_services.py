@@ -34,7 +34,8 @@ def get_delivery_password(supabase: Client = Depends(get_supabase_client)):
     response = supabase.table("system_settings").select("value").eq("key", "delivery_password").execute()
     if not response.data:
         return {"password": ""}
-    return {"password": response.data[0]['value']}
+    # Return a dummy value, not the hash
+    return {"password": "********"}
 
 def update_delivery_password(password_data: schemas.DeliveryPasswordUpdate, supabase: Client = Depends(get_supabase_client)):
     hashed_password = get_password_hash(password_data.password)

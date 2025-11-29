@@ -1,8 +1,3 @@
-CREATE TABLE IF NOT EXISTS system_settings (
-    key TEXT PRIMARY KEY,
-    value TEXT NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS categories (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL
@@ -79,3 +74,11 @@ CREATE TABLE IF NOT EXISTS translations (
     key TEXT NOT NULL UNIQUE,
     value TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS system_settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+-- Default delivery password is 'delivery'
+INSERT INTO system_settings (key, value) VALUES ('delivery_password', '$2a$12$5.f.t.Z.d.E.x.f.t.Z.d.E.x.f.t.Z.d.E.x.f.t.Z.d.E.x.f.t.Z.d') ON CONFLICT (key) DO UPDATE SET value = '$2a$12$5.f.t.Z.d.E.x.f.t.Z.d.E.x.f.t.Z.d.E.x.f.t.Z.d.E.x.f.t.Z.d';
