@@ -21,25 +21,24 @@ export const DataProvider = ({ children }) => {
 
   const updateI18nResources = (translationsData) => {
     const resources = {
-      en: { translation: {} },
       ar: { translation: {} },
     };
     translationsData.forEach(t => {
-      const keys = t.key.split('.');
-      let currentLevel = resources[t.lang]?.translation;
-      if (!currentLevel) return;
-      keys.forEach((key, index) => {
-        if (index === keys.length - 1) {
-          currentLevel[key] = t.value;
-        } else {
-          currentLevel[key] = currentLevel[key] || {};
-          currentLevel = currentLevel[key];
-        }
-      });
+      if (t.lang === 'ar') {
+        const keys = t.key.split('.');
+        let currentLevel = resources.ar.translation;
+        keys.forEach((key, index) => {
+          if (index === keys.length - 1) {
+            currentLevel[key] = t.value;
+          } else {
+            currentLevel[key] = currentLevel[key] || {};
+            currentLevel = currentLevel[key];
+          }
+        });
+      }
     });
-    i18n.addResourceBundle('en', 'translation', resources.en.translation, true, true);
     i18n.addResourceBundle('ar', 'translation', resources.ar.translation, true, true);
-    i18n.changeLanguage(i18n.language);
+    i18n.changeLanguage('ar');
   };
 
   const fetchData = useCallback(async () => {

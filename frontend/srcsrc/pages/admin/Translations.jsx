@@ -13,14 +13,13 @@ import TranslationCard from './TranslationCard';
 const Translations = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { translations, updateTranslation: updateTranslationInContext, addTranslation, isLoading } = useContext(DataContext);
+  const { translations, updateTranslation: updateTranslationIn-context, addTranslation, isLoading } = useContext(DataContext);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedTranslation, setSelectedTranslation] = useState(null);
   const [newTranslation, setNewTranslation] = useState({ lang: 'ar', key: '', value: '' });
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedLang, setSelectedLang] = useState('all');
 
   const updateMutation = useMutation(updateTranslation, {
     onSuccess: (data) => {
@@ -62,9 +61,8 @@ const Translations = () => {
 
   const filteredTranslations = translations.filter(
     (translation) =>
-      (selectedLang === 'all' || translation.lang === selectedLang) &&
-      (translation.key.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        translation.value.toLowerCase().includes(searchTerm.toLowerCase()))
+      translation.key.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      translation.value.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const translationKeys = [...new Set(translations.map((t) => t.key))];
@@ -82,7 +80,7 @@ const Translations = () => {
           {t('admin.translations.add')}
         </button>
       </div>
-      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="mb-8">
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
           <input
@@ -93,16 +91,6 @@ const Translations = () => {
             className="w-full bg-white border border-soft-border text-text-dark p-3 pl-12 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
           />
         </div>
-        <Dropdown
-          options={[
-            { value: 'all', label: t('admin.translations.allLanguages') },
-            { value: 'en', label: t('admin.translations.english') },
-            { value: 'ar', label: t('admin.translations.arabic') },
-          ]}
-          value={selectedLang}
-          onChange={(option) => setSelectedLang(option.value)}
-          placeholder={t('admin.translations.filterByLanguage')}
-        />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredTranslations.map((translation) => (
@@ -152,15 +140,6 @@ const Translations = () => {
             className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
             rows="4"
           ></textarea>
-          <Dropdown
-            options={[
-              { value: 'en', label: t('admin.translations.english') },
-              { value: 'ar', label: t('admin.translations.arabic') },
-            ]}
-            value={newTranslation.lang}
-            onChange={(option) => setNewTranslation({ ...newTranslation, lang: option.value })}
-            placeholder={t('admin.translations.selectLanguage')}
-          />
         </div>
         <div className="flex justify-end gap-4 pt-4">
           <button

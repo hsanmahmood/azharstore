@@ -9,38 +9,23 @@ CREATE TABLE IF NOT EXISTS translations (
 
 -- Insert new translations for the add/edit modal and language filter
 INSERT INTO translations (lang, key, value) VALUES
-('en', 'admin.translations.addTitle', 'Add New Translation'),
 ('ar', 'admin.translations.addTitle', 'إضافة ترجمة جديدة'),
-('en', 'admin.translations.add', 'Add'),
 ('ar', 'admin.translations.add', 'إضافة'),
-('en', 'admin.translations.adding', 'Adding...'),
 ('ar', 'admin.translations.adding', 'جاري الإضافة...'),
-('en', 'admin.translations.addSuccess', 'Translation added successfully'),
 ('ar', 'admin.translations.addSuccess', 'تمت إضافة الترجمة بنجاح'),
-('en', 'admin.translations.addError', 'Failed to add translation'),
 ('ar', 'admin.translations.addError', 'فشل في إضافة الترجمة'),
-('en', 'admin.translations.searchPlaceholder', 'Search translations...'),
 ('ar', 'admin.translations.searchPlaceholder', 'ابحث في الترجمات...'),
-('en', 'admin.translations.allLanguages', 'All Languages'),
 ('ar', 'admin.translations.allLanguages', 'كل اللغات'),
-('en', 'admin.translations.english', 'English'),
 ('ar', 'admin.translations.english', 'الإنجليزية'),
-('en', 'admin.translations.arabic', 'Arabic'),
 ('ar', 'admin.translations.arabic', 'العربية'),
-('en', 'admin.translations.filterByLanguage', 'Filter by language'),
 ('ar', 'admin.translations.filterByLanguage', 'تصفية حسب اللغة'),
-('en', 'admin.translations.selectLanguage', 'Select language'),
 ('ar', 'admin.translations.selectLanguage', 'اختر اللغة'),
-('en', 'common.storeName', 'Azhar Store'),
 ('ar', 'common.storeName', 'أزهار ستور'),
-('en', 'common.cart', 'Cart'),
 ('ar', 'common.cart', 'السلة'),
-('en', 'common.searchPlaceholder', 'Search products...'),
 ('ar', 'common.searchPlaceholder', 'البحث في المنتجات...'),
-('en', 'common.noProducts', 'No products found'),
 ('ar', 'common.noProducts', 'لا توجد منتجات'),
-('en', 'common.footer', '© 2025 Azhar Store. All rights reserved.'),
-('ar', 'common.footer', '© 2025 أزهار ستور. جميع الحقوق محفوظة.');
+('ar', 'common.footer', '© 2025 أزهار ستور. جميع الحقوق محفوظة.'),
+('ar', 'common.toggleSidebar', 'طي القائمة');
 
 INSERT INTO translations (lang, key, value) VALUES ('ar', 'Login', 'تسجيل الدخول');
 INSERT INTO translations (lang, key, value) VALUES ('ar', 'Logout', 'تسجيل الخروج');
