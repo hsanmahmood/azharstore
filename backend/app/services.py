@@ -58,20 +58,15 @@ def delete_category(category_id: int, supabase: Client = Depends(get_supabase_cl
 def get_products(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Product]:
     response = supabase.table("products").select("*, category:categories(*), product_images(*), product_variants(*)").execute()
     
-    # Transform the data to include primary_image_url and images array
     products = response.data
     for product in products:
         if product.get('product_images'):
-            # Safely sort images by created_at to ensure consistent fallback
             product['product_images'].sort(key=lambda img: img.get('created_at', ''))
-            # Extract image URLs
             product['images'] = [img['image_url'] for img in product['product_images']]
-            # Find primary image
             primary_img = next((img for img in product['product_images'] if img.get('is_primary')), None)
             if primary_img:
                 product['primary_image_url'] = primary_img['image_url']
             elif product['product_images']:
-                # If no primary, use first image
                 product['primary_image_url'] = product['product_images'][0]['image_url']
             else:
                 product['primary_image_url'] = None
@@ -88,18 +83,13 @@ def get_product(product_id: int, supabase: Client = Depends(get_supabase_client)
     
     product = response.data[0]
     
-    # Transform the data to include primary_image_url and images array
     if product.get('product_images'):
-        # Safely sort images by created_at to ensure consistent fallback
         product['product_images'].sort(key=lambda img: img.get('created_at', ''))
-        # Extract image URLs
         product['images'] = [img['image_url'] for img in product['product_images']]
-        # Find primary image
         primary_img = next((img for img in product['product_images'] if img.get('is_primary')), None)
         if primary_img:
             product['primary_image_url'] = primary_img['image_url']
         elif product['product_images']:
-            # If no primary, use first image
             product['primary_image_url'] = product['product_images'][0]['image_url']
         else:
             product['primary_image_url'] = None
@@ -110,87 +100,54 @@ def get_product(product_id: int, supabase: Client = Depends(get_supabase_client)
     return product
 
 def create_product(product: schemas.ProductCreate, supabase: Client = Depends(get_supabase_client)) -> schemas.Product:
-    # Insert the new product
     insert_response = supabase.table("products").insert(product.model_dump()).execute()
-
-    # Check if the insert was successful and get the new product's ID
     if not insert_response.data:
         raise HTTPException(status_code=500, detail="Failed to create the product.")
-
     new_product_id = insert_response.data[0]['id']
-
-    # Fetch the newly created product with its category relation
     select_response = supabase.table("products").select("*, category:categories(*)").eq("id", new_product_id).execute()
-
     if not select_response.data:
         raise HTTPException(status_code=404, detail="Newly created product not found.")
-
     return select_response.data[0]
 
 def update_product(product_id: int, product: schemas.ProductUpdate, supabase: Client = Depends(get_supabase_client)) -> schemas.Product | None:
     product_data = product.model_dump(exclude_unset=True)
 
-    # Handle product_images update
     if "product_images" in product_data:
         images_data = product_data.pop("product_images")
         image_ids_from_request = {img['id'] for img in images_data}
-
-        # Fetch current images from DB
         response = supabase.table("product_images").select("id, image_url").eq("product_id", product_id).execute()
         current_images = response.data
         current_image_ids = {img['id'] for img in current_images}
-
-        # Determine which images to delete
         images_to_delete = [img for img in current_images if img['id'] not in image_ids_from_request]
-
         if images_to_delete:
             image_ids_to_delete = [img['id'] for img in images_to_delete]
-
-            # Extract file paths and remove from storage
             file_paths_to_delete = ["/".join(img['image_url'].split("/")[-2:]) for img in images_to_delete]
             if file_paths_to_delete:
                 supabase.storage.from_("products").remove(file_paths_to_delete)
-
-            # Delete from database
             supabase.table("product_images").delete().in_("id", image_ids_to_delete).execute()
-
-        # Check if a primary image is specified in the request
         primary_image_in_request = next((img for img in images_data if img.get('is_primary')), None)
-
         if primary_image_in_request:
-            # If a new primary image is set, reset all flags and then set the new one.
             new_primary_id = primary_image_in_request['id']
             supabase.table("product_images").update({"is_primary": False}).eq("product_id", product_id).execute()
             supabase.table("product_images").update({"is_primary": True}).eq("id", new_primary_id).execute()
         else:
-            # If no new primary is set, check if an existing one was removed.
             remaining_image_ids = {img['id'] for img in images_data}
             if remaining_image_ids:
-                existing_primary_res = supabase.table("product_images").select("id")\
-                    .eq("product_id", product_id)\
-                    .in_("id", list(remaining_image_ids))\
-                    .eq("is_primary", True).execute()
-
-                # If no primary exists among remaining images, set the oldest as primary.
+                existing_primary_res = supabase.table("product_images").select("id").eq("product_id", product_id).in_("id", list(remaining_image_ids)).eq("is_primary", True).execute()
                 if not existing_primary_res.data:
-                    oldest_image_res = supabase.table("product_images").select("id")\
-                        .in_("id", list(remaining_image_ids)).order("created_at").limit(1).execute()
-
+                    oldest_image_res = supabase.table("product_images").select("id").in_("id", list(remaining_image_ids)).order("created_at").limit(1).execute()
                     if oldest_image_res.data:
                         new_primary_id = oldest_image_res.data[0]['id']
                         supabase.table("product_images").update({"is_primary": False}).eq("product_id", product_id).execute()
                         supabase.table("product_images").update({"is_primary": True}).eq("id", new_primary_id).execute()
 
-    # Handle product_variants update
     if "product_variants" in product_data:
         variants_data = product_data.pop("product_variants")
         response = supabase.table("product_variants").select("id").eq("product_id", product_id).execute()
         current_variant_ids = {item['id'] for item in response.data}
         upserted_variant_ids = set()
-
         for variant in variants_data:
             variant_id = variant.get("id")
-            # Ensure image_url is included in the upsert data if it exists
             upsert_data = {k: v for k, v in variant.items() if k != 'id'}
             if variant_id:
                 upserted_variant_ids.add(variant_id)
@@ -200,25 +157,20 @@ def update_product(product_id: int, product: schemas.ProductUpdate, supabase: Cl
                 response = supabase.table("product_variants").insert(upsert_data).execute()
                 if response.data:
                     upserted_variant_ids.add(response.data[0]['id'])
-
         variants_to_delete = current_variant_ids - upserted_variant_ids
         if variants_to_delete:
-            # Check if any of the variants to be deleted are in an order
             response = supabase.table("order_items").select("id").in_("product_variant_id", list(variants_to_delete)).execute()
             if response.data:
-                # If there are order items associated with the variants, raise an error
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
                     detail="Cannot delete product variants that are part of an existing order."
                 )
             supabase.table("product_variants").delete().in_("id", list(variants_to_delete)).execute()
 
-    # Update product details
     if product_data:
         response = supabase.table("products").update(product_data).eq("id", product_id).execute()
         if not response.data:
             return None
-
     return get_product(product_id=product_id, supabase=supabase)
 
 def delete_product(product_id: int, supabase: Client = Depends(get_supabase_client)) -> bool:
@@ -235,18 +187,13 @@ def delete_product_image(image_id: int, supabase: Client = Depends(get_supabase_
     image_response = supabase.table("product_images").select("image_url, product_id, is_primary").eq("id", image_id).execute()
     if not image_response.data:
         return False
-
     image_data = image_response.data[0]
     image_url = image_data["image_url"]
     product_id = image_data["product_id"]
     was_primary = image_data["is_primary"]
-
     file_path = "/".join(image_url.split("/")[-2:])
-
     supabase.storage.from_("products").remove([file_path])
-
     response = supabase.table("product_images").delete().eq("id", image_id).execute()
-
     return bool(response.data)
 
 def set_primary_image(image_id: int, supabase: Client = Depends(get_supabase_client)) -> schemas.ProductImage | None:
@@ -254,9 +201,7 @@ def set_primary_image(image_id: int, supabase: Client = Depends(get_supabase_cli
     if not image_response.data:
         return None
     product_id = image_response.data[0]["product_id"]
-
     supabase.table("product_images").update({"is_primary": False}).eq("product_id", product_id).execute()
-
     response = supabase.table("product_images").update({"is_primary": True}).eq("id", image_id).execute()
     return response.data[0] if response.data else None
 
@@ -276,40 +221,27 @@ def update_product_variant_image(variant_id: int, image_url: str, supabase: Clie
     response = supabase.table("product_variants").update({"image_url": image_url}).eq("id", variant_id).execute()
     return response.data[0] if response.data else None
 
-import logging
-
 def create_public_order(order: schemas.PublicOrderCreate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order:
     try:
-        # Create or update customer
         customer_data = order.customer.model_dump()
         customer_response = supabase.table("customers").upsert(customer_data, on_conflict="phone_number").execute()
         if not customer_response.data:
-            logging.error(f"Failed to create or update customer: {customer_response}")
             raise HTTPException(status_code=500, detail="Failed to create or update customer.")
         customer_id = customer_response.data[0]['id']
-
-        # Create order
         order_data = order.model_dump(exclude={"order_items", "customer"})
         order_data["customer_id"] = customer_id
-
-        # Calculate delivery_fee
         if order.shipping_method == 'delivery' and order.delivery_area_id:
             delivery_area_response = supabase.table("delivery_areas").select("price").eq("id", order.delivery_area_id).execute()
             if delivery_area_response.data:
                 order_data["delivery_fee"] = delivery_area_response.data[0]["price"]
             else:
-                # Handle case where delivery_area_id is invalid
                 raise HTTPException(status_code=400, detail=f"Invalid delivery_area_id: {order.delivery_area_id}")
         else:
             order_data["delivery_fee"] = 0
-
         order_response = supabase.table("orders").insert(order_data).execute()
         if not order_response.data:
-            logging.error(f"Failed to create order: {order_response}")
             raise HTTPException(status_code=500, detail=f"Failed to create order: {str(order_response)}")
-
         new_order = order_response.data[0]
-
         order_items_data = []
         for item in order.order_items:
             item_data = item.model_dump()
@@ -318,38 +250,28 @@ def create_public_order(order: schemas.PublicOrderCreate, supabase: Client = Dep
             if item_data.get("product_variant_id"):
                 item_data["product_id"] = None
             order_items_data.append({"order_id": new_order['id'], **item_data})
-
         if order_items_data:
             items_response = supabase.table("order_items").insert(order_items_data).execute()
             if not items_response.data:
-                # Rollback order creation if items fail
                 supabase.table("orders").delete().eq("id", new_order['id']).execute()
                 raise HTTPException(status_code=500, detail="Failed to create order items.")
-
         return get_order(new_order['id'], supabase)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supabase_client)) -> schemas.Order:
     try:
-        # Create or update customer
         customer_data = order.customer.model_dump()
         customer_response = supabase.table("customers").upsert(customer_data, on_conflict="phone_number").execute()
         if not customer_response.data:
-            logging.error(f"Failed to create or update customer: {customer_response}")
             raise HTTPException(status_code=500, detail="Failed to create or update customer.")
         customer_id = customer_response.data[0]['id']
-
-        # Create order
         order_data = order.model_dump(exclude={"order_items", "customer"})
         order_data["customer_id"] = customer_id
         order_response = supabase.table("orders").insert(order_data).execute()
         if not order_response.data:
-            logging.error(f"Failed to create order: {order_response}")
             raise HTTPException(status_code=500, detail=f"Failed to create order: {str(order_response)}")
-
         new_order = order_response.data[0]
-
         order_items_data = []
         for item in order.order_items:
             item_data = item.model_dump()
@@ -358,14 +280,11 @@ def create_order(order: schemas.OrderCreate, supabase: Client = Depends(get_supa
             if item_data.get("product_variant_id"):
                 item_data["product_id"] = None
             order_items_data.append({"order_id": new_order['id'], **item_data})
-
         if order_items_data:
             items_response = supabase.table("order_items").insert(order_items_data).execute()
             if not items_response.data:
-                # Rollback order creation if items fail
                 supabase.table("orders").delete().eq("id", new_order['id']).execute()
                 raise HTTPException(status_code=500, detail="Failed to create order items.")
-
         return get_order(new_order['id'], supabase)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -391,7 +310,6 @@ def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = D
             response = supabase.table("orders").update(order_data).eq("id", order_id).execute()
             if not response.data:
                 return None
-
         if order.order_items is not None:
             supabase.table("order_items").delete().eq("order_id", order_id).execute()
             order_items_data = []
@@ -402,23 +320,17 @@ def update_order(order_id: int, order: schemas.OrderUpdate, supabase: Client = D
                 if item_data.get("product_variant_id"):
                     item_data["product_id"] = None
                 order_items_data.append({"order_id": order_id, **item_data})
-
             if order_items_data:
                 items_response = supabase.table("order_items").insert(order_items_data).execute()
                 if not items_response.data:
                     raise HTTPException(status_code=500, detail="Failed to update order items.")
-
         return get_order(order_id, supabase)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 def delete_order(order_id: int, supabase: Client = Depends(get_supabase_client)) -> bool:
-    # First, delete associated order items
     supabase.table("order_items").delete().eq("order_id", order_id).execute()
-
-    # Then, delete the order itself
     response = supabase.table("orders").delete().eq("id", order_id).execute()
-
     return bool(response.data)
 
 def get_delivery_areas(supabase: Client = Depends(get_supabase_client)) -> list[schemas.DeliveryArea]:
@@ -440,11 +352,8 @@ def delete_delivery_area(delivery_area_id: int, supabase: Client = Depends(get_s
 def get_app_settings(supabase: Client = Depends(get_supabase_client)) -> schemas.AppSettings:
     response = supabase.table("app_settings").select("*").execute()
     settings_dict = {item['key']: item['value'] for item in response.data}
-
-    # Safely convert free_delivery_threshold to float, defaulting to 0.0 if it's None or empty
     free_delivery_threshold_str = settings_dict.get('free_delivery_threshold')
     free_delivery_threshold = float(free_delivery_threshold_str) if free_delivery_threshold_str else 0.0
-
     return schemas.AppSettings(
         free_delivery_threshold=free_delivery_threshold,
         delivery_message=settings_dict.get('delivery_message', ''),
@@ -453,16 +362,10 @@ def get_app_settings(supabase: Client = Depends(get_supabase_client)) -> schemas
 
 def update_app_settings(settings_data: schemas.AppSettings, supabase: Client = Depends(get_supabase_client)) -> schemas.AppSettings:
     settings_to_update = settings_data.model_dump(exclude_unset=True)
-
     for key, value in settings_to_update.items():
         if value is not None:
             supabase.table("app_settings").upsert({"key": key, "value": str(value)}).execute()
-
     return get_app_settings(supabase)
-
-def get_translations(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Translation]:
-    response = supabase.table("translations").select("*").execute()
-    return response.data
 
 def get_all_translations(supabase: Client = Depends(get_supabase_client)) -> list[schemas.Translation]:
     response = supabase.table("translations").select("*").execute()

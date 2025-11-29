@@ -117,12 +117,10 @@ class AppSettings(BaseModel):
 
 class Translation(BaseModel):
     id: int
-    lang: str
     key: str
     value: str
 
 class TranslationCreate(BaseModel):
-    lang: str
     key: str
     value: str
 

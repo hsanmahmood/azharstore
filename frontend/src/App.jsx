@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { useLoading } from './context/LoadingContext';
@@ -22,20 +21,17 @@ const App = () => {
   const location = useLocation();
   const { isLoading } = useLoading();
 
-  // Dual routing: support both hostname-based (admin.azhar.store) and path-based (localhost/admin)
   const isAdminSite = React.useMemo(() => {
     return (
-      window.location.hostname.startsWith('admin') || // Production: admin.azhar.store
-      (window.location.hostname.includes('localhost') && location.pathname.startsWith('/admin')) || // Local dev
-      (window.location.hostname.includes('127.0.0.1') && location.pathname.startsWith('/admin')) // Local dev alternative
+      window.location.hostname.startsWith('admin') ||
+      (window.location.hostname.includes('localhost') && location.pathname.startsWith('/admin')) ||
+      (window.location.hostname.includes('127.0.0.1') && location.pathname.startsWith('/admin'))
     );
   }, [location.pathname]);
 
-  const { t } = useTranslation();
-
   useEffect(() => {
     document.title = isAdminSite ? 'AzharStore Admin' : 'AzharStore';
-  }, [location, t, isAdminSite]);
+  }, [location, isAdminSite]);
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -48,7 +44,6 @@ const App = () => {
           <Route path="/login" element={token ? <Navigate to="/admin" /> : <Login />} />
           <Route path="/admin/login" element={token ? <Navigate to="/admin" /> : <Login />} />
 
-          {/* Admin routes with /admin prefix for local development */}
           <Route path="/admin" element={<ProtectedRoute />}>
             <Route element={<AdminLayout />}>
               <Route index element={<Navigate to="products" />} />
@@ -61,7 +56,6 @@ const App = () => {
             </Route>
           </Route>
 
-          {/* Admin routes at root for admin.azhar.store */}
           <Route path="/" element={<ProtectedRoute />}>
             <Route element={<AdminLayout />}>
               <Route index element={<Navigate to="products" />} />

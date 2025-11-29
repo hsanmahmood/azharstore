@@ -58,16 +58,9 @@ def get_category(category_id: int, supabase: Client = Depends(get_supabase_clien
 def list_delivery_areas_public(supabase: Client = Depends(get_supabase_client)):
     return services.get_delivery_areas(supabase=supabase)
 
-import logging
-
 @router.post("/orders", response_model=schemas.Order, tags=["Orders"])
 def create_order_public(order: schemas.PublicOrderCreate, supabase: Client = Depends(get_supabase_client)):
-    logging.info(f"Received order data: {order.model_dump_json()}")
-    try:
-        return services.create_public_order(order=order, supabase=supabase)
-    except HTTPException as e:
-        logging.error(f"Error creating order: {e.detail}")
-        raise e
+    return services.create_public_order(order=order, supabase=supabase)
 
 @router.get("/settings", response_model=schemas.AppSettings, tags=["Settings"])
 def get_settings_public(supabase: Client = Depends(get_supabase_client)):
@@ -134,7 +127,6 @@ def set_primary_image(image_id: int, supabase: Client = Depends(get_supabase_cli
     if image is None:
         raise HTTPException(status_code=404, detail="Image not found")
     return image
-
 
 @admin_router.post("/products/{product_id}/variants", response_model=schemas.ProductVariant, tags=["Admin - Products"])
 def create_variant(product_id: int, variant: schemas.ProductVariantCreate, supabase: Client = Depends(get_supabase_client)):
@@ -264,10 +256,6 @@ def get_settings(supabase: Client = Depends(get_supabase_client)):
 def update_settings(settings_data: schemas.AppSettings, supabase: Client = Depends(get_supabase_client)):
     return services.update_app_settings(settings_data=settings_data, supabase=supabase)
 
-@router.get("/translations", response_model=List[schemas.Translation], tags=["Translations"])
-def list_translations(supabase: Client = Depends(get_supabase_client)):
-    return services.get_translations(supabase=supabase)
-
 @router.get("/translations/all", response_model=List[schemas.Translation], tags=["Translations"])
 def list_all_translations(supabase: Client = Depends(get_supabase_client)):
     return services.get_all_translations(supabase=supabase)
@@ -288,19 +276,13 @@ def upload_image(file: UploadFile = File(...), supabase: Client = Depends(get_su
     file_path = f"messages/{uuid.uuid4()}_{file.filename}"
     try:
         file_content = file.file.read()
-
-        # Determine content type, default if not available
         content_type = file.content_type if file.content_type else "application/octet-stream"
-
-        # Upload with explicit content type
         supabase.storage.from_("products").upload(
             file_path,
             file_content,
             {"content-type": content_type}
         )
-
         image_url = supabase.storage.from_("products").get_public_url(file_path)
-
         return {"location": image_url}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Image upload failed: {str(e)}")

@@ -70,7 +70,7 @@ const Translations = () => {
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-primary-background">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-brand-primary">{t('admin.translations.title')}</h1>
         <button
