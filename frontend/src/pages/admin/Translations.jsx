@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
 import { DataContext } from '../../context/DataContext';
 import Modal from '../../components/Modal';
-import { Edit3, PlusCircle, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import LoadingScreen from '../../components/LoadingScreen';
 import Dropdown from '../../components/Dropdown';
+import TranslationCard from './TranslationCard';
 
 const Translations = () => {
   const { t } = useTranslation();
@@ -66,6 +67,8 @@ const Translations = () => {
         translation.value.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  const translationKeys = [...new Set(translations.map((t) => t.key))];
+
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
@@ -74,9 +77,8 @@ const Translations = () => {
         <h1 className="text-3xl font-bold text-brand-primary">{t('admin.translations.title')}</h1>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2 bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
+          className="bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-colors duration-200"
         >
-          <PlusCircle size={20} className="mr-2" />
           {t('admin.translations.add')}
         </button>
       </div>
@@ -93,49 +95,23 @@ const Translations = () => {
         </div>
         <Dropdown
           options={[
-            { value: 'all', label: 'All Languages' },
-            { value: 'en', label: 'English' },
-            { value: 'ar', label: 'Arabic' },
+            { value: 'all', label: t('admin.translations.allLanguages') },
+            { value: 'en', label: t('admin.translations.english') },
+            { value: 'ar', label: t('admin.translations.arabic') },
           ]}
           value={selectedLang}
           onChange={(option) => setSelectedLang(option.value)}
-          placeholder="Filter by language"
+          placeholder={t('admin.translations.filterByLanguage')}
         />
       </div>
-      <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-        <table className="min-w-full leading-normal">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                {t('admin.translations.key')}
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                {t('admin.translations.value')}
-              </th>
-              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredTranslations.map((translation) => (
-              <tr key={translation.id} className="hover:bg-gray-50 transition-colors duration-200">
-                <td className="px-6 py-4 border-b border-gray-200 text-sm">{translation.key}</td>
-                <td className="px-6 py-4 border-b border-gray-200 text-sm">{translation.value}</td>
-                <td className="px-6 py-4 border-b border-gray-200 text-sm text-right">
-                  <button
-                    onClick={() => handleEditClick(translation)}
-                    className="text-brand-purple hover:text-brand-purple/80 font-semibold py-2 px-4 rounded-full transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center"
-                  >
-                    <Edit3 size={16} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {filteredTranslations.map((translation) => (
+          <TranslationCard key={translation.id} translation={translation} onEdit={handleEditClick} />
+        ))}
       </div>
 
-      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title={t('admin.translations.editTitle')}>
-        <div className="space-y-4">
+      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title={t('admin.translations.editTitle')} maxWidth="max-w-md">
+        <div className="space-y-4 p-2">
           <p className="text-sm text-gray-600 font-medium">{selectedTranslation?.key}</p>
           <textarea
             value={newTranslation.value}
@@ -161,14 +137,14 @@ const Translations = () => {
         </div>
       </Modal>
 
-      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title={t('admin.translations.addTitle')}>
-        <div className="space-y-4">
-          <input
-            type="text"
-            placeholder={t('admin.translations.key')}
+      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title={t('admin.translations.addTitle')} maxWidth="max-w-md">
+        <div className="space-y-4 p-2">
+          <Dropdown
+            options={translationKeys.map((key) => ({ value: key, label: key }))}
             value={newTranslation.key}
-            onChange={(e) => setNewTranslation({ ...newTranslation, key: e.target.value })}
-            className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
+            onChange={(option) => setNewTranslation({ ...newTranslation, key: option.value })}
+            placeholder={t('admin.translations.key')}
+            isSearchable={true}
           />
           <textarea
             placeholder={t('admin.translations.value')}
@@ -177,14 +153,14 @@ const Translations = () => {
             className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
             rows="4"
           ></textarea>
-           <Dropdown
+          <Dropdown
             options={[
-              { value: 'en', label: 'English' },
-              { value: 'ar', label: 'Arabic' },
+              { value: 'en', label: t('admin.translations.english') },
+              { value: 'ar', label: t('admin.translations.arabic') },
             ]}
             value={newTranslation.lang}
             onChange={(option) => setNewTranslation({ ...newTranslation, lang: option.value })}
-            placeholder="Select language"
+            placeholder={t('admin.translations.selectLanguage')}
           />
         </div>
         <div className="flex justify-end gap-4 pt-4">

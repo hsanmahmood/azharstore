@@ -9,15 +9,18 @@ import SearchBar from '../../components/SearchBar';
 import { NotificationProvider } from '../../context/NotificationContext';
 import { Toaster } from 'react-hot-toast';
 
-
 const AdminLayoutContent = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    i18n.changeLanguage('ar');
+  }, [i18n]);
 
   useEffect(() => {
     setIsMobileSidebarOpen(false);

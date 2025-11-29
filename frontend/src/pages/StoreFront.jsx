@@ -6,14 +6,27 @@ import { DataContext } from '../context/DataContext';
 import { useCart } from '../context/CartContext';
 import CartView from '../components/CartView';
 import LoadingScreen from '../components/LoadingScreen';
+import { useTranslation } from 'react-i18next';
 
 const StoreFront = () => {
-    const { products, categories, isLoading } = useContext(DataContext);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filteredProducts, setFilteredProducts] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('all');
-    const { cartCount } = useCart();
-    const [isCartViewOpen, setIsCartViewOpen] = useState(false);
+  const { products, categories, isLoading } = useContext(DataContext);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const { cartCount } = useCart();
+  const [isCartViewOpen, setIsCartViewOpen] = useState(false);
+  const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    const savedLang = localStorage.getItem('storefrontLang') || 'ar';
+    i18n.changeLanguage(savedLang);
+  }, [i18n]);
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'ar' ? 'en' : 'ar';
+    i18n.changeLanguage(newLang);
+    localStorage.setItem('storefrontLang', newLang);
+  };
 
   // Filter products when category or search changes
   useEffect(() => {
@@ -55,7 +68,7 @@ const StoreFront = () => {
           {/* Logo */}
           <div className="flex items-center min-w-0 flex-1">
             <div className="bg-brand-purple text-white px-4 py-2 rounded-lg font-bold text-xl h-20 flex items-center">
-              أزهار ستور
+              {t('common.storeName')}
             </div>
           </div>
 
@@ -68,8 +81,11 @@ const StoreFront = () => {
             </button>
 
             {/* Language */}
-            <button className="inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200">
-              <span className="text-sm font-medium">العربية</span>
+            <button
+              onClick={toggleLanguage}
+              className="inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200"
+            >
+              <span className="text-sm font-medium">{i18n.language === 'ar' ? 'English' : 'العربية'}</span>
               <Globe className="h-4 w-4" />
             </button>
 
@@ -78,7 +94,7 @@ const StoreFront = () => {
               onClick={() => setIsCartViewOpen(true)}
               className="relative inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200"
             >
-              <span className="text-sm font-medium">السلة</span>
+              <span className="text-sm font-medium">{t('common.cart')}</span>
               <ShoppingCart className="h-4 w-4" />
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-1 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">
@@ -99,7 +115,7 @@ const StoreFront = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
             <input
               type="text"
-              placeholder="البحث في المنتجات..."
+              placeholder={t('common.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-10 h-12 text-base bg-white border border-soft-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
@@ -129,7 +145,7 @@ const StoreFront = () => {
       <main className="container mx-auto px-3 py-8">
         {filteredProducts.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-text-light text-lg">لا توجد منتجات</p>
+            <p className="text-text-light text-lg">{t('common.noProducts')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -141,7 +157,7 @@ const StoreFront = () => {
       {/* Footer */}
       <footer className="bg-white border-t border-soft-border mt-12 py-6">
         <div className="container mx-auto px-4 text-center text-text-light text-sm">
-          <p>© 2025 أزهار ستور. جميع الحقوق محفوظة.</p>
+          <p>{t('common.footer')}</p>
         </div>
       </footer>
     </div>

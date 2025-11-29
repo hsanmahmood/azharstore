@@ -30,7 +30,17 @@ INSERT INTO translations (lang, key, value) VALUES
 ('en', 'admin.translations.filterByLanguage', 'Filter by language'),
 ('ar', 'admin.translations.filterByLanguage', 'تصفية حسب اللغة'),
 ('en', 'admin.translations.selectLanguage', 'Select language'),
-('ar', 'admin.translations.selectLanguage', 'اختر اللغة');
+('ar', 'admin.translations.selectLanguage', 'اختر اللغة'),
+('en', 'common.storeName', 'Azhar Store'),
+('ar', 'common.storeName', 'أزهار ستور'),
+('en', 'common.cart', 'Cart'),
+('ar', 'common.cart', 'السلة'),
+('en', 'common.searchPlaceholder', 'Search products...'),
+('ar', 'common.searchPlaceholder', 'البحث في المنتجات...'),
+('en', 'common.noProducts', 'No products found'),
+('ar', 'common.noProducts', 'لا توجد منتجات'),
+('en', 'common.footer', '© 2025 Azhar Store. All rights reserved.'),
+('ar', 'common.footer', '© 2025 أزهار ستور. جميع الحقوق محفوظة.');
 
 INSERT INTO translations (lang, key, value) VALUES ('ar', 'Login', 'تسجيل الدخول');
 INSERT INTO translations (lang, key, value) VALUES ('ar', 'Logout', 'تسجيل الخروج');
