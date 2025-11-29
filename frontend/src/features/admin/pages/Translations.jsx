@@ -9,7 +9,7 @@ import { Search } from 'lucide-react';
 import LoadingScreen from '../../../components/common/LoadingScreen';
 import Dropdown from '../../../components/common/Dropdown';
 import TranslationCard from '../components/TranslationCard';
-
+import allKeys from '../../../i18n/allKeys.json';
 const Translations = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -65,7 +65,8 @@ const Translations = () => {
       translation.value.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const translationKeys = [...new Set(translations.map((t) => t.key))];
+  const translatedKeys = new Set(translations.map((t) => t.key));
+  const untranslatedKeys = allKeys.filter((key) => !translatedKeys.has(key));
 
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
@@ -128,7 +129,7 @@ const Translations = () => {
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title={t('admin.translations.addTitle')} maxWidth="max-w-md">
         <div className="space-y-4 p-2">
           <Dropdown
-            options={translationKeys.map((key) => ({ value: key, label: key }))}
+            options={untranslatedKeys.map((key) => ({ value: key, label: key }))}
             value={newTranslation.key}
             onChange={(option) => setNewTranslation({ ...newTranslation, key: option.value })}
             placeholder={t('admin.translations.key')}
