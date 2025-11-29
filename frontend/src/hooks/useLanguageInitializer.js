@@ -1,6 +1,6 @@
 import { useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DataContext } from './DataContext';
+import { DataContext } from '../context/DataContext';
 
 const useLanguageInitializer = () => {
   const { i18n } = useTranslation();
