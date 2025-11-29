@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, useCallback, useContext } fr
 import { apiService, getAllTranslations } from '../services/api';
 import { AuthContext } from './AuthContext';
 import { useLoading } from './LoadingContext';
+import i18n from '../i18n/config';
 
 export const DataContext = createContext();
 
@@ -15,7 +16,7 @@ export const DataProvider = ({ children }) => {
   const [deliveryAreas, setDeliveryAreas] = useState([]);
   const [appSettings, setAppSettings] = useState({});
   const [translations, setTranslations] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Keep local loading for initial data fetch
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
   const fetchData = useCallback(async () => {
@@ -32,6 +33,27 @@ export const DataProvider = ({ children }) => {
       setProducts(productsRes.data);
       setCategories(categoriesRes);
       setTranslations(translationsRes);
+
+      // Update i18n resources
+      const resources = {
+        en: { translation: {} },
+        ar: { translation: {} },
+      };
+      translationsRes.forEach(t => {
+        const keys = t.key.split('.');
+        let currentLevel = resources[t.lang].translation;
+        keys.forEach((key, index) => {
+          if (index === keys.length - 1) {
+            currentLevel[key] = t.value;
+          } else {
+            currentLevel[key] = currentLevel[key] || {};
+            currentLevel = currentLevel[key];
+          }
+        });
+      });
+      i18n.addResourceBundle('en', 'translation', resources.en.translation);
+      i18n.addResourceBundle('ar', 'translation', resources.ar.translation);
+
 
       if (token) {
         const [customersRes, ordersRes, deliveryAreasRes, appSettingsRes] = await Promise.all([
@@ -136,11 +158,19 @@ export const DataProvider = ({ children }) => {
   };
 
   const updateTranslation = (updatedTranslation) => {
-    setTranslations(prev => prev.map(t => t.id === updatedTranslation.id ? updatedTranslation : t));
+    setTranslations(prev => {
+      const newTranslations = prev.map(t => t.id === updatedTranslation.id ? updatedTranslation : t);
+      fetchData(); // Refetch to update i18n
+      return newTranslations;
+    });
   };
 
   const addTranslation = (translation) => {
-    setTranslations(prev => [translation, ...prev]);
+    setTranslations(prev => {
+      const newTranslations = [translation, ...prev];
+      fetchData(); // Refetch to update i18n
+      return newTranslations;
+    });
   };
 
   const value = {

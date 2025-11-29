@@ -7,6 +7,7 @@ import { DataContext } from '../../context/DataContext';
 import Modal from '../../components/Modal';
 import { Edit3, PlusCircle, Search } from 'lucide-react';
 import LoadingScreen from '../../components/LoadingScreen';
+import Dropdown from '../../components/Dropdown';
 
 const Translations = () => {
   const { t } = useTranslation();
@@ -18,6 +19,7 @@ const Translations = () => {
   const [selectedTranslation, setSelectedTranslation] = useState(null);
   const [newTranslation, setNewTranslation] = useState({ lang: 'ar', key: '', value: '' });
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedLang, setSelectedLang] = useState('all');
 
   const updateMutation = useMutation(updateTranslation, {
     onSuccess: (data) => {
@@ -59,8 +61,9 @@ const Translations = () => {
 
   const filteredTranslations = translations.filter(
     (translation) =>
-      translation.key.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      translation.value.toLowerCase().includes(searchTerm.toLowerCase())
+      (selectedLang === 'all' || translation.lang === selectedLang) &&
+      (translation.key.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        translation.value.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   if (isLoading) return <LoadingScreen fullScreen={false} />;
@@ -77,7 +80,7 @@ const Translations = () => {
           {t('admin.translations.add')}
         </button>
       </div>
-      <div className="mb-8">
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
           <input
@@ -88,6 +91,16 @@ const Translations = () => {
             className="w-full bg-white border border-soft-border text-text-dark p-3 pl-12 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
           />
         </div>
+        <Dropdown
+          options={[
+            { value: 'all', label: 'All Languages' },
+            { value: 'en', label: 'English' },
+            { value: 'ar', label: 'Arabic' },
+          ]}
+          value={selectedLang}
+          onChange={(option) => setSelectedLang(option.value)}
+          placeholder="Filter by language"
+        />
       </div>
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
         <table className="min-w-full leading-normal">
@@ -164,6 +177,15 @@ const Translations = () => {
             className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
             rows="4"
           ></textarea>
+           <Dropdown
+            options={[
+              { value: 'en', label: 'English' },
+              { value: 'ar', label: 'Arabic' },
+            ]}
+            value={newTranslation.lang}
+            onChange={(option) => setNewTranslation({ ...newTranslation, lang: option.value })}
+            placeholder="Select language"
+          />
         </div>
         <div className="flex justify-end gap-4 pt-4">
           <button
