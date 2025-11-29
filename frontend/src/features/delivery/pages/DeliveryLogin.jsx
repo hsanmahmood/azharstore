@@ -15,7 +15,7 @@ const DeliveryLogin = () => {
     setError('');
     try {
       await login(password);
-      navigate('/orders');
+      navigate('/delivery');
     } catch (err) {
       setError(err.response?.data?.detail || 'Login failed');
     }

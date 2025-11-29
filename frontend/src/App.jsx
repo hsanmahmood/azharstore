@@ -36,9 +36,9 @@ const App = () => {
 
   const isDeliverySite = React.useMemo(() => {
     return (
-      window.location.hostname.startsWith('orders') ||
-      (window.location.hostname.includes('localhost') && location.pathname.startsWith('/orders')) ||
-      (window.location.hostname.includes('127.0.0.1') && location.pathname.startsWith('/orders'))
+      window.location.hostname.startsWith('delivery') ||
+      (window.location.hostname.includes('localhost') && location.pathname.startsWith('/delivery')) ||
+      (window.location.hostname.includes('127.0.0.1') && location.pathname.startsWith('/delivery'))
     );
   }, [location.pathname]);
 
@@ -98,13 +98,13 @@ const App = () => {
       <DeliveryAuthProvider>
         <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col">
           <Routes>
-            <Route path="/orders/login" element={<DeliveryLogin />} />
-            <Route path="/orders" element={<ProtectedRoute />}>
+            <Route path="/delivery/login" element={<DeliveryLogin />} />
+            <Route path="/delivery" element={<ProtectedRoute />}>
               <Route element={<DeliveryLayout />}>
                 <Route index element={<DeliveryOrderManagement />} />
               </Route>
             </Route>
-            <Route path="*" element={<Navigate to="/orders" />} />
+            <Route path="*" element={<Navigate to="/delivery" />} />
           </Routes>
         </div>
       </DeliveryAuthProvider>

@@ -23,7 +23,7 @@ deliveryApi.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('deliveryToken');
-      window.location.href = '/orders/login';
+      window.location.href = '/delivery/login';
     }
     return Promise.reject(error);
   }
