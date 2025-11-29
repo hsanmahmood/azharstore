@@ -35,6 +35,7 @@ api.interceptors.response.use(
 export const getTranslations = () => api.get('/translations').then(res => res.data);
 export const getAllTranslations = () => api.get('/translations/all').then(res => res.data);
 export const updateTranslation = ({ id, value }) => api.patch(`/admin/translations/${id}`, { value });
+export const createTranslation = (data) => api.post('/admin/translations', data);
 
 // Product services
 export const productService = {

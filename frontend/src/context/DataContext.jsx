@@ -139,6 +139,10 @@ export const DataProvider = ({ children }) => {
     setTranslations(prev => prev.map(t => t.id === updatedTranslation.id ? updatedTranslation : t));
   };
 
+  const addTranslation = (translation) => {
+    setTranslations(prev => [translation, ...prev]);
+  };
+
   const value = {
     products,
     setProducts,
@@ -174,6 +178,7 @@ export const DataProvider = ({ children }) => {
     deleteDeliveryArea,
     updateAppSettings,
     updateTranslation,
+    addTranslation,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

@@ -279,6 +279,10 @@ def update_translation(translation_id: int, translation: schemas.TranslationUpda
         raise HTTPException(status_code=404, detail="Translation not found")
     return db_translation
 
+@admin_router.post("/translations", response_model=schemas.Translation, tags=["Admin - Translations"])
+def create_translation(translation: schemas.TranslationCreate, supabase: Client = Depends(get_supabase_client)):
+    return services.create_translation(translation=translation, supabase=supabase)
+
 @admin_router.post("/upload-image", tags=["Admin - General"])
 def upload_image(file: UploadFile = File(...), supabase: Client = Depends(get_supabase_client)):
     file_path = f"messages/{uuid.uuid4()}_{file.filename}"
