@@ -1,46 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ShoppingCart, Globe, Search, X, Instagram } from 'lucide-react';
 import CategorySlider from '../components/CategorySlider';
 import ProductGrid from '../components/ProductGrid';
-import { apiService } from '../services/api';
+import { DataContext } from '../context/DataContext';
 import { useCart } from '../context/CartContext';
 import CartView from '../components/CartView';
+import LoadingScreen from '../components/LoadingScreen';
 
 const StoreFront = () => {
+    const { products, categories, isLoading } = useContext(DataContext);
     const [searchTerm, setSearchTerm] = useState('');
-    const [categories, setCategories] = useState([]);
-    const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('all');
-    const [loading, setLoading] = useState(true);
     const { cartCount } = useCart();
     const [isCartViewOpen, setIsCartViewOpen] = useState(false);
-
-  // Fetch categories and products on mount
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [categoriesData, productsResponse] = await Promise.all([
-          apiService.getAllCategories(),
-          apiService.getAllProducts()
-        ]);
-
-        setCategories(categoriesData);
-        setProducts(productsResponse.data || []);
-        setFilteredProducts(productsResponse.data || []);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setCategories([]);
-        setProducts([]);
-        setFilteredProducts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   // Filter products when category or search changes
   useEffect(() => {
@@ -69,6 +42,10 @@ const StoreFront = () => {
   const handleCategoryClick = (categoryId) => {
     setSelectedCategory(categoryId);
   };
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="min-h-screen bg-primary-background">
@@ -143,7 +120,6 @@ const StoreFront = () => {
               categories={categories}
               selectedCategory={selectedCategory}
               onCategoryClick={handleCategoryClick}
-              loading={loading}
             />
           </div>
         </div>
@@ -151,24 +127,7 @@ const StoreFront = () => {
 
       {/* Product Grid */}
       <main className="container mx-auto px-3 py-8">
-        {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-white rounded-xl border border-border-gray shadow-sm overflow-hidden animate-pulse">
-                <div className="aspect-square bg-gray-200"></div>
-                <div className="p-3 space-y-3">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-full"></div>
-                  <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                  <div className="flex items-center justify-between">
-                    <div className="h-5 bg-gray-200 rounded w-1/3"></div>
-                    <div className="h-8 w-8 bg-gray-200 rounded-lg"></div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : filteredProducts.length === 0 ? (
+        {filteredProducts.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-text-light text-lg">لا توجد منتجات</p>
           </div>

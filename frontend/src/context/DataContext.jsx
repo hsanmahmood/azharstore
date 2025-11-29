@@ -1,31 +1,37 @@
 import React, { createContext, useState, useEffect, useCallback, useContext } from 'react';
-import { apiService } from '../services/api';
+import { apiService, getTranslations } from '../services/api';
 import { AuthContext } from './AuthContext';
+import { useLoading } from './LoadingContext';
 
 export const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
   const { token } = useContext(AuthContext);
+  const { showLoading, hideLoading } = useLoading();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [deliveryAreas, setDeliveryAreas] = useState([]);
   const [appSettings, setAppSettings] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [translations, setTranslations] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Keep local loading for initial data fetch
   const [error, setError] = useState('');
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
+    showLoading();
     try {
       const publicDataPromises = [
         apiService.getAllProducts(),
         apiService.getAllCategories(),
+        getTranslations(),
       ];
 
-      const [productsRes, categoriesRes] = await Promise.all(publicDataPromises);
+      const [productsRes, categoriesRes, translationsRes] = await Promise.all(publicDataPromises);
       setProducts(productsRes.data);
       setCategories(categoriesRes);
+      setTranslations(translationsRes);
 
       if (token) {
         const [customersRes, ordersRes, deliveryAreasRes, appSettingsRes] = await Promise.all([
@@ -57,8 +63,9 @@ export const DataProvider = ({ children }) => {
       }
     } finally {
       setIsLoading(false);
+      hideLoading();
     }
-  }, [token]);
+  }, [token, showLoading, hideLoading]);
 
   useEffect(() => {
     fetchData();
@@ -128,6 +135,10 @@ export const DataProvider = ({ children }) => {
     setAppSettings(settings);
   };
 
+  const updateTranslation = (updatedTranslation) => {
+    setTranslations(prev => prev.map(t => t.id === updatedTranslation.id ? updatedTranslation : t));
+  };
+
   const value = {
     products,
     setProducts,
@@ -141,6 +152,8 @@ export const DataProvider = ({ children }) => {
     setDeliveryAreas,
     appSettings,
     setAppSettings,
+    translations,
+    setTranslations,
     isLoading,
     error,
     refreshData: fetchData,
@@ -160,6 +173,7 @@ export const DataProvider = ({ children }) => {
     updateDeliveryArea,
     deleteDeliveryArea,
     updateAppSettings,
+    updateTranslation,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

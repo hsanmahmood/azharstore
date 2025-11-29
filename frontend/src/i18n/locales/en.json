@@ -124,7 +124,21 @@
       "products": "Products",
       "categories": "Categories",
       "customers": "Customers",
-      "home": "Home"
+      "home": "Home",
+      "translations": "Translations"
+    },
+    "translations": {
+      "title": "Translations",
+      "loading": "Loading translations...",
+      "key": "Key",
+      "value": "Value",
+      "edit": "Edit",
+      "editTitle": "Edit Translation",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "updateSuccess": "Translation updated successfully",
+      "updateError": "Failed to update translation"
     }
   },
   "customerManagement": {

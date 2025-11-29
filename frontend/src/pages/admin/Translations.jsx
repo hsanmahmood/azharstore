@@ -1,21 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { getTranslations, updateTranslation } from '../../services/api';
+import React, { useState, useContext } from 'react';
+import { useMutation, useQueryClient } from 'react-query';
+import { updateTranslation } from '../../services/api';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
+import { DataContext } from '../../context/DataContext';
 
 const Translations = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-
-  const { data: translations, isLoading } = useQuery('translations', getTranslations);
+  const { translations, updateTranslation: updateTranslationInContext } = useContext(DataContext);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTranslation, setSelectedTranslation] = useState(null);
   const [newValue, setNewValue] = useState('');
 
   const mutation = useMutation(updateTranslation, {
-    onSuccess: () => {
+    onSuccess: (data) => {
+      updateTranslationInContext(data.data);
       queryClient.invalidateQueries('translations');
       toast.success(t('admin.translations.updateSuccess'));
       setIsModalOpen(false);
@@ -34,8 +35,6 @@ const Translations = () => {
   const handleSave = () => {
     mutation.mutate({ id: selectedTranslation.id, value: newValue });
   };
-
-  if (isLoading) return <div>{t('admin.translations.loading')}</div>;
 
   return (
     <div>

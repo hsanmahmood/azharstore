@@ -151,7 +151,21 @@
       "products": "المنتجات",
       "categories": "الفئات",
       "customers": "العملاء",
-      "home": "الرئيسية"
+      "home": "الرئيسية",
+      "translations": "الترجمات"
+    },
+    "translations": {
+      "title": "الترجمات",
+      "loading": "جاري تحميل الترجمات...",
+      "key": "المفتاح",
+      "value": "القيمة",
+      "edit": "تعديل",
+      "editTitle": "تعديل الترجمة",
+      "save": "حفظ",
+      "saving": "جاري الحفظ...",
+      "cancel": "إلغاء",
+      "updateSuccess": "تم تحديث الترجمة بنجاح",
+      "updateError": "فشل في تحديث الترجمة"
     }
   },
   "customerManagement": {
