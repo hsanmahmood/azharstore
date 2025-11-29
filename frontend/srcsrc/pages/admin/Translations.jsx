@@ -13,12 +13,12 @@ import TranslationCard from './TranslationCard';
 const Translations = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { translations, updateTranslation: updateTranslationIn-context, addTranslation, isLoading } = useContext(DataContext);
+  const { translations, updateTranslation: updateTranslationInContext, addTranslation, isLoading } = useContext(DataContext);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedTranslation, setSelectedTranslation] = useState(null);
-  const [newTranslation, setNewTranslation] = useState({ lang: 'ar', key: '', value: '' });
+  const [newTranslation, setNewTranslation] = useState({ key: '', value: '' });
   const [searchTerm, setSearchTerm] = useState('');
 
   const updateMutation = useMutation(updateTranslation, {
@@ -56,7 +56,7 @@ const Translations = () => {
   };
 
   const handleAdd = () => {
-    createMutation.mutate(newTranslation);
+    createMutation.mutate({ ...newTranslation, lang: 'ar' });
   };
 
   const filteredTranslations = translations.filter(
@@ -70,7 +70,7 @@ const Translations = () => {
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-brand-primary">{t('admin.translations.title')}</h1>
         <button

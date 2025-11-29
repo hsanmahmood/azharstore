@@ -1,26 +1,23 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { NavLink, Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Package, Layers, LogOut, PanelLeft, Menu, Home, Users, ShoppingCart, Settings, Languages } from 'lucide-react';
+import { Package, Layers, LogOut, PanelLeft, Menu, Users, ShoppingCart, Settings, Languages } from 'lucide-react';
 import { AuthContext } from '../../context/AuthContext';
 import MobileAdminSidebar from './MobileAdminSidebar';
-import { SearchProvider, SearchContext } from '../../context/SearchContext';
-import SearchBar from '../../components/SearchBar';
+import { SearchProvider } from '../../context/SearchContext';
 import { NotificationProvider } from '../../context/NotificationContext';
 import { Toaster } from 'react-hot-toast';
+import useLanguageInitializer from '../../hooks/useLanguageInitializer';
+import LoadingScreen from '../../components/LoadingScreen';
 
 const AdminLayoutContent = () => {
-  const { t, i18n } = useTranslation();
+  useLanguageInitializer();
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
-  const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    i18n.changeLanguage('ar');
-  }, [i18n]);
 
   useEffect(() => {
     setIsMobileSidebarOpen(false);
@@ -38,7 +35,6 @@ const AdminLayoutContent = () => {
     navigate('/login');
   };
 
-  // Detect if we're using /admin prefix (localhost) or root (admin.azhar.store)
   const adminBasePath = location.pathname.startsWith('/admin') ? '/admin' : '';
 
   const navLinks = [
@@ -90,7 +86,7 @@ const AdminLayoutContent = () => {
               className={`flex items-center w-full px-4 py-2.5 text-sm font-medium text-text-light hover:bg-brand-purple/5 hover:text-brand-purple rounded-lg transition-colors ${!isOpen ? 'justify-center' : ''}`}
             >
               <PanelLeft className={`h-5 w-5 ${isOpen ? 'ml-3' : ''}`} />
-              <span className={`transition-opacity duration-200 ${!isOpen ? 'hidden' : 'delay-200'}`}>طي القائمة</span>
+              <span className={`transition-opacity duration-200 ${!isOpen ? 'hidden' : 'delay-200'}`}>{t('common.toggleSidebar')}</span>
             </button>
             <button
               onClick={handleLogout}
