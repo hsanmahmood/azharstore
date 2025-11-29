@@ -20,6 +20,7 @@ import DeliveryLogin from './features/delivery/pages/DeliveryLogin';
 import DeliveryLayout from './features/delivery/pages/DeliveryLayout';
 import DeliveryOrderManagement from './features/delivery/pages/DeliveryOrderManagement';
 import { DeliveryAuthProvider } from './context/deliveryAuth.jsx';
+import DeliveryProtectedRoute from './components/common/DeliveryProtectedRoute';
 
 const App = () => {
   const { token } = useContext(AuthContext);
@@ -98,13 +99,13 @@ const App = () => {
       <DeliveryAuthProvider>
         <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col">
           <Routes>
-            <Route path="/delivery/login" element={<DeliveryLogin />} />
-            <Route path="/delivery" element={<ProtectedRoute />}>
+            <Route path="/login" element={<DeliveryLogin />} />
+            <Route path="/" element={<DeliveryProtectedRoute />}>
               <Route element={<DeliveryLayout />}>
                 <Route index element={<DeliveryOrderManagement />} />
               </Route>
             </Route>
-            <Route path="*" element={<Navigate to="/delivery" />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
       </DeliveryAuthProvider>
