@@ -1,5 +1,8 @@
--- Create translations table if it doesn't exist
-CREATE TABLE IF NOT EXISTS translations (
+-- Drop the translations table if it exists
+DROP TABLE IF EXISTS translations;
+
+-- Create translations table
+CREATE TABLE translations (
     id SERIAL PRIMARY KEY,
     lang VARCHAR(10) NOT NULL,
     key TEXT NOT NULL,
@@ -7,7 +10,7 @@ CREATE TABLE IF NOT EXISTS translations (
     UNIQUE (lang, key)
 );
 
--- Insert new translations for the add/edit modal and language filter
+-- Insert translations
 INSERT INTO translations (lang, key, value) VALUES
 ('ar', 'admin.translations.addTitle', 'إضافة ترجمة جديدة'),
 ('ar', 'admin.translations.add', 'إضافة'),
@@ -25,205 +28,205 @@ INSERT INTO translations (lang, key, value) VALUES
 ('ar', 'common.searchPlaceholder', 'البحث في المنتجات...'),
 ('ar', 'common.noProducts', 'لا توجد منتجات'),
 ('ar', 'common.footer', '© 2025 أزهار ستور. جميع الحقوق محفوظة.'),
-('ar', 'common.toggleSidebar', 'طي القائمة');
-
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'Login', 'تسجيل الدخول');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'Logout', 'تسجيل الخروج');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'Dashboard', 'لوحة التحكم');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'Products', 'المنتجات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'Categories', 'الفئات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'Admin Panel', 'لوحة الإدارة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.search', 'بحث');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.save', 'حفظ');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.cancel', 'إلغاء');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.delete', 'حذف');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.edit', 'تعديل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.add', 'إضافة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.confirm', 'تأكيد');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.create', 'إنشاء');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.saveChanges', 'حفظ التغييرات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.actions', 'الإجراءات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.currency', 'د.ب');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.notAvailable', 'غير متوفر');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.allCategories', 'جميع الفئات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.filterByCategory', 'التصفية حسب الفئة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.allCustomers', 'جميع العملاء');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.filterByCustomer', 'التصفية حسب العميل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.allProducts', 'جميع المنتجات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.filterByProduct', 'التصفية حسب المنتج');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.productsWithOrders', 'المنتجات المطلوبة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.productsWithoutOrders', 'المنتجات غير المطلوبة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'common.filterByOrders', 'التصفية حسب الطلبات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.title', 'الإعدادات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.deliverySettings', 'إعدادات التوصيل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.freeDeliveryThreshold', 'الحد الأدنى للتوصيل المجاني');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.deliveryAreas', 'مناطق التوصيل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.addArea', 'إضافة منطقة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.editArea', 'تعديل منطقة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.areaName', 'اسم المنطقة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.deliveryPrice', 'سعر التوصيل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.confirmDeleteArea', 'هل أنت متأكد من حذف منطقة التوصيل هذه؟');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.deliveryArea', 'منطقة التوصيل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.selectArea', 'اختر منطقة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.delivery', 'التوصيل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.messages', 'الرسائل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.deliveryMessage', 'رسالة التوصيل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.pickupMessage', 'رسالة الاستلام');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.areaUpdatedSuccess', 'تم تحديث المنطقة بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.areaAddedSuccess', 'تم إضافة المنطقة بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.areaSaveError', 'فشل في حفظ المنطقة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.areaDeletedSuccess', 'تم حذف المنطقة بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.areaDeleteError', 'فشل في حذف المنطقة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.deliverySettingsSaved', 'تم حفظ إعدادات التوصيل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.deliverySettingsError', 'فشل في حفظ إعدادات التوصيل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.messagesSaved', 'تم حفظ الرسائل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'settings.messagesError', 'فشل في حفظ الرسائل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.title', 'إدارة المنتجات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.addProduct', 'إضافة منتج');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.editProduct', 'تعديل منتج');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.confirmDelete', 'هل أنت متأكد من حذف هذا المنتج؟');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.name', 'اسم المنتج');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.description', 'الوصف');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.price', 'السعر');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.category', 'الفئة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.selectCategory', 'اختر فئة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.stock', 'الكمية');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.images', 'الصور');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.primaryImage', 'الصورة الأساسية');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.galleryImages', 'صور المعرض');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.image', 'الصورة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.variants', 'الخيارات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.addVariant', 'إضافة خيار');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.variantName', 'اسم الخيار');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.totalStock', 'إجمالي المخزون');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.imagesSelected', '{{count}} صور مختارة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.clickToUpload', 'انقر لتحميل الصور');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.draftName', 'منتج جديد (مسودة)');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.form.downloadAll', 'تحميل الكل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.imageAlt', 'صورة المنتج');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.primaryBadge', 'الأساسية');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.tooltips.viewImage', 'عرض الصورة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.tooltips.setAsPrimary', 'تعيين كأساسية');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.tooltips.downloadImage', 'تحميل الصورة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.tooltips.removeImage', 'إزالة الصورة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.actions.view', 'عرض');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.actions.setAsPrimary', 'تعيين كأساسية');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.actions.download', 'تحميل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.actions.remove', 'إزالة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.imagePreview', 'معاينة الصورة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.tabs.details', 'التفاصيل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.tabs.images', 'الصور');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.tabs.variants', 'الخيارات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.saving', 'جاري الحفظ...');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.uploadingImages', 'جاري رفع الصور...');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.errors.fetch', 'فشل في تحميل المنتجات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.errors.add', 'فشل في إضافة المنتج');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.errors.update', 'فشل في تحديث المنتج');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.errors.delete', 'فشل في حذف المنتج');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.errors.draftError', 'فشل في إنشاء مسودة المنتج');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.errors.uploadError', 'فشل في تحميل الصور');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.errors.addVariantError', 'فشل في إضافة الخيار');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.errors.updateVariantError', 'فشل في تحديث الخيار');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.errors.variantInUse', 'لا يمكن حذف الخيار لأنه مستخدم في طلب حالي.');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.errors.saveVariantFirst', 'يرجى حفظ الخيار أولاً');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.errors.variantNameRequired', 'اسم الخيار مطلوب');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.errors.downloadFailed', 'فشل التحميل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.errors.noImagesToDownload', 'لا توجد صور للتحميل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.errors.unexpected', 'حدث خطأ غير متوقع');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.notifications.productAdded', 'تم إضافة المنتج بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.notifications.productUpdated', 'تم تحديث المنتج بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.notifications.productDeleted', 'تم حذف المنتج بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.notifications.variantAdded', 'تم إضافة الخيار بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.notifications.variantUpdated', 'تم تحديث الخيار بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'productManagement.notifications.variantImageUploaded', 'تم رفع صورة الخيار بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'categoryManagement.title', 'إدارة الفئات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'categoryManagement.addCategory', 'إضافة فئة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'categoryManagement.editCategory', 'تعديل فئة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'categoryManagement.confirmDelete', 'هل أنت متأكد من حذف هذه الفئة؟');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'categoryManagement.form.name', 'اسم الفئة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'categoryManagement.errors.fetch', 'فشل في تحميل الفئات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'categoryManagement.errors.add', 'فشل في إضافة الفئة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'categoryManagement.errors.update', 'فشل في تحديث الفئة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'categoryManagement.errors.delete', 'فشل في حذف الفئة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'categoryManagement.notifications.added', 'تم إضافة الفئة بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'categoryManagement.notifications.updated', 'تم تحديث الفئة بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'categoryManagement.notifications.deleted', 'تم حذف الفئة بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.nav.products', 'المنتجات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.nav.categories', 'الفئات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.nav.customers', 'العملاء');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.nav.home', 'الرئيسية');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.nav.translations', 'الترجمات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.translations.title', 'الترجمات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.translations.loading', 'جاري تحميل الترجمات...');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.translations.key', 'المفتاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.translations.value', 'القيمة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.translations.edit', 'تعديل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.translations.editTitle', 'تعديل الترجمة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.translations.save', 'حفظ');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.translations.saving', 'جاري الحفظ...');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.translations.cancel', 'إلغاء');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.translations.updateSuccess', 'تم تحديث الترجمة بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'admin.translations.updateError', 'فشل في تحديث الترجمة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.title', 'إدارة العملاء');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.addCustomer', 'إضافة عميل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.editCustomer', 'تعديل عميل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.confirmDelete', 'هل أنت متأكد من حذف هذا العميل؟');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.table.name', 'الاسم');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.table.phone', 'رقم الهاتف');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.table.town', 'المدينة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.table.address', 'العنوان');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.form.name', 'الاسم');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.form.phone', 'رقم الهاتف');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.form.town', 'المدينة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.form.addressHome', 'المنزل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.form.addressRoad', 'الطريق');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.form.addressBlock', 'المجمع');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.form.address', 'العنوان');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.form.phoneHint', 'يجب أن يتكون رقم الهاتف من 8 أرقام');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.form.phoneValidationError', 'لم يستوفِ رقم الهاتف متطلبات الطول');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.errors.fetch', 'فشل في تحميل العملاء');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.errors.submit', 'فشل في حفظ العميل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.errors.delete', 'فشل في حذف العميل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.notifications.added', 'تم إضافة العميل بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.notifications.updated', 'تم تحديث العميل بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'customerManagement.notifications.deleted', 'تم حذف العميل بنجاح');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.title', 'إدارة الطلبات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.addOrder', 'إضافة طلب');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.editOrder', 'تعديل طلب');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.confirmDelete', 'هل أنت متأكد من حذف هذا الطلب؟');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.table.orderId', 'رقم الطلب');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.table.customer', 'العميل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.table.status', 'الحالة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.table.shippingMethod', 'طريقة الشحن');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.table.total', 'المجموع');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.table.date', 'التاريخ');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.customer', 'العميل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.selectCustomer', 'اختر عميل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.products', 'المنتجات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.addProduct', 'إضافة منتج');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.shippingMethod', 'طريقة الشحن');
-INSERT INTO translations (lang, aney, value) VALUES ('ar', 'orderManagement.form.selectShippingMethod', 'اختر طريقة الشحن');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.status', 'الحالة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.selectStatus', 'اختر الحالة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.comments', 'ملاحظات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.orderItems', 'عناصر الطلب');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.noVariants', 'لا توجد خيارات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.selectProduct', 'اختر منتج');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.selectVariant', 'اختر خيار');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.productNotFound', 'المنتج غير موجود');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.total', 'المجموع');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.subtotal', 'المجموع الفرعي');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.freeDeliveryApplied', 'تم تطبيق التوصيل المجاني');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.unitPrice', 'سعر الوحدة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.form.quantity', 'الكمية');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.freeDeliveryApplied', 'تم تطبيق التوصيل المجاني');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.status.processing', 'قيد المعالجة');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.status.ready', 'جاهز');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.status.shipped', 'تم الشحن');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.status.delivered', 'تم التوصيل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.status.cancelled', 'تم الإلغاء');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.shipping.delivery', 'توصيل');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.shipping.pick_up', 'استلام');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.errors.fetch', 'فشل في تحميل الطلبات');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.errors.submit', 'فشل في حفظ الطلب');
-INSERT INTO translations (lang, key, value) VALUES ('ar', 'orderManagement.errors.freeDeliveryApplied', 'تم تطبيق التوصيل المجاني');
+('ar', 'common.toggleSidebar', 'طي القائمة'),
+('ar', 'Login', 'تسجيل الدخول'),
+('ar', 'Logout', 'تسجيل الخروج'),
+('ar', 'Dashboard', 'لوحة التحكم'),
+('ar', 'Products', 'المنتجات'),
+('ar', 'Categories', 'الفئات'),
+('ar', 'Admin Panel', 'لوحة الإدارة'),
+('ar', 'common.search', 'بحث'),
+('ar', 'common.save', 'حفظ'),
+('ar', 'common.cancel', 'إلغاء'),
+('ar', 'common.delete', 'حذف'),
+('ar', 'common.edit', 'تعديل'),
+('ar', 'common.add', 'إضافة'),
+('ar', 'common.confirm', 'تأكيد'),
+('ar', 'common.create', 'إنشاء'),
+('ar', 'common.saveChanges', 'حفظ التغييرات'),
+('ar', 'common.actions', 'الإجراءات'),
+('ar', 'common.currency', 'د.ب'),
+('ar', 'common.notAvailable', 'غير متوفر'),
+('ar', 'common.allCategories', 'جميع الفئات'),
+('ar', 'common.filterByCategory', 'التصفية حسب الفئة'),
+('ar', 'common.allCustomers', 'جميع العملاء'),
+('ar', 'common.filterByCustomer', 'التصفية حسب العميل'),
+('ar', 'common.allProducts', 'جميع المنتجات'),
+('ar', 'common.filterByProduct', 'التصفية حسب المنتج'),
+('ar', 'common.productsWithOrders', 'المنتجات المطلوبة'),
+('ar', 'common.productsWithoutOrders', 'المنتجات غير المطلوبة'),
+('ar', 'common.filterByOrders', 'التصفية حسب الطلبات'),
+('ar', 'settings.title', 'الإعدادات'),
+('ar', 'settings.deliverySettings', 'إعدادات التوصيل'),
+('ar', 'settings.freeDeliveryThreshold', 'الحد الأدنى للتوصيل المجاني'),
+('ar', 'settings.deliveryAreas', 'مناطق التوصيل'),
+('ar', 'settings.addArea', 'إضافة منطقة'),
+('ar', 'settings.editArea', 'تعديل منطقة'),
+('ar', 'settings.areaName', 'اسم المنطقة'),
+('ar', 'settings.deliveryPrice', 'سعر التوصيل'),
+('ar', 'settings.confirmDeleteArea', 'هل أنت متأكد من حذف منطقة التوصيل هذه؟'),
+('ar', 'settings.deliveryArea', 'منطقة التوصيل'),
+('ar', 'settings.selectArea', 'اختر منطقة'),
+('ar', 'settings.delivery', 'التوصيل'),
+('ar', 'settings.messages', 'الرسائل'),
+('ar', 'settings.deliveryMessage', 'رسالة التوصيل'),
+('ar', 'settings.pickupMessage', 'رسالة الاستلام'),
+('ar', 'settings.areaUpdatedSuccess', 'تم تحديث المنطقة بنجاح'),
+('ar', 'settings.areaAddedSuccess', 'تم إضافة المنطقة بنجاح'),
+('ar', 'settings.areaSaveError', 'فشل في حفظ المنطقة'),
+('ar', 'settings.areaDeletedSuccess', 'تم حذف المنطقة بنجاح'),
+('ar', 'settings.areaDeleteError', 'فشل في حذف المنطقة'),
+('ar', 'settings.deliverySettingsSaved', 'تم حفظ إعدادات التوصيل'),
+('ar', 'settings.deliverySettingsError', 'فشل في حفظ إعدادات التوصيل'),
+('ar', 'settings.messagesSaved', 'تم حفظ الرسائل'),
+('ar', 'settings.messagesError', 'فشل في حفظ الرسائل'),
+('ar', 'productManagement.title', 'إدارة المنتجات'),
+('ar', 'productManagement.addProduct', 'إضافة منتج'),
+('ar', 'productManagement.editProduct', 'تعديل منتج'),
+('ar', 'productManagement.confirmDelete', 'هل أنت متأكد من حذف هذا المنتج؟'),
+('ar', 'productManagement.form.name', 'اسم المنتج'),
+('ar', 'productManagement.form.description', 'الوصف'),
+('ar', 'productManagement.form.price', 'السعر'),
+('ar', 'productManagement.form.category', 'الفئة'),
+('ar', 'productManagement.form.selectCategory', 'اختر فئة'),
+('ar', 'productManagement.form.stock', 'الكمية'),
+('ar', 'productManagement.form.images', 'الصور'),
+('ar', 'productManagement.form.primaryImage', 'الصورة الأساسية'),
+('ar', 'productManagement.form.galleryImages', 'صور المعرض'),
+('ar', 'productManagement.form.image', 'الصورة'),
+('ar', 'productManagement.form.variants', 'الخيارات'),
+('ar', 'productManagement.form.addVariant', 'إضافة خيار'),
+('ar', 'productManagement.form.variantName', 'اسم الخيار'),
+('ar', 'productManagement.form.totalStock', 'إجمالي المخزون'),
+('ar', 'productManagement.form.imagesSelected', '{{count}} صور مختارة'),
+('ar', 'productManagement.form.clickToUpload', 'انقر لتحميل الصور'),
+('ar', 'productManagement.form.draftName', 'منتج جديد (مسودة)'),
+('ar', 'productManagement.form.downloadAll', 'تحميل الكل'),
+('ar', 'productManagement.imageAlt', 'صورة المنتج'),
+('ar', 'productManagement.primaryBadge', 'الأساسية'),
+('ar', 'productManagement.tooltips.viewImage', 'عرض الصورة'),
+('ar', 'productManagement.tooltips.setAsPrimary', 'تعيين كأساسية'),
+('ar', 'productManagement.tooltips.downloadImage', 'تحميل الصورة'),
+('ar', 'productManagement.tooltips.removeImage', 'إزالة الصورة'),
+('ar', 'productManagement.actions.view', 'عرض'),
+('ar', 'productManagement.actions.setAsPrimary', 'تعيين كأساسية'),
+('ar', 'productManagement.actions.download', 'تحميل'),
+('ar', 'productManagement.actions.remove', 'إزالة'),
+('ar', 'productManagement.imagePreview', 'معاينة الصورة'),
+('ar', 'productManagement.tabs.details', 'التفاصيل'),
+('ar', 'productManagement.tabs.images', 'الصور'),
+('ar', 'productManagement.tabs.variants', 'الخيارات'),
+('ar', 'productManagement.saving', 'جاري الحفظ...');
+INSERT INTO translations (lang, key, value) VALUES
+('ar', 'productManagement.uploadingImages', 'جاري رفع الصور...'),
+('ar', 'productManagement.errors.fetch', 'فشل في تحميل المنتجات'),
+('ar', 'productManagement.errors.add', 'فشل في إضافة المنتج'),
+('ar', 'productManagement.errors.update', 'فشل في تحديث المنتج'),
+('ar', 'productManagement.errors.delete', 'فشل في حذف المنتج'),
+('ar', 'productManagement.errors.draftError', 'فشل في إنشاء مسودة المنتج'),
+('ar', 'productManagement.errors.uploadError', 'فشل في تحميل الصور'),
+('ar', 'productManagement.errors.addVariantError', 'فشل في إضافة الخيار'),
+('ar', 'productManagement.errors.updateVariantError', 'فشل في تحديث الخيار'),
+('ar', 'productManagement.errors.variantInUse', 'لا يمكن حذف الخيار لأنه مستخدم في طلب حالي.'),
+('ar', 'productManagement.errors.saveVariantFirst', 'يرجى حفظ الخيار أولاً'),
+('ar', 'productManagement.errors.variantNameRequired', 'اسم الخيار مطلوب'),
+('ar', 'productManagement.errors.downloadFailed', 'فشل التحميل'),
+('ar', 'productManagement.errors.noImagesToDownload', 'لا توجد صور للتحميل'),
+('ar', 'productManagement.errors.unexpected', 'حدث خطأ غير متوقع'),
+('ar', 'productManagement.notifications.productAdded', 'تم إضافة المنتج بنجاح'),
+('ar', 'productManagement.notifications.productUpdated', 'تم تحديث المنتج بنجاح'),
+('ar', 'productManagement.notifications.productDeleted', 'تم حذف المنتج بنجاح'),
+('ar', 'productManagement.notifications.variantAdded', 'تم إضافة الخيار بنجاح'),
+('ar', 'productManagement.notifications.variantUpdated', 'تم تحديث الخيار بنجاح'),
+('ar', 'productManagement.notifications.variantImageUploaded', 'تم رفع صورة الخيار بنجاح'),
+('ar', 'categoryManagement.title', 'إدارة الفئات'),
+('ar', 'categoryManagement.addCategory', 'إضافة فئة'),
+('ar', 'categoryManagement.editCategory', 'تعديل فئة'),
+('ar', 'categoryManagement.confirmDelete', 'هل أنت متأكد من حذف هذه الفئة؟'),
+('ar', 'categoryManagement.form.name', 'اسم الفئة'),
+('ar', 'categoryManagement.errors.fetch', 'فشل في تحميل الفئات'),
+('ar', 'categoryManagement.errors.add', 'فشل في إضافة الفئة'),
+('ar', 'categoryManagement.errors.update', 'فشل في تحديث الفئة'),
+('ar', 'categoryManagement.errors.delete', 'فشل في حذف الفئة'),
+('ar', 'categoryManagement.notifications.added', 'تم إضافة الفئة بنجاح'),
+('ar', 'categoryManagement.notifications.updated', 'تم تحديث الفئة بنجاح'),
+('ar', 'categoryManagement.notifications.deleted', 'تم حذف الفئة بنجاح'),
+('ar', 'admin.nav.products', 'المنتجات'),
+('ar', 'admin.nav.categories', 'الفئات'),
+('ar', 'admin.nav.customers', 'العملاء'),
+('ar', 'admin.nav.home', 'الرئيسية'),
+('ar', 'admin.nav.translations', 'الترجمات'),
+('ar', 'admin.translations.title', 'الترجمات'),
+('ar', 'admin.translations.loading', 'جاري تحميل الترجمات...'),
+('ar', 'admin.translations.key', 'المفتاح'),
+('ar', 'admin.translations.value', 'القيمة'),
+('ar', 'admin.translations.edit', 'تعديل'),
+('ar', 'admin.translations.editTitle', 'تعديل الترجمة'),
+('ar', 'admin.translations.save', 'حفظ'),
+('ar', 'admin.translations.saving', 'جاري الحفظ...'),
+('ar', 'admin.translations.cancel', 'إلغاء'),
+('ar', 'admin.translations.updateSuccess', 'تم تحديث الترجمة بنجاح'),
+('ar', 'admin.translations.updateError', 'فشل في تحديث الترجمة'),
+('ar', 'customerManagement.title', 'إدارة العملاء'),
+('ar', 'customerManagement.addCustomer', 'إضافة عميل'),
+('ar', 'customerManagement.editCustomer', 'تعديل عميل'),
+('ar', 'customerManagement.confirmDelete', 'هل أنت متأكد من حذف هذا العميل؟'),
+('ar', 'customerManagement.table.name', 'الاسم'),
+('ar', 'customerManagement.table.phone', 'رقم الهاتف'),
+('ar', 'customerManagement.table.town', 'المدينة'),
+('ar', 'customerManagement.table.address', 'العنوان'),
+('ar', 'customerManagement.form.name', 'الاسم'),
+('ar', 'customerManagement.form.phone', 'رقم الهاتف'),
+('ar', 'customerManagement.form.town', 'المدينة'),
+('ar', 'customerManagement.form.addressHome', 'المنزل'),
+('ar', 'customerManagement.form.addressRoad', 'الطريق'),
+('ar', 'customerManagement.form.addressBlock', 'المجمع'),
+('ar', 'customerManagement.form.address', 'العنوان'),
+('ar', 'customerManagement.form.phoneHint', 'يجب أن يتكون رقم الهاتف من 8 أرقام'),
+('ar', 'customerManagement.form.phoneValidationError', 'لم يستوفِ رقم الهاتف متطلبات الطول'),
+('ar', 'customerManagement.errors.fetch', 'فشل في تحميل العملاء'),
+('ar', 'customerManagement.errors.submit', 'فشل في حفظ العميل'),
+('ar', 'customerManagement.errors.delete', 'فشل في حذف العميل'),
+('ar', 'customerManagement.notifications.added', 'تم إضافة العميل بنجاح'),
+('ar', 'customerManagement.notifications.updated', 'تم تحديث العميل بنجاح'),
+('ar', 'customerManagement.notifications.deleted', 'تم حذف العميل بنجاح'),
+('ar', 'orderManagement.title', 'إدارة الطلبات'),
+('ar', 'orderManagement.addOrder', 'إضافة طلب'),
+('ar', 'orderManagement.editOrder', 'تعديل طلب'),
+('ar', 'orderManagement.confirmDelete', 'هل أنت متأكد من حذف هذا الطلب؟'),
+('ar', 'orderManagement.table.orderId', 'رقم الطلب'),
+('ar', 'orderManagement.table.customer', 'العميل'),
+('ar', 'orderManagement.table.status', 'الحالة'),
+('ar', 'orderManagement.table.shippingMethod', 'طريقة الشحن'),
+('ar', 'orderManagement.table.total', 'المجموع'),
+('ar', 'orderManagement.table.date', 'التاريخ'),
+('ar', 'orderManagement.form.customer', 'العميل'),
+('ar', 'orderManagement.form.selectCustomer', 'اختر عميل'),
+('ar', 'orderManagement.form.products', 'المنتجات'),
+('ar', 'orderManagement.form.addProduct', 'إضافة منتج'),
+('ar', 'orderManagement.form.shippingMethod', 'طريقة الشحن'),
+('ar', 'orderManagement.form.selectShippingMethod', 'اختر طريقة الشحن'),
+('ar', 'orderManagement.form.status', 'الحالة'),
+('ar', 'orderManagement.form.selectStatus', 'اختر الحالة'),
+('ar', 'orderManagement.form.comments', 'ملاحظات'),
+('ar', 'orderManagement.form.orderItems', 'عناصر الطلب'),
+('ar', 'orderManagement.form.noVariants', 'لا توجد خيارات'),
+('ar', 'orderManagement.form.selectProduct', 'اختر منتج'),
+('ar', 'orderManagement.form.selectVariant', 'اختر خيار'),
+('ar', 'orderManagement.form.productNotFound', 'المنتج غير موجود'),
+('ar', 'orderManagement.form.total', 'المجموع'),
+('ar', 'orderManagement.form.subtotal', 'المجموع الفرعي'),
+('ar', 'orderManagement.form.freeDeliveryApplied', 'تم تطبيق التوصيل المجاني'),
+('ar', 'orderManagement.form.unitPrice', 'سعر الوحدة'),
+('ar', 'orderManagement.form.quantity', 'الكمية'),
+('ar', 'orderManagement.freeDeliveryApplied', 'تم تطبيق التوصيل المجاني'),
+('ar', 'orderManagement.status.processing', 'قيد المعالجة'),
+('ar', 'orderManagement.status.ready', 'جاهز'),
+('ar', 'orderManagement.status.shipped', 'تم الشحن'),
+('ar', 'orderManagement.status.delivered', 'تم التوصيل'),
+('ar', 'orderManagement.status.cancelled', 'تم الإلغاء'),
+('ar', 'orderManagement.shipping.delivery', 'توصيل'),
+('ar', 'orderManagement.shipping.pick_up', 'استلام'),
+('ar', 'orderManagement.errors.fetch', 'فشل في تحميل الطلبات'),
+('ar', 'orderManagement.errors.submit', 'فشل في حفظ الطلب'),
+('ar', 'orderManagement.errors.freeDeliveryApplied', 'تم تطبيق التوصيل المجاني');

@@ -14,10 +14,30 @@ export const DataProvider = ({ children }) => {
   const [customers, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [deliveryAreas, setDeliveryAreas] = useState([]);
-  const [appSettings, setAppSettings] = useState({});
+  const [appSettings, setAppSettings] = useState([]);
   const [translations, setTranslations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const updateI18nResources = (translationsData) => {
+    const resources = {
+      ar: { translation: {} },
+    };
+    translationsData.forEach(t => {
+      const keys = t.key.split('.');
+      let currentLevel = resources.ar.translation;
+      keys.forEach((key, index) => {
+        if (index === keys.length - 1) {
+          currentLevel[key] = t.value;
+        } else {
+          currentLevel[key] = currentLevel[key] || {};
+          currentLevel = currentLevel[key];
+        }
+      });
+    });
+    i18n.addResourceBundle('ar', 'translation', resources.ar.translation, true, true);
+    i18n.changeLanguage('ar');
+  };
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -33,27 +53,7 @@ export const DataProvider = ({ children }) => {
       setProducts(productsRes.data);
       setCategories(categoriesRes);
       setTranslations(translationsRes);
-
-      // Update i18n resources
-      const resources = {
-        en: { translation: {} },
-        ar: { translation: {} },
-      };
-      translationsRes.forEach(t => {
-        const keys = t.key.split('.');
-        let currentLevel = resources[t.lang].translation;
-        keys.forEach((key, index) => {
-          if (index === keys.length - 1) {
-            currentLevel[key] = t.value;
-          } else {
-            currentLevel[key] = currentLevel[key] || {};
-            currentLevel = currentLevel[key];
-          }
-        });
-      });
-      i18n.addResourceBundle('en', 'translation', resources.en.translation);
-      i18n.addResourceBundle('ar', 'translation', resources.ar.translation);
-
+      updateI18nResources(translationsRes);
 
       if (token) {
         const [customersRes, ordersRes, deliveryAreasRes, appSettingsRes] = await Promise.all([
@@ -160,7 +160,7 @@ export const DataProvider = ({ children }) => {
   const updateTranslation = (updatedTranslation) => {
     setTranslations(prev => {
       const newTranslations = prev.map(t => t.id === updatedTranslation.id ? updatedTranslation : t);
-      fetchData(); // Refetch to update i18n
+      updateI18nResources(newTranslations);
       return newTranslations;
     });
   };
@@ -168,7 +168,7 @@ export const DataProvider = ({ children }) => {
   const addTranslation = (translation) => {
     setTranslations(prev => {
       const newTranslations = [translation, ...prev];
-      fetchData(); // Refetch to update i18n
+      updateI18nResources(newTranslations);
       return newTranslations;
     });
   };
