@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
 import { DataContext } from '../../context/DataContext';
 import Modal from '../../components/Modal';
-import { Edit3, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import LoadingScreen from '../../components/LoadingScreen';
 import Dropdown from '../../components/Dropdown';
+import TranslationCard from './TranslationCard';
 
 const Translations = () => {
   const { t } = useTranslation();
@@ -103,40 +104,14 @@ const Translations = () => {
           placeholder={t('admin.translations.filterByLanguage')}
         />
       </div>
-      <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-        <table className="min-w-full leading-normal">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                {t('admin.translations.key')}
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                {t('admin.translations.value')}
-              </th>
-              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredTranslations.map((translation) => (
-              <tr key={translation.id} className="hover:bg-gray-50 transition-colors duration-200">
-                <td className="px-6 py-4 border-b border-gray-200 text-sm">{translation.key}</td>
-                <td className="px-6 py-4 border-b border-gray-200 text-sm">{translation.value}</td>
-                <td className="px-6 py-4 border-b border-gray-200 text-sm text-right">
-                  <button
-                    onClick={() => handleEditClick(translation)}
-                    className="text-brand-purple hover:text-brand-purple/80 p-2 rounded-full transition-colors duration-200"
-                  >
-                    <Edit3 size={16} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {filteredTranslations.map((translation) => (
+          <TranslationCard key={translation.id} translation={translation} onEdit={handleEditClick} />
+        ))}
       </div>
 
-      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title={t('admin.translations.editTitle')}>
-        <div className="space-y-4">
+      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title={t('admin.translations.editTitle')} maxWidth="max-w-md">
+        <div className="space-y-4 p-2">
           <p className="text-sm text-gray-600 font-medium">{selectedTranslation?.key}</p>
           <textarea
             value={newTranslation.value}
@@ -162,14 +137,13 @@ const Translations = () => {
         </div>
       </Modal>
 
-      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title={t('admin.translations.addTitle')}>
-        <div className="space-y-4">
+      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title={t('admin.translations.addTitle')} maxWidth="max-w-md">
+        <div className="space-y-4 p-2">
           <Dropdown
             options={translationKeys.map((key) => ({ value: key, label: key }))}
             value={newTranslation.key}
             onChange={(option) => setNewTranslation({ ...newTranslation, key: option.value })}
             placeholder={t('admin.translations.key')}
-            isSearchable={true}
           />
           <textarea
             placeholder={t('admin.translations.value')}
