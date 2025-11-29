@@ -64,10 +64,10 @@ const StoreFront = () => {
           {/* Buttons */}
           <div className="flex items-center gap-4">
             {/* Instagram */}
-            <button className="inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200">
+            <a href="https://www.instagram.com/azharstore" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200">
               <span className="text-sm font-medium">Instagram</span>
               <Instagram className="h-4 w-4" />
-            </button>
+            </a>
 
 
             {/* Cart */}

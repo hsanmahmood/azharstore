@@ -27,6 +27,7 @@ const Settings = () => {
   const [freeDeliveryThreshold, setFreeDeliveryThreshold] = useState('');
   const [deliveryMessage, setDeliveryMessage] = useState('');
   const [pickupMessage, setPickupMessage] = useState('');
+  const [deliveryPassword, setDeliveryPassword] = useState('');
 
   useEffect(() => {
     if (appSettings) {
@@ -34,7 +35,16 @@ const Settings = () => {
       setDeliveryMessage(appSettings.delivery_message || '');
       setPickupMessage(appSettings.pickup_message || '');
     }
-  }, [appSettings]);
+    const fetchDeliveryPassword = async () => {
+      try {
+        const response = await apiService.getDeliveryPassword();
+        setDeliveryPassword(response.data.password);
+      } catch (error) {
+        notify('Failed to fetch delivery password', 'error');
+      }
+    };
+    fetchDeliveryPassword();
+  }, [appSettings, notify]);
 
   const openModal = (area = null) => {
     setEditingArea(area);
@@ -68,6 +78,18 @@ const Settings = () => {
       closeModal();
     } catch (err) {
       notify(t('settings.areaSaveError'), 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSystemSettingsSave = async () => {
+    setIsSubmitting(true);
+    try {
+      await apiService.updateDeliveryPassword({ password: deliveryPassword });
+      notify('Delivery password updated successfully');
+    } catch (err) {
+      notify('Failed to update delivery password', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -147,6 +169,7 @@ const Settings = () => {
         <nav className="flex space-x-4">
           <TabButton tabName="delivery" label={t('settings.delivery')} />
           <TabButton tabName="messages" label={t('settings.messages')} />
+          <TabButton tabName="system" label={t('settings.system')} />
         </nav>
       </div>
 
@@ -223,6 +246,31 @@ const Settings = () => {
             >
               {isSubmitting ? <Loader2 className="animate-spin" /> : t('common.saveChanges')}
             </button>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'system' && (
+        <div>
+          <div className="bg-card-background border border-soft-border rounded-20 p-6 mb-8">
+            <h2 className="text-2xl font-bold text-text-dark mb-4">{t('settings.deliveryPassword')}</h2>
+            <div className="flex items-center gap-4">
+              <label htmlFor="deliveryPassword" className="text-text-light">{t('settings.newPassword')}</label>
+              <input
+                id="deliveryPassword"
+                type="password"
+                value={deliveryPassword}
+                onChange={(e) => setDeliveryPassword(e.target.value)}
+                className="w-60 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
+              />
+              <button
+                onClick={handleSystemSettingsSave}
+                className="bg-brand-purple text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all duration-200"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? <Loader2 className="animate-spin" /> : t('common.save')}
+              </button>
+            </div>
           </div>
         </div>
       )}

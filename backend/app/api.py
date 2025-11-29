@@ -4,7 +4,7 @@ from supabase import Client
 import secrets
 import uuid
 
-from . import services, schemas, customer_services
+from . import services, schemas, customer_services, delivery_services
 from .config import settings
 from .supabase_client import get_supabase_client
 
@@ -291,3 +291,23 @@ main_router.include_router(router)
 main_router.include_router(admin_router)
 main_router.include_router(customers_router)
 main_router.include_router(orders_router)
+
+delivery_router = APIRouter(prefix="/api/delivery")
+
+@delivery_router.post("/login", response_model=schemas.Token, tags=["Delivery - Authentication"])
+def delivery_login(form_data: schemas.DeliveryLoginRequest, supabase: Client = Depends(get_supabase_client)):
+    return delivery_services.login(delivery_login=form_data, supabase=supabase)
+
+@delivery_router.get("/orders", response_model=List[schemas.Order], tags=["Delivery - Orders"], dependencies=[Depends(services.get_current_admin_user)])
+def delivery_list_orders(supabase: Client = Depends(get_supabase_client)):
+    return services.get_orders(supabase=supabase)
+
+@admin_router.get("/system/delivery-password", response_model=dict, tags=["Admin - System"])
+def get_delivery_password(supabase: Client = Depends(get_supabase_client)):
+    return delivery_services.get_delivery_password(supabase=supabase)
+
+@admin_router.patch("/system/delivery-password", response_model=dict, tags=["Admin - System"])
+def update_delivery_password(password_data: schemas.DeliveryPasswordUpdate, supabase: Client = Depends(get_supabase_client)):
+    return delivery_services.update_delivery_password(password_data=password_data, supabase=supabase)
+
+main_router.include_router(delivery_router)

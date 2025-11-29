@@ -7,11 +7,9 @@ import MobileAdminSidebar from '../components/MobileAdminSidebar';
 import { SearchProvider } from '../../../context/SearchContext';
 import { NotificationProvider } from '../../../context/NotificationContext';
 import { Toaster } from 'react-hot-toast';
-import useLanguageInitializer from '../../../hooks/useLanguageInitializer';
 import LoadingScreen from '../../../components/common/LoadingScreen';
 
 const AdminLayoutContent = () => {
-  useLanguageInitializer();
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();

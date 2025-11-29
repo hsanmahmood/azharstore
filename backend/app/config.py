@@ -21,10 +21,10 @@ essential_origins = {
     "http://localhost:5173",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:5173",
-    "https://beta.azhar.store",
     "https://az-rosy.vercel.app",
     "https://azhar.store",
     "https://admin.azhar.store",
+    "https://orders.azhar.store",
 }
 
 additional_origins = {origin.strip() for origin in settings.CORS_ORIGINS.split(",") if origin.strip()}

@@ -10,6 +10,9 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 *.local
 
 # Editor directories and files

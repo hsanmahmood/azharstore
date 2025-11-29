@@ -101,6 +101,12 @@ class Customer(BaseModel):
     address_road: Optional[str] = None
     address_block: Optional[str] = None
 
+class DeliveryLoginRequest(BaseModel):
+    password: str
+
+class DeliveryPasswordUpdate(BaseModel):
+    password: str
+
 class DeliveryArea(BaseModel):
     id: int
     name: str

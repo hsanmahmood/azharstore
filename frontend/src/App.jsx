@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { DataContext } from './context/DataContext';
 import { useLoading } from './context/LoadingContext';
 import StoreFront from './features/storefront/pages/StoreFront';
 import ProductDetail from './features/storefront/pages/ProductDetail';
@@ -15,11 +16,15 @@ import OrderManagement from './features/admin/pages/OrderManagement';
 import Settings from './features/admin/pages/Settings';
 import Translations from './features/admin/pages/Translations';
 import LoadingScreen from './components/common/LoadingScreen';
+import DeliveryLogin from './features/delivery/pages/DeliveryLogin';
+import DeliveryLayout from './features/delivery/pages/DeliveryLayout';
+import DeliveryOrderManagement from './features/delivery/pages/DeliveryOrderManagement';
+import { DeliveryAuthProvider } from './context/deliveryAuth.jsx';
 
 const App = () => {
   const { token } = useContext(AuthContext);
+  const { isLoading: isDataLoading } = useContext(DataContext);
   const location = useLocation();
-  const { isLoading } = useLoading();
 
   const isAdminSite = React.useMemo(() => {
     return (
@@ -29,11 +34,25 @@ const App = () => {
     );
   }, [location.pathname]);
 
-  useEffect(() => {
-    document.title = isAdminSite ? 'AzharStore Admin' : 'AzharStore';
-  }, [location, isAdminSite]);
+  const isDeliverySite = React.useMemo(() => {
+    return (
+      window.location.hostname.startsWith('orders') ||
+      (window.location.hostname.includes('localhost') && location.pathname.startsWith('/orders')) ||
+      (window.location.hostname.includes('127.0.0.1') && location.pathname.startsWith('/orders'))
+    );
+  }, [location.pathname]);
 
-  if (isLoading) {
+  useEffect(() => {
+    if (isAdminSite) {
+      document.title = 'AzharStore Admin';
+    } else if (isDeliverySite) {
+      document.title = 'AzharStore Delivery';
+    } else {
+      document.title = 'AzharStore';
+    }
+  }, [location, isAdminSite, isDeliverySite]);
+
+  if (isDataLoading) {
     return <LoadingScreen />;
   }
 
@@ -71,6 +90,24 @@ const App = () => {
           <Route path="*" element={<Navigate to="/admin" />} />
         </Routes>
       </div>
+    );
+  }
+
+  if (isDeliverySite) {
+    return (
+      <DeliveryAuthProvider>
+        <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col">
+          <Routes>
+            <Route path="/orders/login" element={<DeliveryLogin />} />
+            <Route path="/orders" element={<ProtectedRoute />}>
+              <Route element={<DeliveryLayout />}>
+                <Route index element={<DeliveryOrderManagement />} />
+              </Route>
+            </Route>
+            <Route path="*" element={<Navigate to="/orders" />} />
+          </Routes>
+        </div>
+      </DeliveryAuthProvider>
     );
   }
 
