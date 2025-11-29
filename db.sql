@@ -7,6 +7,21 @@ CREATE TABLE IF NOT EXISTS translations (
     UNIQUE (lang, key)
 );
 
+-- Insert new translations for the add/edit modal
+INSERT INTO translations (lang, key, value) VALUES
+('en', 'admin.translations.addTitle', 'Add New Translation'),
+('ar', 'admin.translations.addTitle', 'إضافة ترجمة جديدة'),
+('en', 'admin.translations.add', 'Add'),
+('ar', 'admin.translations.add', 'إضافة'),
+('en', 'admin.translations.adding', 'Adding...'),
+('ar', 'admin.translations.adding', 'جاري الإضافة...'),
+('en', 'admin.translations.addSuccess', 'Translation added successfully'),
+('ar', 'admin.translations.addSuccess', 'تمت إضافة الترجمة بنجاح'),
+('en', 'admin.translations.addError', 'Failed to add translation'),
+('ar', 'admin.translations.addError', 'فشل في إضافة الترجمة'),
+('en', 'admin.translations.searchPlaceholder', 'Search translations...'),
+('ar', 'admin.translations.searchPlaceholder', 'ابحث في الترجمات...');
+
 INSERT INTO translations (lang, key, value) VALUES ('ar', 'Login', 'تسجيل الدخول');
 INSERT INTO translations (lang, key, value) VALUES ('ar', 'Logout', 'تسجيل الخروج');
 INSERT INTO translations (lang, key, value) VALUES ('ar', 'Dashboard', 'لوحة التحكم');

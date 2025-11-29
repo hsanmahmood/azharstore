@@ -35,11 +35,11 @@ const Translations = () => {
     onSuccess: (data) => {
       addTranslation(data.data);
       queryClient.invalidateQueries('translations');
-      toast.success('Translation added successfully');
+      toast.success(t('admin.translations.addSuccess'));
       setIsAddModalOpen(false);
     },
     onError: () => {
-      toast.error('Failed to add translation');
+      toast.error(t('admin.translations.addError'));
     },
   });
 
@@ -74,7 +74,7 @@ const Translations = () => {
           className="flex items-center gap-2 bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
         >
           <PlusCircle size={20} className="mr-2" />
-          Add Translation
+          {t('admin.translations.add')}
         </button>
       </div>
       <div className="mb-8">
@@ -82,7 +82,7 @@ const Translations = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
           <input
             type="text"
-            placeholder="Search translations..."
+            placeholder={t('admin.translations.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-white border border-soft-border text-text-dark p-3 pl-12 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
@@ -112,8 +112,7 @@ const Translations = () => {
                     onClick={() => handleEditClick(translation)}
                     className="text-brand-purple hover:text-brand-purple/80 font-semibold py-2 px-4 rounded-full transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center"
                   >
-                    <Edit3 size={16} className="mr-2" />
-                    {t('admin.translations.edit')}
+                    <Edit3 size={16} />
                   </button>
                 </td>
               </tr>
@@ -149,17 +148,17 @@ const Translations = () => {
         </div>
       </Modal>
 
-      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Add New Translation">
+      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title={t('admin.translations.addTitle')}>
         <div className="space-y-4">
           <input
             type="text"
-            placeholder="Key"
+            placeholder={t('admin.translations.key')}
             value={newTranslation.key}
             onChange={(e) => setNewTranslation({ ...newTranslation, key: e.target.value })}
             className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
           />
           <textarea
-            placeholder="Value"
+            placeholder={t('admin.translations.value')}
             value={newTranslation.value}
             onChange={(e) => setNewTranslation({ ...newTranslation, value: e.target.value })}
             className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
@@ -178,7 +177,7 @@ const Translations = () => {
             disabled={createMutation.isLoading}
             className="bg-brand-primary hover:bg-opacity-90 text-brand-background font-bold py-2.5 px-5 rounded-lg transition-colors transform active:scale-95 flex items-center justify-center min-w-[120px]"
           >
-            {createMutation.isLoading ? 'Adding...' : 'Add'}
+            {createMutation.isLoading ? t('admin.translations.adding') : t('admin.translations.add')}
           </button>
         </div>
       </Modal>
