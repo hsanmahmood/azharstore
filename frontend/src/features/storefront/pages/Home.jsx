@@ -10,9 +10,7 @@ const Home = () => {
     <div dir="rtl" className="flex-1">
       <section className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 py-16 sm:py-24">
         <div className="text-center mb-16">
-          <h1 className="text-4xl sm:text-6xl font-bold text-white mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
-            AzharStore
-          </h1>
+          <img src="/logo.webp" alt="AzharStore Logo" className="h-24 mx-auto mb-6" />
           <p className="text-xl text-brand-gray max-w-2xl mx-auto">
             منصة التجارة الإلكترونية الحديثة
           </p>
@@ -47,6 +45,12 @@ const Home = () => {
           </Link>
         </div>
       </section>
+      <footer className="bg-black/20 border-t border-brand-border py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+          <img src="/logo.webp" alt="AzharStore Logo" className="h-12 mx-auto mb-4" />
+          <p className="text-brand-secondary text-sm">&copy; {new Date().getFullYear()} AzharStore. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 };

@@ -56,7 +56,7 @@ const AdminLayoutContent = () => {
       <div className="flex flex-col h-full">
         <div className="flex items-center justify-between p-4 mb-4 border-b border-soft-border">
           <div className={`transition-all duration-300 ${!isOpen ? 'opacity-0 w-0' : 'opacity-100'}`}>
-            <span className="text-lg font-bold text-text-dark">AzharStore</span>
+            <img src="/logo.webp" alt="AzharStore Logo" className="h-8" />
           </div>
         </div>
 

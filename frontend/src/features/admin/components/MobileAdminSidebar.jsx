@@ -18,7 +18,7 @@ const MobileAdminSidebar = ({ isOpen, onClose, navLinks, handleLogout }) => {
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-4 mb-4 border-b border-brand-border/50">
-            <span className="text-lg font-bold">AzharStore</span>
+            <img src="/logo.webp" alt="AzharStore Logo" className="h-8" />
             <button onClick={onClose} className="text-brand-secondary hover:text-brand-primary">
               <X size={24} />
             </button>
