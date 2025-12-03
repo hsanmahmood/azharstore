@@ -52,7 +52,7 @@ const StoreFront = () => {
   return (
     <div className="min-h-screen bg-primary-background">
       {/* Header */}
-      <header className="border-b bg-white shadow-sm sticky top-0 z-50">
+      <header className="border-b border-gray-200 bg-white shadow-sm sticky top-0 z-50">
         <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center min-w-0 flex-1">
@@ -87,7 +87,7 @@ const StoreFront = () => {
       <CartView isOpen={isCartViewOpen} onClose={() => setIsCartViewOpen(false)} />
 
       {/* Search + Categories */}
-      <div className="border-b bg-gray-50/50">
+      <div className="border-b border-gray-200">
         <div className="container mx-auto px-3 py-6 space-y-4">
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto w-full relative">
@@ -134,7 +134,7 @@ const StoreFront = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-soft-border mt-12 py-6">
+      <footer className="bg-white border-t border-gray-200 mt-12 py-6">
         <div className="container mx-auto px-4 text-center text-text-light text-sm">
           <p>{t('common.footer')}</p>
         </div>
