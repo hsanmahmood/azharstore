@@ -12,7 +12,7 @@ const Home = () => {
       <header className="bg-black/20 border-b border-brand-border py-4">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex justify-between items-center">
           <Link to="/">
-            <img src="/logo.jpeg" alt="AzharStore Logo" className="h-12" />
+            <img src="/logo.png" alt="AzharStore Logo" className="h-12" />
           </Link>
         </div>
       </header>
@@ -20,9 +20,7 @@ const Home = () => {
       <main className="flex-1">
         <section className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 py-16 sm:py-24">
           <div className="text-center mb-16">
-            <h1 className="text-4xl sm:text-6xl font-bold text-white mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
-              أهلاً بك في AzharStore
-            </h1>
+            <img src="/logo.png" alt="AzharStore Logo" className="h-24 mx-auto mb-6" />
             <p className="text-xl text-brand-gray max-w-2xl mx-auto">
               منصة التجارة الإلكترونية الحديثة
             </p>
