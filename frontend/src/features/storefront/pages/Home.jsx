@@ -12,7 +12,7 @@ const Home = () => {
       <header className="bg-black/20 border-b border-brand-border py-4">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex justify-between items-center">
           <Link to="/">
-            <img src="/logo.jpeg" alt="AzharStore Logo" className="h-12" />
+            <img src="/logo.png" alt="AzharStore Logo" className="h-12" />
           </Link>
         </div>
       </header>

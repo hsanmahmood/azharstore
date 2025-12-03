@@ -11,7 +11,7 @@ const TranslationCard = ({ translation, onEdit }) => {
     <div className={cardClasses}>
       <div className="flex flex-col h-full">
         <div className="flex justify-between items-start gap-4">
-          <h3 className="text-sm font-medium text-text-light flex-1 break-words min-w-0">{translation.key}</h3>
+          <h3 className="text-sm font-medium text-text-light flex-1 truncate">{translation.key}</h3>
           <div className="flex items-center gap-3 flex-shrink-0">
             <button onClick={() => onEdit(translation)} className="text-text-light hover:text-brand-purple transition-colors">
               <Edit size={18} />
