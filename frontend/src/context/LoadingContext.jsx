@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useCallback } from 'react';
 
 export const LoadingContext = createContext({
   isLoading: true,
@@ -9,8 +9,8 @@ export const LoadingContext = createContext({
 export const LoadingProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
-  const showLoading = () => setIsLoading(true);
-  const hideLoading = () => setIsLoading(false);
+  const showLoading = useCallback(() => setIsLoading(true), []);
+  const hideLoading = useCallback(() => setIsLoading(false), []);
 
   const value = { isLoading, showLoading, hideLoading };
 

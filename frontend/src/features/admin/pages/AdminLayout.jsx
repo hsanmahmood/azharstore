@@ -7,6 +7,7 @@ import MobileAdminSidebar from '../components/MobileAdminSidebar';
 import { SearchProvider } from '../../../context/SearchContext';
 import { NotificationProvider } from '../../../context/NotificationContext';
 import { Toaster } from 'react-hot-toast';
+import { useLoading } from '../../../context/LoadingContext';
 import LoadingScreen from '../../../components/common/LoadingScreen';
 
 const AdminLayoutContent = () => {
@@ -14,6 +15,7 @@ const AdminLayoutContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
+  const { isLoading } = useLoading();
   const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -98,6 +100,10 @@ const AdminLayoutContent = () => {
       </div>
     );
   };
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div dir="rtl" className="flex h-screen bg-primary-background text-text-dark font-arabic">
