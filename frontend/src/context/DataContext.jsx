@@ -16,7 +16,6 @@ export const DataProvider = ({ children }) => {
   const [deliveryAreas, setDeliveryAreas] = useState([]);
   const [appSettings, setAppSettings] = useState([]);
   const [translations, setTranslations] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
   const updateI18nResources = (translationsData) => {
@@ -40,7 +39,6 @@ export const DataProvider = ({ children }) => {
   };
 
   const fetchData = useCallback(async () => {
-    setIsLoading(true);
     showLoading();
     try {
       const publicDataPromises = [
@@ -84,7 +82,6 @@ export const DataProvider = ({ children }) => {
         setError('An unexpected error occurred.');
       }
     } finally {
-      setIsLoading(false);
       hideLoading();
     }
   }, [token, showLoading, hideLoading]);
@@ -188,7 +185,6 @@ export const DataProvider = ({ children }) => {
     setAppSettings,
     translations,
     setTranslations,
-    isLoading,
     error,
     refreshData: fetchData,
     addProduct,

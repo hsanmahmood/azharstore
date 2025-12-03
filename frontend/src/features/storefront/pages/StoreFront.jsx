@@ -4,12 +4,14 @@ import CategorySlider from '../../../components/product/CategorySlider';
 import ProductGrid from '../../../components/product/ProductGrid';
 import { DataContext } from '../../../context/DataContext';
 import { useCart } from '../../../context/CartContext';
+import { useLoading } from '../../../context/LoadingContext';
 import CartView from '../../../components/layout/CartView';
-import LoadingScreen from '../../../components/common/LoadingScreen';
+import LoadingScreen from '../../../components-common/LoadingScreen';
 import { useTranslation } from 'react-i18next';
 
 const StoreFront = () => {
-  const { products, categories, isLoading } = useContext(DataContext);
+  const { products, categories } = useContext(DataContext);
+  const { isLoading } = useLoading();
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
