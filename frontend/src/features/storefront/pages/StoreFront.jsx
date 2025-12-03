@@ -56,9 +56,7 @@ const StoreFront = () => {
         <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center min-w-0 flex-1">
-            <div className="bg-brand-purple text-white px-4 py-2 rounded-lg font-bold text-xl h-20 flex items-center">
-              {t('common.storeName')}
-            </div>
+            <img src="/logo.png" alt="AzharStore Logo" className="h-16" />
           </div>
 
           {/* Buttons */}
