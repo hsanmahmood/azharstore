@@ -7,7 +7,7 @@ import i18n from '../i18n/config';
 export const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
-  const { token } = useContext(AuthContext);
+  const { token, isLoading: isAuthLoading } = useContext(AuthContext);
   const { showLoading, hideLoading } = useLoading();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -87,8 +87,10 @@ export const DataProvider = ({ children }) => {
   }, [token, showLoading, hideLoading]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (!isAuthLoading) {
+      fetchData();
+    }
+  }, [fetchData, isAuthLoading]);
 
   const addProduct = (product) => {
     setProducts(prev => [product, ...prev]);

@@ -8,7 +8,7 @@ const LoadingScreen = ({ fullScreen = true }) => {
   return (
     <div className={wrapperClasses}>
       <div className="flex flex-col items-center gap-4">
-        <img src="/logo.png" alt="Loading..." className="h-24 w-24 mb-4" />
+        <img src="/logo.png" alt="Loading..." className="h-32 object-contain mb-4" />
         <div className="h-16 w-16 rounded-full border-4 border-brand-border border-t-brand-primary animate-spin"></div>
       </div>
     </div>
