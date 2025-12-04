@@ -13,6 +13,7 @@ import Dropdown from '../../../components/common/Dropdown';
 import { DataContext } from '../../../context/DataContext';
 import { SearchContext } from '../../../context/SearchContext';
 import { useNotifier } from '../../../context/NotificationContext';
+import Pagination from '../../../components/common/Pagination';
 
 const OrderManagement = () => {
   const { t } = useTranslation();
@@ -27,6 +28,8 @@ const OrderManagement = () => {
   const [viewingOrder, setViewingOrder] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [deletingOrderId, setDeletingOrderId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
   const updateOrderState = (updatedOrder) => {
     updateOrder(updatedOrder);
@@ -92,6 +95,9 @@ const OrderManagement = () => {
     return searchMatch && customerMatch && productMatch;
   });
 
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const paginatedOrders = filteredOrders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
@@ -128,7 +134,7 @@ const OrderManagement = () => {
       {dataError && <div className="text-red-500">{dataError}</div>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredOrders.map((order) => (
+        {paginatedOrders.map((order) => (
           <OrderCard
             key={order.id}
             order={order}
@@ -138,6 +144,12 @@ const OrderManagement = () => {
           />
         ))}
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
 
       <Modal
         isOpen={isModalOpen}

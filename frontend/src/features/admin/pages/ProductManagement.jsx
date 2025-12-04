@@ -15,7 +15,9 @@ import ImageUploader from '../../../components/forms/ImageUploader';
 import ProductImage from '../../../components/product/ProductImage';
 import ImageLightbox from '../../../components/modals/ImageLightbox';
 import JSZip from 'jszip';
+import NumberInput from '../../../components/forms/NumberInput';
 import { saveAs } from 'file-saver';
+import Pagination from '../../../components/common/Pagination';
 
 
 const ProductManagement = () => {
@@ -45,6 +47,8 @@ const ProductManagement = () => {
   const [activeTab, setActiveTab] = useState('details');
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImageUrl, setLightboxImageUrl] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
 
   const initialFormState = {
@@ -444,6 +448,9 @@ const ProductManagement = () => {
     return searchMatch && categoryMatch && orderMatch;
   });
 
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
@@ -488,7 +495,7 @@ const ProductManagement = () => {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredProducts.map((product) => (
+        {paginatedProducts.map((product) => (
           <ProductCard
             key={product.id}
             product={product}
@@ -497,6 +504,12 @@ const ProductManagement = () => {
           />
         ))}
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
 
       <Modal
         isOpen={isModalOpen}
@@ -581,12 +594,11 @@ const ProductManagement = () => {
                     {t('productManagement.form.price')}
                   </label>
                   <div className="relative">
-                    <input
-                      type="number"
+                    <NumberInput
                       step="0.01"
                       name="price"
                       value={formData.price}
-                      onChange={handleFormChange}
+                      onChange={(value) => setFormData(prev => ({ ...prev, price: value }))}
                       required
                       className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 pl-12 placeholder-text-light"
                     />
@@ -600,11 +612,10 @@ const ProductManagement = () => {
                   <label className="block text-sm font-medium text-text-light mb-2">
                     {t('productManagement.form.stock')}
                   </label>
-                  <input
-                    type="number"
+                  <NumberInput
                     name="stock_quantity"
                     value={formData.stock_quantity}
-                    onChange={handleFormChange}
+                    onChange={(value) => setFormData(prev => ({ ...prev, stock_quantity: value }))}
                     className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
                     disabled={variants.length > 0}
                   />
@@ -687,11 +698,10 @@ const ProductManagement = () => {
                       onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
                       className="flex-1 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
                     />
-                    <input
-                      type="number"
+                    <NumberInput
                       placeholder={t('productManagement.form.stock')}
                       value={variant.stock_quantity}
-                      onChange={(e) => handleVariantChange(index, 'stock_quantity', e.target.value === '' ? '' : parseInt(e.target.value))}
+                      onChange={(value) => handleVariantChange(index, 'stock_quantity', value)}
                       className="w-32 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
                     />
                     <div className="w-28 flex justify-center items-center gap-2">
