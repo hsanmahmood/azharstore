@@ -302,12 +302,19 @@ def delivery_login(form_data: schemas.DeliveryLoginRequest, supabase: Client = D
 def delivery_list_orders(supabase: Client = Depends(get_supabase_client)):
     return services.get_orders(supabase=supabase)
 
-@admin_router.get("/system/delivery-password", response_model=dict, tags=["Admin - System"])
+system_router = APIRouter(
+    prefix="/api/admin/system",
+    dependencies=[Depends(services.get_current_admin_user)],
+    tags=["Admin - System"]
+)
+
+@system_router.get("/delivery-password", response_model=dict)
 def get_delivery_password(supabase: Client = Depends(get_supabase_client)):
     return delivery_services.get_delivery_password(supabase=supabase)
 
-@admin_router.patch("/system/delivery-password", response_model=dict, tags=["Admin - System"])
+@system_router.patch("/delivery-password", response_model=dict)
 def update_delivery_password(password_data: schemas.DeliveryPasswordUpdate, supabase: Client = Depends(get_supabase_client)):
     return delivery_services.update_delivery_password(password_data=password_data, supabase=supabase)
 
 main_router.include_router(delivery_router)
+main_router.include_router(system_router)

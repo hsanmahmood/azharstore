@@ -502,12 +502,16 @@ const ProductManagement = () => {
           />
         ))}
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalItems={filteredProducts.length}
-        itemsPerPage={itemsPerPage}
-        onPageChange={setCurrentPage}
-      />
+      <div className="flex justify-center mt-8">
+        {filteredProducts.length > itemsPerPage && (
+          <Pagination
+            currentPage={currentPage}
+            totalItems={filteredProducts.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+          />
+        )}
+      </div>
 
       <Modal
         isOpen={isModalOpen}
