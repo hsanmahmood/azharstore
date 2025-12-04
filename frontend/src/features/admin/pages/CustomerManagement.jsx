@@ -11,7 +11,6 @@ import { useNotifier } from '../../../context/NotificationContext';
 import LoadingScreen from '../../../components/common/LoadingScreen';
 import ConfirmationModal from '../../../components/modals/ConfirmationModal';
 import { apiService } from '../../../services/api';
-import Pagination from '../../../components/common/Pagination';
 
 const CustomerManagement = () => {
   const { t } = useTranslation();
@@ -22,8 +21,6 @@ const CustomerManagement = () => {
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [deletingCustomerId, setDeletingCustomerId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
 
   const openModal = (customer = null) => {
     setEditingCustomer(customer);
@@ -68,9 +65,6 @@ const CustomerManagement = () => {
     customer.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
-  const paginatedCustomers = filteredCustomers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
@@ -92,7 +86,7 @@ const CustomerManagement = () => {
       {dataError && <div className="text-red-500">{dataError}</div>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {paginatedCustomers.map((customer) => (
+        {filteredCustomers.map((customer) => (
           <CustomerCard
             key={customer.id}
             customer={customer}
@@ -101,12 +95,6 @@ const CustomerManagement = () => {
           />
         ))}
       </div>
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
 
       <Modal
         isOpen={isModalOpen}

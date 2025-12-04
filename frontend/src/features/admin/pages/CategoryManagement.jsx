@@ -9,7 +9,6 @@ import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import Modal from '../../../components/modals/Modal';
 import LoadingScreen from '../../../components/common/LoadingScreen';
 import ConfirmationModal from '../../../components/modals/ConfirmationModal';
-import Pagination from '../../../components/common/Pagination';
 
 const CategoryManagement = () => {
   const { t } = useTranslation();
@@ -22,8 +21,6 @@ const CategoryManagement = () => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [deletingCategoryId, setDeletingCategoryId] = useState(null);
   const [formData, setFormData] = useState({ name: '' });
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
 
   const openModal = (category = null) => {
     setEditingCategory(category);
@@ -93,9 +90,6 @@ const CategoryManagement = () => {
     category && category.name && category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
-  const paginatedCategories = filteredCategories.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
@@ -121,7 +115,7 @@ const CategoryManagement = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-        {paginatedCategories.map((category) => (
+        {filteredCategories.map((category) => (
           <div
             key={category.id}
             className={`bg-card-background border border-soft-border rounded-20 p-5 flex justify-between items-center transition-all duration-300 hover:border-brand-purple/50 hover:-translate-y-1 ${category.deleting ? 'animate-fade-out' : ''}`}
@@ -144,12 +138,6 @@ const CategoryManagement = () => {
           </div>
         ))}
       </div>
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
 
       <Modal
         isOpen={isModalOpen}

@@ -16,10 +16,10 @@ import OrderManagement from './features/admin/pages/OrderManagement';
 import Settings from './features/admin/pages/Settings';
 import Translations from './features/admin/pages/Translations';
 import LoadingScreen from './components/common/LoadingScreen';
-import DeliveryLogin from './features/delivery/pages/DeliveryLogin';
+import DeliveryLogin from './features/delivery/pages/LoginPage';
 import DeliveryLayout from './features/delivery/pages/DeliveryLayout';
-import DeliveryOrderManagement from './features/delivery/pages/DeliveryOrderManagement';
-import { DeliveryAuthProvider } from './context/deliveryAuth.jsx';
+import DeliveryOrdersPage from './features/delivery/pages/OrdersPage';
+import { DeliveryAuthProvider } from './context/deliveryAuth';
 import DeliveryProtectedRoute from './components/common/DeliveryProtectedRoute';
 
 const App = () => {
@@ -102,7 +102,7 @@ const App = () => {
             <Route path="/login" element={<DeliveryLogin />} />
             <Route path="/" element={<DeliveryProtectedRoute />}>
               <Route element={<DeliveryLayout />}>
-                <Route index element={<DeliveryOrderManagement />} />
+                <Route index element={<DeliveryOrdersPage />} />
               </Route>
             </Route>
             <Route path="*" element={<Navigate to="/" />} />

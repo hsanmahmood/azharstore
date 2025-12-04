@@ -15,9 +15,7 @@ import ImageUploader from '../../../components/forms/ImageUploader';
 import ProductImage from '../../../components/product/ProductImage';
 import ImageLightbox from '../../../components/modals/ImageLightbox';
 import JSZip from 'jszip';
-import NumberInput from '../../../components/forms/NumberInput';
 import { saveAs } from 'file-saver';
-import Pagination from '../../../components/common/Pagination';
 
 
 const ProductManagement = () => {
@@ -47,8 +45,6 @@ const ProductManagement = () => {
   const [activeTab, setActiveTab] = useState('details');
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImageUrl, setLightboxImageUrl] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
 
 
   const initialFormState = {
@@ -448,9 +444,6 @@ const ProductManagement = () => {
     return searchMatch && categoryMatch && orderMatch;
   });
 
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
@@ -495,7 +488,7 @@ const ProductManagement = () => {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {paginatedProducts.map((product) => (
+        {filteredProducts.map((product) => (
           <ProductCard
             key={product.id}
             product={product}
@@ -504,12 +497,6 @@ const ProductManagement = () => {
           />
         ))}
       </div>
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
 
       <Modal
         isOpen={isModalOpen}
@@ -594,11 +581,12 @@ const ProductManagement = () => {
                     {t('productManagement.form.price')}
                   </label>
                   <div className="relative">
-                    <NumberInput
+                    <input
+                      type="number"
                       step="0.01"
                       name="price"
                       value={formData.price}
-                      onChange={(value) => setFormData(prev => ({ ...prev, price: value }))}
+                      onChange={handleFormChange}
                       required
                       className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 pl-12 placeholder-text-light"
                     />
@@ -612,10 +600,11 @@ const ProductManagement = () => {
                   <label className="block text-sm font-medium text-text-light mb-2">
                     {t('productManagement.form.stock')}
                   </label>
-                  <NumberInput
+                  <input
+                    type="number"
                     name="stock_quantity"
                     value={formData.stock_quantity}
-                    onChange={(value) => setFormData(prev => ({ ...prev, stock_quantity: value }))}
+                    onChange={handleFormChange}
                     className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
                     disabled={variants.length > 0}
                   />
@@ -637,7 +626,7 @@ const ProductManagement = () => {
                   {t('productManagement.form.downloadAll')}
                 </button>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
                 {editingProduct?.product_images.map((image) => (
                   <ProductImage
                     key={image.id}
@@ -672,8 +661,8 @@ const ProductManagement = () => {
               </div>
 
               <div className="space-y-4">
-                {/* Header for larger screens */}
-                <div className="hidden md:flex variant-item header text-text-light">
+                {/* Header */}
+                <div className="variant-item header text-text-light">
                   <div className="w-20 text-center">{t('productManagement.form.image')}</div>
                   <div className="flex-1 px-2">{t('productManagement.form.variantName')}</div>
                   <div className="w-32 px-2">{t('productManagement.form.stock')}</div>
@@ -682,33 +671,30 @@ const ProductManagement = () => {
 
                 {/* Variant Rows */}
                 {variants.map((variant, index) => (
-                  <div key={index} className="variant-item flex-col md:flex-row bg-gray-50 p-3 rounded-lg border border-soft-border">
-                    <div className="w-full md:w-20 flex justify-center mb-2 md:mb-0">
+                  <div key={index} className="variant-item">
+                    <div className="w-20 flex justify-center">
                       <ImageUploader
                         onUpload={(e) => handleVariantImageUpload(index, e)}
                         preview={variant.image_url}
                         uploading={uploadingImages}
-                        size="h-16 w-16"
+                        size="h-12 w-12"
                       />
                     </div>
-                    <div className="flex-1 w-full mb-2 md:mb-0">
-                      <input
-                        type="text"
-                        placeholder={t('productManagement.form.variantName')}
-                        value={variant.name}
-                        onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
-                        className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
-                      />
-                    </div>
-                    <div className="w-full md:w-32 mb-2 md:mb-0">
-                      <NumberInput
-                        placeholder={t('productManagement.form.stock')}
-                        value={variant.stock_quantity}
-                        onChange={(value) => handleVariantChange(index, 'stock_quantity', value)}
-                        className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
-                      />
-                    </div>
-                    <div className="w-full md:w-28 flex justify-center items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder={t('productManagement.form.variantName')}
+                      value={variant.name}
+                      onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
+                      className="flex-1 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
+                    />
+                    <input
+                      type="number"
+                      placeholder={t('productManagement.form.stock')}
+                      value={variant.stock_quantity}
+                      onChange={(e) => handleVariantChange(index, 'stock_quantity', e.target.value === '' ? '' : parseInt(e.target.value))}
+                      className="w-32 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
+                    />
+                    <div className="w-28 flex justify-center items-center gap-2">
                       <button type="button" onClick={() => handleSaveVariant(index)} className="text-green-500 hover:text-green-400 bg-green-500/10 hover:bg-green-500/20 p-2 rounded-lg relative">
                         {variant.id && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-green-500"></span>}
                         <Save size={18} />

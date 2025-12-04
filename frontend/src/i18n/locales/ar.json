@@ -251,6 +251,10 @@
       "fetch": "فشل في تحميل الطلبات",
       "submit": "فشل في حفظ الطلب",
       "freeDeliveryApplied": "تم تطبيق التوصيل المجاني"
+  },
+  "pagination": {
+    "showingPage": "عرض صفحة {{currentPage}} من {{totalPages}}",
+    "records": "السجلات"
     }
   }
 }

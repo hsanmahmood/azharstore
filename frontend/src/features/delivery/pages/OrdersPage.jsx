@@ -1,87 +1,42 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus } from 'lucide-react';
 import { apiService } from '../../../services/api';
 import SearchBar from '../../../components/common/SearchBar';
 import Modal from '../../../components/modals/Modal';
 import LoadingScreen from '../../../components/common/LoadingScreen';
-import OrderForm from '../components/OrderForm';
-import OrderCard from '../components/OrderCard';
-import OrderDetails from '../components/OrderDetails';
-import ConfirmationModal from '../../../components/modals/ConfirmationModal';
+import OrderCard from '../../admin/components/OrderCard';
+import OrderDetails from '../../admin/components/OrderDetails';
 import Dropdown from '../../../components/common/Dropdown';
 import { DataContext } from '../../../context/DataContext';
 import { SearchContext } from '../../../context/SearchContext';
 import { useNotifier } from '../../../context/NotificationContext';
 
-const OrderManagement = () => {
+const OrdersPage = () => {
   const { t } = useTranslation();
-  const { orders, customers, products, isLoading, error: dataError, addOrder, updateOrder, removeOrder, setError, setOrders } = useContext(DataContext);
+  const { orders, customers, products, isLoading, error: dataError, setOrders } = useContext(DataContext);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const notify = useNotifier();
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-  const [editingOrder, setEditingOrder] = useState(null);
   const [viewingOrder, setViewingOrder] = useState(null);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [deletingOrderId, setDeletingOrderId] = useState(null);
 
-  const updateOrderState = (updatedOrder) => {
-    updateOrder(updatedOrder);
-  };
-
-  const deleteOrder = async (orderId) => {
-    try {
-      await apiService.deleteOrder(orderId);
-      removeOrder(orderId);
-      notify(t('orderManagement.notifications.deleted'));
-    } catch (err) {
-      const errorMsg = err.response?.data?.detail || t('orderManagement.errors.delete');
-      notify(errorMsg, 'error');
-    }
-  };
-
-  const openModal = (order = null) => {
-    setEditingOrder(order);
-    setIsModalOpen(true);
-  };
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await apiService.getAllOrders();
+        setOrders(response.data);
+      } catch (error) {
+        const errorMsg = error.response?.data?.detail || t('orderManagement.errors.fetch');
+        notify(errorMsg, 'error');
+      }
+    };
+    fetchOrders();
+  }, [setOrders, notify, t]);
 
   const openDetailsModal = (order) => {
     setViewingOrder(order);
     setIsDetailsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setEditingOrder(null);
-  };
-
-  const handleSuccess = async () => {
-    try {
-      const response = await apiService.getAllOrders();
-      setOrders(response.data);
-      notify(editingOrder ? t('orderManagement.notifications.updated') : t('orderManagement.notifications.added'));
-    } catch (error) {
-      const errorMsg = error.response?.data?.detail || t('orderManagement.errors.fetch');
-      notify(errorMsg, 'error');
-    } finally {
-      closeModal();
-    }
-  };
-
-  const openDeleteConfirm = (id) => {
-    setDeletingOrderId(id);
-    setIsConfirmModalOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (deletingOrderId) {
-      deleteOrder(deletingOrderId);
-    }
-    setIsConfirmModalOpen(false);
-    setDeletingOrderId(null);
   };
 
   const filteredOrders = orders.filter(order => {
@@ -97,13 +52,7 @@ const OrderManagement = () => {
   return (
     <>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-brand-primary">{t('orderManagement.title')}</h1>
-        <button
-          onClick={() => openModal()}
-          className="flex items-center gap-2 bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
-        >
-          <Plus size={20} /> {t('orderManagement.addOrder')}
-        </button>
+        <h1 className="text-3xl font-bold text-brand-primary">{t('delivery.orders.title')}</h1>
       </div>
 
       <div className="mb-4">
@@ -132,21 +81,10 @@ const OrderManagement = () => {
           <OrderCard
             key={order.id}
             order={order}
-            onEdit={openModal}
             onView={openDetailsModal}
-            onDelete={() => openDeleteConfirm(order.id)}
           />
         ))}
       </div>
-
-      <Modal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        title={editingOrder ? t('orderManagement.editOrder') : t('orderManagement.addOrder')}
-        maxWidth="max-w-4xl"
-      >
-        <OrderForm order={editingOrder} onSuccess={handleSuccess} />
-      </Modal>
 
       <Modal
         isOpen={isDetailsModalOpen}
@@ -156,16 +94,8 @@ const OrderManagement = () => {
       >
         <OrderDetails order={viewingOrder} />
       </Modal>
-
-      <ConfirmationModal
-        isOpen={isConfirmModalOpen}
-        onClose={() => setIsConfirmModalOpen(false)}
-        onConfirm={handleConfirmDelete}
-        title={t('common.delete')}
-        message={t('orderManagement.confirmDelete')}
-      />
     </>
   );
 };
 
-export default OrderManagement;
+export default OrdersPage;

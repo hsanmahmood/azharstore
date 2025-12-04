@@ -11,7 +11,6 @@ import Dropdown from '../../../components/common/Dropdown';
 import TranslationCard from '../components/TranslationCard';
 import SearchBar from '../../../components/common/SearchBar';
 import allKeys from '../../../i18n/allKeys.json';
-import Pagination from '../../../components/common/Pagination';
 const Translations = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -22,8 +21,6 @@ const Translations = () => {
   const [selectedTranslation, setSelectedTranslation] = useState(null);
   const [newTranslation, setNewTranslation] = useState({ key: '', value: '' });
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
 
   const updateMutation = useMutation(updateTranslation, {
     onSuccess: (data) => {
@@ -69,12 +66,6 @@ const Translations = () => {
       translation.value.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredTranslations.length / itemsPerPage);
-  const paginatedTranslations = filteredTranslations.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
   const translatedKeys = new Set(translations.map((t) => t.key));
   const untranslatedKeys = allKeys.filter((key) => !translatedKeys.has(key));
 
@@ -99,16 +90,10 @@ const Translations = () => {
         />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {paginatedTranslations.map((translation) => (
+        {filteredTranslations.map((translation) => (
           <TranslationCard key={translation.id} translation={translation} onEdit={handleEditClick} />
         ))}
       </div>
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
 
       <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title={t('admin.translations.editTitle')} maxWidth="max-w-md">
         <div className="space-y-4 p-2">
@@ -139,12 +124,12 @@ const Translations = () => {
 
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title={t('admin.translations.addTitle')} maxWidth="max-w-md">
         <div className="space-y-4 p-2">
-          <input
-            type="text"
-            placeholder={t('admin.translations.key')}
+          <Dropdown
+            options={untranslatedKeys.map((key) => ({ value: key, label: key }))}
             value={newTranslation.key}
-            onChange={(e) => setNewTranslation({ ...newTranslation, key: e.target.value })}
-            className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
+            onChange={(option) => setNewTranslation({ ...newTranslation, key: option.value })}
+            placeholder={t('admin.translations.key')}
+            isSearchable={true}
           />
           <textarea
             placeholder={t('admin.translations.value')}

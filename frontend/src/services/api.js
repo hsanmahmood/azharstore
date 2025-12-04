@@ -92,6 +92,7 @@ export const customerService = {
 export const apiService = {
   // Auth
   login: (password) => api.post('/login', { password }),
+  deliveryLogin: (password) => api.post('/delivery/login', { password }),
 
   // Products
   getAllProducts: () => api.get('/products'),
@@ -150,6 +151,10 @@ export const apiService = {
   // Translations
   getTranslations: () => api.get('/translations').then(res => res.data),
   updateTranslation: ({ id, value }) => api.patch(`/admin/translations/${id}`, { value }),
+
+  // Delivery
+  getDeliveryPassword: () => api.get('/admin/system/delivery-password'),
+  updateDeliveryPassword: (data) => api.patch('/admin/system/delivery-password', data),
 
   // General (deprecated, use product upload)
   uploadImage: (productId, file) => {

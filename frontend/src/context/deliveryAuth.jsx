@@ -1,22 +1,19 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { deliveryApiService } from '../services/deliveryApi';
+import { apiService } from '../services/api';
 
 export const DeliveryAuthContext = createContext();
 
 export const DeliveryAuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('deliveryToken'));
+  const [isAuthenticated, setIsAuthenticated] = useState(!!token);
 
   useEffect(() => {
-    if (token) {
-      localStorage.setItem('deliveryToken', token);
-    } else {
-      localStorage.removeItem('deliveryToken');
-    }
+    localStorage.setItem('deliveryToken', token);
+    setIsAuthenticated(!!token);
   }, [token]);
 
-  const login = async (password) => {
-    const response = await deliveryApiService.login(password);
-    setToken(response.data.access_token);
+  const login = (newToken) => {
+    setToken(newToken);
   };
 
   const logout = () => {
@@ -24,7 +21,7 @@ export const DeliveryAuthProvider = ({ children }) => {
   };
 
   return (
-    <DeliveryAuthContext.Provider value={{ token, login, logout }}>
+    <DeliveryAuthContext.Provider value={{ token, isAuthenticated, login, logout }}>
       {children}
     </DeliveryAuthContext.Provider>
   );

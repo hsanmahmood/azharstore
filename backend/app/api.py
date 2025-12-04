@@ -298,7 +298,7 @@ delivery_router = APIRouter(prefix="/api/delivery")
 def delivery_login(form_data: schemas.DeliveryLoginRequest, supabase: Client = Depends(get_supabase_client)):
     return delivery_services.login(delivery_login=form_data, supabase=supabase)
 
-@delivery_router.get("/orders", response_model=List[schemas.Order], tags=["Delivery - Orders"], dependencies=[Depends(services.get_current_admin_user)])
+@delivery_router.get("/orders", response_model=List[schemas.Order], tags=["Delivery - Orders"], dependencies=[Depends(delivery_services.get_current_delivery_user)])
 def delivery_list_orders(supabase: Client = Depends(get_supabase_client)):
     return services.get_orders(supabase=supabase)
 
