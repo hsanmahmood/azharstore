@@ -458,8 +458,11 @@ const ProductManagement = () => {
         </button>
       </div>
 
-      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="mb-4">
         <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+      </div>
+
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
         <Dropdown
           options={[{ value: null, label: t('common.allCategories') }, ...categories.map(c => ({ value: c.id, label: c.name }))]}
           value={selectedCategory}
@@ -688,7 +691,7 @@ const ProductManagement = () => {
                       type="number"
                       placeholder={t('productManagement.form.stock')}
                       value={variant.stock_quantity}
-                      onChange={(e) => handleVariantChange(index, 'stock_quantity', parseInt(e.target.value) || 0)}
+                      onChange={(e) => handleVariantChange(index, 'stock_quantity', e.target.value === '' ? '' : parseInt(e.target.value))}
                       className="w-32 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
                     />
                     <div className="w-28 flex justify-center items-center gap-2">

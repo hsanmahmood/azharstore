@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-// Use environment variable for API URL, fallback to production
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.azhar.store/api';
+// Use environment variable for API URL, fallback to localhost for local dev or production
+const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (isLocalhost ? 'http://localhost:8000/api' : 'https://api.azhar.store/api');
 
 const api = axios.create({
   baseURL: API_BASE_URL,

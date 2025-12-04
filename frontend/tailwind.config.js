@@ -52,11 +52,16 @@ export default {
           "0%": { opacity: 0, transform: "translateY(20px)" },
           "100%": { opacity: 1, transform: "translateY(0)" },
         },
+        fadeIn: {
+          "0%": { opacity: 0 },
+          "100%": { opacity: 1 },
+        },
       },
       animation: {
         "modal-in": "modalIn 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards",
         "fade-out": "fadeOut 300ms ease-out forwards",
         "fade-in-up": "fadeInUp 400ms ease-out forwards",
+        "fadeIn": "fadeIn 500ms ease-out forwards",
       },
     },
   },

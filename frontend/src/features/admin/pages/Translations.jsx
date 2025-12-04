@@ -9,6 +9,7 @@ import { Search } from 'lucide-react';
 import LoadingScreen from '../../../components/common/LoadingScreen';
 import Dropdown from '../../../components/common/Dropdown';
 import TranslationCard from '../components/TranslationCard';
+import SearchBar from '../../../components/common/SearchBar';
 import allKeys from '../../../i18n/allKeys.json';
 const Translations = () => {
   const { t } = useTranslation();
@@ -82,16 +83,11 @@ const Translations = () => {
         </button>
       </div>
       <div className="mb-8">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-          <input
-            type="text"
-            placeholder={t('admin.translations.searchPlaceholder')}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-white border border-soft-border text-text-dark p-3 pl-12 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
-          />
-        </div>
+        <SearchBar
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder={t('admin.translations.searchPlaceholder')}
+        />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredTranslations.map((translation) => (

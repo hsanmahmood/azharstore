@@ -2,17 +2,16 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { authService } from '../services/api';
 import LogRocket from 'logrocket';
 import { jwtDecode } from "jwt-decode";
-import { useLoading } from './LoadingContext';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const { isLoading, showLoading, hideLoading } = useLoading();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const validateToken = () => {
-      showLoading();
+      setIsLoading(true);
       if (token) {
         try {
           const decodedToken = jwtDecode(token);
@@ -26,11 +25,11 @@ export const AuthProvider = ({ children }) => {
           logout();
         }
       }
-      hideLoading();
+      setIsLoading(false);
     };
 
     validateToken();
-  }, [token, showLoading, hideLoading]);
+  }, [token]);
 
   const login = async (password) => {
     const response = await authService.login(password);

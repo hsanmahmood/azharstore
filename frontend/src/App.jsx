@@ -24,7 +24,7 @@ import DeliveryProtectedRoute from './components/common/DeliveryProtectedRoute';
 
 const App = () => {
   const { token } = useContext(AuthContext);
-  const { isLoading: isDataLoading } = useContext(DataContext);
+  const { isLoading: isDataLoading } = useLoading();
   const location = useLocation();
 
   const isAdminSite = React.useMemo(() => {
@@ -114,7 +114,7 @@ const App = () => {
 
   return (
     <CartProvider>
-      <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col">
+      <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col animate-fadeIn">
         <Routes>
           <Route path="/" element={<StoreFront />} />
           <Route path="/product/:id" element={<ProductDetail />} />

@@ -263,7 +263,7 @@ const OrderForm = ({ order, onSuccess }) => {
               <input
                 type="number"
                 value={item.quantity}
-                onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value) || 1)}
+                onChange={(e) => handleItemChange(index, 'quantity', e.target.value === '' ? '' : parseInt(e.target.value))}
                 className="w-20 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg"
                 min="1"
               />

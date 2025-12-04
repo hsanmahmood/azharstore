@@ -106,8 +106,11 @@ const OrderManagement = () => {
         </button>
       </div>
 
-      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="mb-4">
         <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+      </div>
+
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
         <Dropdown
           options={[{ value: null, label: t('common.allCustomers') }, ...customers.map(c => ({ value: c.id, label: c.name }))]}
           value={selectedCustomer}
