@@ -21,6 +21,7 @@ import DeliveryLayout from './features/delivery/pages/DeliveryLayout';
 import DeliveryOrdersPage from './features/delivery/pages/OrdersPage';
 import { DeliveryAuthProvider } from './context/deliveryAuth';
 import DeliveryProtectedRoute from './components/common/DeliveryProtectedRoute';
+import { SearchProvider } from './context/SearchContext';
 
 const App = () => {
   const { token } = useContext(AuthContext);
@@ -97,17 +98,19 @@ const App = () => {
   if (isDeliverySite) {
     return (
       <DeliveryAuthProvider>
-        <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col">
-          <Routes>
-            <Route path="/login" element={<DeliveryLogin />} />
-            <Route path="/" element={<DeliveryProtectedRoute />}>
-              <Route element={<DeliveryLayout />}>
-                <Route index element={<DeliveryOrdersPage />} />
+        <SearchProvider>
+          <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col">
+            <Routes>
+              <Route path="/login" element={<DeliveryLogin />} />
+              <Route path="/" element={<DeliveryProtectedRoute />}>
+                <Route element={<DeliveryLayout />}>
+                  <Route index element={<DeliveryOrdersPage />} />
+                </Route>
               </Route>
-            </Route>
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </div>
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </div>
+        </SearchProvider>
       </DeliveryAuthProvider>
     );
   }

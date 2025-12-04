@@ -19,9 +19,10 @@ def login(delivery_login: schemas.DeliveryLoginRequest, supabase: Client = Depen
     if not response.data:
         raise HTTPException(status_code=404, detail="Delivery password not set")
 
-    hashed_password = response.data[0]['value']
+    stored_password = response.data[0]['value']
 
-    if not verify_password(delivery_login.password, hashed_password):
+    # Plaintext comparison
+    if delivery_login.password != stored_password:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect password",
@@ -34,10 +35,23 @@ def get_delivery_password(supabase: Client = Depends(get_supabase_client)):
     response = supabase.table("system_settings").select("value").eq("key", "delivery_password").execute()
     if not response.data:
         return {"password": ""}
-    # Return a dummy value, not the hash
-    return {"password": "********"}
+
+    # We are now storing the plaintext password for simplicity, so return it directly.
+    # In a real-world scenario, you would never do this. This is a temporary measure.
+    # The value stored in the database is the actual password, not a hash.
+
+    # Check if 'value' exists and is not empty
+    password_value = response.data[0].get('value')
+    if not password_value:
+        return {"password": ""}
+
+    return {"password": password_value}
 
 def update_delivery_password(password_data: schemas.DeliveryPasswordUpdate, supabase: Client = Depends(get_supabase_client)):
-    hashed_password = get_password_hash(password_data.password)
-    supabase.table("system_settings").upsert({"key": "delivery_password", "value": hashed_password}).execute()
+    # Storing plaintext password for simplicity.
+    # This is not secure and should not be done in a production environment.
+    supabase.table("system_settings").upsert({
+        "key": "delivery_password",
+        "value": password_data.password
+    }).execute()
     return {"message": "Password updated successfully"}
