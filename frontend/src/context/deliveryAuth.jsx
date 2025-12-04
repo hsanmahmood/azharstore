@@ -5,23 +5,32 @@ export const DeliveryAuthContext = createContext();
 
 export const DeliveryAuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('deliveryToken'));
-  const [isAuthenticated, setIsAuthenticated] = useState(!!token);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem('deliveryToken', token);
-    setIsAuthenticated(!!token);
-  }, [token]);
+    const token = localStorage.getItem('deliveryToken');
+    if (token) {
+      setToken(token);
+      setIsAuthenticated(true);
+    }
+    setLoading(false);
+  }, []);
 
   const login = (newToken) => {
+    localStorage.setItem('deliveryToken', newToken);
     setToken(newToken);
+    setIsAuthenticated(true);
   };
 
   const logout = () => {
+    localStorage.removeItem('deliveryToken');
     setToken(null);
+    setIsAuthenticated(false);
   };
 
   return (
-    <DeliveryAuthContext.Provider value={{ token, isAuthenticated, login, logout }}>
+    <DeliveryAuthContext.Provider value={{ token, isAuthenticated, login, logout, loading }}>
       {children}
     </DeliveryAuthContext.Provider>
   );

@@ -15,6 +15,7 @@
   "common.noProducts",
   "common.footer",
   "login.invalidPassword",
+  "login.wrongPassword",
   "Login",
   "Admin Panel",
   "admin.translations.updateSuccess",
@@ -193,5 +194,11 @@
   "productManagement.actions.setAsPrimary",
   "productManagement.actions.download",
   "productManagement.actions.remove",
-  "common.search"
+  "common.search",
+  "settings.deliveryPasswordUpdated",
+  "settings.deliveryPasswordUpdateError",
+  "settings.deliveryPasswordFetchError",
+  "settings.deliveryPassword",
+  "settings.newPassword",
+  "settings.system"
 ]

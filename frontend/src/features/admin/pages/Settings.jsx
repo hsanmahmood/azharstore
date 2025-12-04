@@ -40,11 +40,11 @@ const Settings = () => {
         const response = await apiService.getDeliveryPassword();
         setDeliveryPassword(response.data.password);
       } catch (error) {
-        notify('Failed to fetch delivery password', 'error');
+        notify(t('settings.deliveryPasswordFetchError'), 'error');
       }
     };
     fetchDeliveryPassword();
-  }, [appSettings, notify]);
+  }, [appSettings, notify, t]);
 
   const openModal = (area = null) => {
     setEditingArea(area);
@@ -87,9 +87,9 @@ const Settings = () => {
     setIsSubmitting(true);
     try {
       await apiService.updateDeliveryPassword({ password: deliveryPassword });
-      notify('Delivery password updated successfully');
+      notify(t('settings.deliveryPasswordUpdated'));
     } catch (err) {
-      notify('Failed to update delivery password', 'error');
+      notify(t('settings.deliveryPasswordUpdateError'), 'error');
     } finally {
       setIsSubmitting(false);
     }

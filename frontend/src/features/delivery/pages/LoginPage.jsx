@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AuthContext } from '../../../context/AuthContext';
+import { DeliveryAuthContext } from '../../../context/deliveryAuth';
 import { Loader2 } from 'lucide-react';
 import PasswordInput from '../../../components/common/PasswordInput';
 import { apiService } from '../../../services/api';
@@ -9,7 +9,7 @@ import { apiService } from '../../../services/api';
 const DeliveryLogin = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { login } = useContext(DeliveryAuthContext);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -22,9 +22,9 @@ const DeliveryLogin = () => {
     try {
       const response = await apiService.deliveryLogin(password);
       login(response.data.access_token);
-      navigate('/delivery/orders');
+      navigate('/');
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || t('login.invalidPassword');
+      const errorMessage = err.response?.data?.detail || t('login.wrongPassword');
       setError(errorMessage);
     } finally {
       setIsLoading(false);

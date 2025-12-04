@@ -22,7 +22,7 @@ const Login = () => {
       await login(password);
       navigate('/admin/products');
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || t('login.invalidPassword');
+      const errorMessage = err.response?.data?.detail || t('login.wrongPassword');
       setError(errorMessage);
     } finally {
       setIsLoading(false);
