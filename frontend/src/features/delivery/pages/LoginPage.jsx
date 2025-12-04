@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { DeliveryAuthContext } from '../../../context/deliveryAuth';
@@ -9,10 +9,16 @@ import { apiService } from '../../../services/api';
 const DeliveryLogin = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { login } = useContext(DeliveryAuthContext);
+  const { login, isAuthenticated } = useContext(DeliveryAuthContext);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,10 +28,10 @@ const DeliveryLogin = () => {
     try {
       const response = await apiService.deliveryLogin(password);
       login(response.data.access_token);
-      navigate('/');
-    } catch (err) {
+    } catch (err) => {
       const errorMessage = err.response?.data?.detail || t('login.wrongPassword');
       setError(errorMessage);
+      return;
     } finally {
       setIsLoading(false);
     }
