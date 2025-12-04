@@ -11,6 +11,7 @@ import Dropdown from '../../../components/common/Dropdown';
 import TranslationCard from '../components/TranslationCard';
 import SearchBar from '../../../components/common/SearchBar';
 import allKeys from '../../../i18n/allKeys.json';
+import Pagination from '../../../components/common/Pagination';
 const Translations = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -21,6 +22,8 @@ const Translations = () => {
   const [selectedTranslation, setSelectedTranslation] = useState(null);
   const [newTranslation, setNewTranslation] = useState({ key: '', value: '' });
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
   const updateMutation = useMutation(updateTranslation, {
     onSuccess: (data) => {
@@ -66,6 +69,12 @@ const Translations = () => {
       translation.value.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const totalPages = Math.ceil(filteredTranslations.length / itemsPerPage);
+  const paginatedTranslations = filteredTranslations.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   const translatedKeys = new Set(translations.map((t) => t.key));
   const untranslatedKeys = allKeys.filter((key) => !translatedKeys.has(key));
 
@@ -90,10 +99,16 @@ const Translations = () => {
         />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredTranslations.map((translation) => (
+        {paginatedTranslations.map((translation) => (
           <TranslationCard key={translation.id} translation={translation} onEdit={handleEditClick} />
         ))}
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
 
       <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title={t('admin.translations.editTitle')} maxWidth="max-w-md">
         <div className="space-y-4 p-2">

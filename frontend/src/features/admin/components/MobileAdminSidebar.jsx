@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { X, Home, LogOut } from 'lucide-react';
+import { X, Home, LogOut, Settings } from 'lucide-react';
 
 const MobileAdminSidebar = ({ isOpen, onClose, navLinks, handleLogout }) => {
   const { t } = useTranslation();
@@ -14,7 +14,7 @@ const MobileAdminSidebar = ({ isOpen, onClose, navLinks, handleLogout }) => {
       />
 
       <aside
-        className={`fixed top-0 right-0 h-full w-64 bg-black/50 backdrop-blur-lg border-l border-brand-border z-50 transition-transform duration-300 md:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 h-full w-64 bg-card-background backdrop-blur-lg border-l border-brand-border z-50 transition-transform duration-300 md:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-4 mb-4 border-b border-brand-border/50">
@@ -46,6 +46,18 @@ const MobileAdminSidebar = ({ isOpen, onClose, navLinks, handleLogout }) => {
           </nav>
 
           <div className="px-2 py-4 mt-auto border-t border-brand-border">
+            <NavLink
+              to="/admin/settings"
+              onClick={onClose}
+              className={({ isActive }) =>
+                `flex items-center w-full px-4 py-2.5 text-sm font-medium rounded-lg ${
+                  isActive ? 'bg-brand-primary/10 text-brand-primary' : 'text-brand-secondary hover:bg-brand-primary/5 hover:text-brand-primary'
+                }`
+              }
+            >
+              <Settings className="h-5 w-5 ml-3" />
+              <span>{t('settings.title')}</span>
+            </NavLink>
             <button
               onClick={() => {
                 onClose();
