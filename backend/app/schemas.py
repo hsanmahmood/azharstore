@@ -1,6 +1,9 @@
 from pydantic import BaseModel, validator
 from typing import Optional
 from enum import Enum
+from fastapi.security import OAuth2PasswordBearer
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 class OrderStatus(str, Enum):
     processing = 'processing'

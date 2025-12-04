@@ -41,16 +41,3 @@ def update_delivery_password(password_data: schemas.DeliveryPasswordUpdate, supa
     hashed_password = get_password_hash(password_data.password)
     supabase.table("system_settings").upsert({"key": "delivery_password", "value": hashed_password}).execute()
     return {"message": "Password updated successfully"}
-
-def get_current_delivery_user(token: str = Depends(schemas.oauth2_scheme)):
-    try:
-        # For simplicity, we are not validating the token against a user database
-        # In a real-world scenario, you would decode the token and check if the user exists
-        if token:
-            return {"username": "delivery_user"}
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
