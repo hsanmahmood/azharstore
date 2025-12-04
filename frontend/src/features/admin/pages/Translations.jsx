@@ -7,7 +7,6 @@ import { DataContext } from '../../../context/DataContext';
 import Modal from '../../../components/modals/Modal';
 import { Search } from 'lucide-react';
 import LoadingScreen from '../../../components/common/LoadingScreen';
-import Dropdown from '../../../components/common/Dropdown';
 import TranslationCard from '../components/TranslationCard';
 import SearchBar from '../../../components/common/SearchBar';
 import allKeys from '../../../i18n/allKeys.json';
@@ -124,12 +123,12 @@ const Translations = () => {
 
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title={t('admin.translations.addTitle')} maxWidth="max-w-md">
         <div className="space-y-4 p-2">
-          <Dropdown
-            options={untranslatedKeys.map((key) => ({ value: key, label: key }))}
-            value={newTranslation.key}
-            onChange={(option) => setNewTranslation({ ...newTranslation, key: option.value })}
+          <input
+            type="text"
             placeholder={t('admin.translations.key')}
-            isSearchable={true}
+            value={newTranslation.key}
+            onChange={(e) => setNewTranslation({ ...newTranslation, key: e.target.value })}
+            className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 placeholder-text-light"
           />
           <textarea
             placeholder={t('admin.translations.value')}

@@ -16,6 +16,7 @@ import ProductImage from '../../../components/product/ProductImage';
 import ImageLightbox from '../../../components/modals/ImageLightbox';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import Pagination from '../../../components/common/Pagination';
 
 
 const ProductManagement = () => {
@@ -45,6 +46,8 @@ const ProductManagement = () => {
   const [activeTab, setActiveTab] = useState('details');
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImageUrl, setLightboxImageUrl] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(20);
 
 
   const initialFormState = {
@@ -444,6 +447,8 @@ const ProductManagement = () => {
     return searchMatch && categoryMatch && orderMatch;
   });
 
+  const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   if (isLoading) return <LoadingScreen fullScreen={false} />;
 
   return (
@@ -488,7 +493,7 @@ const ProductManagement = () => {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredProducts.map((product) => (
+        {paginatedProducts.map((product) => (
           <ProductCard
             key={product.id}
             product={product}
@@ -497,6 +502,12 @@ const ProductManagement = () => {
           />
         ))}
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalItems={filteredProducts.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+      />
 
       <Modal
         isOpen={isModalOpen}
