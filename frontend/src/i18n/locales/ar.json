@@ -26,7 +26,17 @@
     "filterByProduct": "التصفية حسب المنتج",
     "productsWithOrders": "المنتجات المطلوبة",
     "productsWithoutOrders": "المنتجات غير المطلوبة",
-    "filterByOrders": "التصفية حسب الطلبات"
+    "filterByOrders": "التصفية حسب الطلبات",
+    "cart": "السلة",
+    "searchPlaceholder": "ابحث عن منتج...",
+    "noProducts": "لا توجد منتجات",
+    "footer": "© 2024 AzharStore. جميع الحقوق محفوظة."
+  },
+  "checkout": {
+    "customerInfo": "المعلومات",
+    "deliveryMethod": "التوصيل",
+    "deliveryArea": "المنطقة",
+    "summary": "الملخص"
   },
   "settings": {
     "title": "الإعدادات",
@@ -251,10 +261,10 @@
       "fetch": "فشل في تحميل الطلبات",
       "submit": "فشل في حفظ الطلب",
       "freeDeliveryApplied": "تم تطبيق التوصيل المجاني"
-  },
-  "pagination": {
-    "showingPage": "عرض صفحة {{currentPage}} من {{totalPages}}",
-    "records": "السجلات"
+    },
+    "pagination": {
+      "showingPage": "عرض صفحة {{currentPage}} من {{totalPages}}",
+      "records": "السجلات"
     }
   }
 }

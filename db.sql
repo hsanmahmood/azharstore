@@ -1,18 +1,14 @@
--- SQL Script to Remove Delivery Dashboard from Database
--- Run this in your Supabase SQL Editor
+-- Set database timezone to GMT+3 (Arabia Standard Time)
+ALTER DATABASE postgres SET timezone TO 'Asia/Riyadh';
 
--- Drop system_settings table (used only for delivery password)
-DROP TABLE IF EXISTS system_settings CASCADE;
+-- Ensure orders table created_at column uses timestamptz (timestamp with timezone)
+-- If the column already exists as timestamp without timezone, this will convert it
+ALTER TABLE orders 
+ALTER COLUMN created_at TYPE timestamptz USING created_at AT TIME ZONE 'UTC';
 
--- Note: We're keeping all other tables as they're used by the main application
--- The following tables are NOT affected:
--- - products
--- - categories
--- - customers
--- - orders
--- - order_items
--- - product_images
--- - product_variants
--- - delivery_areas (still used for storefront checkout)
--- - app_settings
--- - translations
+-- Set default value to use current timestamp in GMT+3
+ALTER TABLE orders 
+ALTER COLUMN created_at SET DEFAULT (NOW() AT TIME ZONE 'Asia/Riyadh');
+
+-- Note: All existing timestamps will be interpreted as UTC and converted to GMT+3
+-- New orders will automatically use GMT+3 timezone

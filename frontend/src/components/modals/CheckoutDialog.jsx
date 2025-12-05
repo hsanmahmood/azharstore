@@ -1,55 +1,88 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
-import { Loader2, Truck, Package } from 'lucide-react';
+import { Loader2, Truck, Package, Check } from 'lucide-react';
 import { apiService } from '../../services/api';
 import ErrorDisplay from '../common/ErrorDisplay';
+import { useTranslation } from 'react-i18next';
 
-const CustomerDetailsStep = ({ data, handleChange, onNext, error, deliveryMethod }) => (
-    <form onSubmit={onNext} className="space-y-6 p-4" dir="rtl">
-        <ErrorDisplay error={error} />
-        <div className="space-y-2">
-            <label className="block text-sm font-medium text-text-light text-right">الاسم</label>
-            <input type="text" name="name" value={data.name} onChange={handleChange} required className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 text-right" />
-        </div>
-        <div className="space-y-2">
-            <label className="block text-sm font-medium text-text-light text-right">رقم الهاتف</label>
-            <input type="text" name="phone_number" value={data.phone_number} onChange={handleChange} required className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 text-right" />
-            <p className="text-xs text-text-light text-right mt-1">الرجاء إدخال 8 أرقام فقط</p>
-        </div>
-        <div className="text-right my-4"><span className="text-lg text-text-dark">العنوان</span></div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-6">
-            <div className="space-y-2">
-                <label className="block text-xs font-medium text-text-light text-right">الشارع</label>
-                <input type="text" name="address_road" value={data.address_road} onChange={handleChange} required={deliveryMethod === 'delivery'} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
+const ProgressBar = ({ currentStep, totalSteps }) => {
+    const progress = (currentStep / totalSteps) * 100;
+
+    return (
+        <div className="mb-6" dir="rtl">
+            <div className="text-center text-sm text-gray-600 mb-2">
+                خطوة {currentStep} من {totalSteps}
             </div>
-            <div className="space-y-2">
-                <label className="block text-xs font-medium text-text-light text-right">رقم المنزل</label>
-                <input type="text" name="address_home" value={data.address_home} onChange={handleChange} required={deliveryMethod === 'delivery'} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
-            </div>
-            <div className="space-y-2">
-                <label className="block text-xs font-medium text-text-light text-right">رقم المجمع</label>
-                <input type="text" name="address_block" value={data.address_block} onChange={handleChange} required={deliveryMethod === 'delivery'} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
-            </div>
-            <div className="space-y-2">
-                <label className="block text-xs font-medium text-text-light text-right">المدينة</label>
-                <input type="text" name="town" value={data.town} onChange={handleChange} required={deliveryMethod === 'delivery'} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
+            <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                    className="h-full bg-brand-purple rounded-full transition-all duration-300"
+                    style={{ width: `${progress}%` }}
+                />
             </div>
         </div>
-        <div className="flex justify-start gap-4 pt-4">
-            <button type="submit" className="bg-brand-primary hover:bg-opacity-90 text-brand-background font-bold py-2 px-4 rounded-md transition-colors">التالي</button>
-        </div>
-    </form>
-);
+    );
+};
+
+const CustomerDetailsStep = ({ data, handleChange, onNext, error, deliveryMethod }) => {
+    return (
+        <form onSubmit={onNext} className="space-y-6 p-4" dir="rtl">
+            <ErrorDisplay error={error} />
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-text-light text-right">الاسم</label>
+                <input type="text" name="name" value={data.name} onChange={handleChange} required className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 text-right" />
+            </div>
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-text-light text-right">رقم الهاتف</label>
+                <input type="text" name="phone_number" value={data.phone_number} onChange={handleChange} required className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 text-right" />
+                <p className="text-xs text-text-light text-right mt-1">الرجاء إدخال 8 أرقام فقط</p>
+            </div>
+            <div className="text-right my-4"><span className="text-lg text-text-dark">العنوان</span></div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-6">
+                <div className="space-y-2">
+                    <label className="block text-xs font-medium text-text-light text-right">الشارع</label>
+                    <input type="text" name="address_road" value={data.address_road} onChange={handleChange} required={deliveryMethod === 'delivery'} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
+                </div>
+                <div className="space-y-2">
+                    <label className="block text-xs font-medium text-text-light text-right">رقم المنزل</label>
+                    <input type="text" name="address_home" value={data.address_home} onChange={handleChange} required={deliveryMethod === 'delivery'} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
+                </div>
+                <div className="space-y-2">
+                    <label className="block text-xs font-medium text-text-light text-right">رقم المجمع</label>
+                    <input type="text" name="address_block" value={data.address_block} onChange={handleChange} required={deliveryMethod === 'delivery'} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
+                </div>
+                <div className="space-y-2">
+                    <label className="block text-xs font-medium text-text-light text-right">المدينة</label>
+                    <input type="text" name="town" value={data.town} onChange={handleChange} required={deliveryMethod === 'delivery'} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
+                </div>
+            </div>
+            <div className="flex justify-start gap-4 pt-4">
+                <button type="submit" className="bg-brand-primary hover:bg-opacity-90 text-brand-background font-bold py-2 px-4 rounded-md transition-colors">التالي</button>
+            </div>
+        </form>
+    );
+};
 
 const DeliveryMethodStep = ({ onNext, onBack, onSelect, selectedMethod }) => (
     <div className="p-4" dir="rtl">
         <h2 className="text-xl font-semibold mb-4 text-right">اختر طريقة الاستلام</h2>
         <div className="grid grid-cols-2 gap-4">
-            <button onClick={() => onSelect('delivery')} className={`p-6 border-2 rounded-lg flex flex-col items-center justify-center transition-all ${selectedMethod === 'delivery' ? 'border-brand-purple bg-purple-50' : 'hover:border-purple-300'}`}>
+            <button
+                onClick={() => onSelect('delivery')}
+                className={`p-6 border-2 rounded-lg flex flex-col items-center justify-center ${selectedMethod === 'delivery'
+                        ? 'border-brand-purple bg-brand-purple/10'
+                        : 'border-gray-300 hover:border-brand-purple'
+                    }`}
+            >
                 <Truck className="w-12 h-12 mb-2 text-brand-purple" />
                 <span className="font-semibold">توصيل</span>
             </button>
-            <button onClick={() => onSelect('pick_up')} className={`p-6 border-2 rounded-lg flex flex-col items-center justify-center transition-all ${selectedMethod === 'pick_up' ? 'border-brand-purple bg-purple-50' : 'hover:border-purple-300'}`}>
+            <button
+                onClick={() => onSelect('pick_up')}
+                className={`p-6 border-2 rounded-lg flex flex-col items-center justify-center ${selectedMethod === 'pick_up'
+                        ? 'border-brand-purple bg-brand-purple/10'
+                        : 'border-gray-300 hover:border-brand-purple'
+                    }`}
+            >
                 <Package className="w-12 h-12 mb-2 text-brand-purple" />
                 <span className="font-semibold">استلام من المتجر</span>
             </button>
@@ -67,7 +100,14 @@ const DeliveryAreaStep = ({ onNext, onBack, onSelect, selectedArea, deliveryArea
         <div className="grid grid-cols-2 gap-4">
             {deliveryAreas && deliveryAreas.length > 0 ? (
                 deliveryAreas.map(area => (
-                    <button key={area.id} onClick={() => onSelect(area)} className={`p-4 border-2 rounded-lg flex flex-col items-center justify-center transition-all ${selectedArea?.id === area.id ? 'border-brand-purple bg-purple-50' : 'hover:border-purple-300'}`}>
+                    <button
+                        key={area.id}
+                        onClick={() => onSelect(area)}
+                        className={`p-4 border-2 rounded-lg flex flex-col items-center justify-center ${selectedArea?.id === area.id
+                                ? 'border-brand-purple bg-brand-purple/10'
+                                : 'border-gray-300 hover:border-brand-purple'
+                            }`}
+                    >
                         <span className="font-semibold">{area.name}</span>
                         <span className="text-sm text-text-light">{area.price} د.ب</span>
                     </button>
@@ -137,14 +177,17 @@ const OrderSummaryStep = ({ onBack, onSubmit, data, cartItems, totalPrice, isSub
 };
 
 const ThankYouStep = ({ onClose, message }) => (
-    <div className="p-4 text-center" dir="rtl">
-        <h2 className="text-2xl font-bold mb-4">شكراً لك!</h2>
-        <div className="prose" dangerouslySetInnerHTML={{ __html: message }} />
-        <button onClick={onClose} className="mt-6 bg-brand-primary text-brand-background font-bold py-2 px-4 rounded-md">إغلاق</button>
+    <div className="p-8 text-center flex flex-col items-center justify-center min-h-[400px]" dir="rtl">
+        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+            <Check className="w-12 h-12 text-green-600" />
+        </div>
+        <div className="prose max-w-md" dangerouslySetInnerHTML={{ __html: message }} />
+        <button onClick={onClose} className="mt-8 bg-brand-primary text-brand-background font-bold py-3 px-6 rounded-lg hover:bg-opacity-90 transition-colors">إغلاق</button>
     </div>
 );
 
 const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) => {
+    const { t } = useTranslation();
     const [step, setStep] = useState(1);
     const [checkoutData, setCheckoutData] = useState({
         customer: { name: '', phone_number: '', town: '', address_home: '', address_road: '', address_block: '' },
@@ -184,7 +227,7 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
         setError(null);
 
         if (step === 1) {
-            const { name, phone_number, town, address_home, address_road, address_block } = checkoutData.customer;
+            const { name, phone_number } = checkoutData.customer;
             if (!name.trim()) {
                 setError({ detail: "الاسم مطلوب" });
                 return;
@@ -196,7 +239,7 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
         }
 
         if (step === 2 && checkoutData.deliveryMethod === 'pick_up') {
-            setStep(4); // Skip to summary
+            setStep(4);
         } else {
             setStep(step + 1);
         }
@@ -224,7 +267,7 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
         setError('');
         try {
             await onSubmit(checkoutData);
-            setStep(5); // Move to thank you step
+            setStep(5);
         } catch (err) {
             const errorData = err.response?.data || { detail: 'Failed to create order. Please try again.' };
             setError(errorData);
@@ -259,14 +302,9 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="إتمام الطلب" maxWidth="max-w-2xl">
-            <div className="p-4">
-                <div className="text-center text-sm text-text-light mb-2">
-                    خطوة {step} من 4
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                    <div className="bg-brand-purple h-2.5 rounded-full" style={{ width: `${(step / 4) * 100}%` }}></div>
-                </div>
-                <div className="h-[400px]">
+            <div className="p-6">
+                {step < 5 && <ProgressBar currentStep={step} totalSteps={4} />}
+                <div className={step === 5 ? '' : 'min-h-[400px]'}>
                     {renderStep()}
                 </div>
             </div>

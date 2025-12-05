@@ -1,9 +1,10 @@
 import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Edit, Trash2, Eye } from 'lucide-react';
+import { Edit, Trash2, Eye, Calendar, Clock } from 'lucide-react';
 import Dropdown from '../../../components/common/Dropdown';
 import { apiService } from '../../../services/api';
 import { DataContext } from '../../../context/DataContext';
+import { formatDateGMT3, formatTimeGMT3 } from '../../../utils/dateUtils';
 
 const OrderCard = ({ order, onEdit, onDelete, onView }) => {
   const { t } = useTranslation();
@@ -77,6 +78,16 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
         <p className="text-sm text-text-light mt-2">
           {t('orderManagement.table.customer')}: {order.customer.name}
         </p>
+        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+          <div className="flex items-center gap-1">
+            <Calendar size={14} />
+            <span>{formatDateGMT3(order.created_at)}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Clock size={14} />
+            <span>{formatTimeGMT3(order.created_at)}</span>
+          </div>
+        </div>
         <div className="mt-3 space-y-2 text-sm">
           <div className="w-full">
             <Dropdown

@@ -1,6 +1,8 @@
 import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Calendar, Clock } from 'lucide-react';
 import { DataContext } from '../../../context/DataContext';
+import { formatDateGMT3, formatTimeGMT3 } from '../../../utils/dateUtils';
 
 const OrderDetails = ({ order }) => {
   const { t } = useTranslation();
@@ -45,6 +47,14 @@ const OrderDetails = ({ order }) => {
           <h3 className="text-lg font-medium text-brand-purple mb-4">{t('orderManagement.title')}</h3>
           <div className="space-y-2 text-sm text-text-light">
             <p><span className="font-semibold text-text-dark">{t('orderManagement.table.orderId')}:</span> #{order.id}</p>
+            <div className="flex items-center gap-2">
+              <Calendar size={16} className="text-brand-purple" />
+              <span className="font-semibold text-text-dark">{formatDateGMT3(order.created_at)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock size={16} className="text-brand-purple" />
+              <span className="font-semibold text-text-dark">{formatTimeGMT3(order.created_at)}</span>
+            </div>
             <p><span className="font-semibold text-text-dark">{t('orderManagement.table.status')}:</span> {t(`orderManagement.status.${order.status}`)}</p>
             <p><span className="font-semibold text-text-dark">{t('orderManagement.table.shippingMethod')}:</span> {t(`orderManagement.shipping.${order.shipping_method}`)}</p>
             {order.shipping_method === 'delivery' && (
