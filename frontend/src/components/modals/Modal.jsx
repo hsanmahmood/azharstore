@@ -7,14 +7,14 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-3xl' }) => 
 
   const modalContent = (
     <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex justify-center items-center p-4 bg-opacity-50"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex justify-center items-center p-4 sm:p-6 bg-opacity-50"
       onClick={onClose}
     >
       <div
-        className={`bg-primary-background border border-soft-border rounded-20 shadow-card w-full ${maxWidth} m-auto flex flex-col max-h-[90vh] animate-modal-in`}
+        className={`bg-primary-background border border-soft-border rounded-20 shadow-card w-full ${maxWidth} m-auto flex flex-col max-h-[90vh] sm:max-h-full animate-modal-in sm:rounded-lg`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex-shrink-0 flex justify-between items-center p-6 border-b border-soft-border">
+        <div className="flex-shrink-0 flex justify-between items-center p-4 sm:p-6 border-b border-soft-border">
           <h2 className="text-xl font-bold text-text-dark">{title}</h2>
           <button
             onClick={onClose}

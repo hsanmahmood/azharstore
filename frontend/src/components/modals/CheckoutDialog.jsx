@@ -68,23 +68,23 @@ const DeliveryMethodStep = ({ onNext, onBack, onSelect, selectedMethod }) => (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button
                 onClick={() => onSelect('delivery')}
-                className={`p-6 border-2 rounded-lg flex flex-col items-center justify-center ${selectedMethod === 'delivery'
+                className={`p-4 sm:p-6 border-2 rounded-lg flex flex-col items-center justify-center ${selectedMethod === 'delivery'
                         ? 'border-brand-purple bg-brand-purple/10'
                         : 'border-gray-300 hover:border-brand-purple'
                     }`}
             >
-                <Truck className="w-12 h-12 mb-2 text-brand-purple" />
-                <span className="font-semibold">توصيل</span>
+                <Truck className="w-8 h-8 sm:w-12 sm:h-12 mb-2 text-brand-purple" />
+                <span className="font-semibold text-sm sm:text-base">توصيل</span>
             </button>
             <button
                 onClick={() => onSelect('pick_up')}
-                className={`p-6 border-2 rounded-lg flex flex-col items-center justify-center ${selectedMethod === 'pick_up'
+                className={`p-4 sm:p-6 border-2 rounded-lg flex flex-col items-center justify-center ${selectedMethod === 'pick_up'
                         ? 'border-brand-purple bg-brand-purple/10'
                         : 'border-gray-300 hover:border-brand-purple'
                     }`}
             >
-                <Package className="w-12 h-12 mb-2 text-brand-purple" />
-                <span className="font-semibold">استلام من المتجر</span>
+                <Package className="w-8 h-8 sm:w-12 sm:h-12 mb-2 text-brand-purple" />
+                <span className="font-semibold text-sm sm:text-base">استلام من المتجر</span>
             </button>
         </div>
         <div className="flex justify-between mt-6">
@@ -177,12 +177,12 @@ const OrderSummaryStep = ({ onBack, onSubmit, data, cartItems, totalPrice, isSub
 };
 
 const ThankYouStep = ({ onClose, message }) => (
-    <div className="p-8 text-center flex flex-col items-center justify-center min-h-[400px]" dir="rtl">
-        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-            <Check className="w-12 h-12 text-green-600" />
+    <div className="p-6 sm:p-8 text-center flex flex-col items-center justify-center min-h-[400px]" dir="rtl">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+            <Check className="w-10 h-10 sm:w-12 sm:h-12 text-green-600" />
         </div>
         <div className="prose max-w-md" dangerouslySetInnerHTML={{ __html: message }} />
-        <button onClick={onClose} className="mt-8 bg-brand-primary text-brand-background font-bold py-3 px-6 rounded-lg hover:bg-opacity-90 transition-colors">إغلاق</button>
+        <button onClick={onClose} className="mt-8 bg-brand-primary text-brand-background font-bold py-2.5 px-5 sm:py-3 sm:px-6 rounded-lg hover:bg-opacity-90 transition-colors">إغلاق</button>
     </div>
 );
 
