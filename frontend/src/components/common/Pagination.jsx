@@ -1,82 +1,84 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
-const Pagination = ({ currentPage, totalPages, onPageChange, recordsNameKey = 'records' }) => {
+const Pagination = ({
+  currentPage,
+  totalItems,
+  itemsPerPage,
+  onPageChange,
+}) => {
   const { t } = useTranslation();
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   if (totalPages <= 1) {
     return null;
   }
 
-  const handlePrevious = () => {
-    if (currentPage > 1) {
-      onPageChange(currentPage - 1);
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      onPageChange(newPage);
     }
   };
 
-  const handleNext = () => {
-    if (currentPage < totalPages) {
-      onPageChange(currentPage + 1);
-    }
-  };
-
-  const getPageNumbers = () => {
+  const renderPageNumbers = () => {
     const pageNumbers = [];
-    if (totalPages <= 5) {
-      for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-      }
+    const maxPagesToShow = 5;
+    let startPage, endPage;
+
+    if (totalPages <= maxPagesToShow) {
+      startPage = 1;
+      endPage = totalPages;
     } else {
       if (currentPage <= 3) {
-        pageNumbers.push(1, 2, 3, 4, '...', totalPages);
-      } else if (currentPage >= totalPages - 2) {
-        pageNumbers.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+        startPage = 1;
+        endPage = maxPagesToShow;
+      } else if (currentPage + 1 >= totalPages) {
+        startPage = totalPages - maxPagesToShow + 1;
+        endPage = totalPages;
       } else {
-        pageNumbers.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+        startPage = currentPage - 2;
+        endPage = currentPage + 2;
       }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`mx-1 flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition-colors ${
+            currentPage === i
+              ? 'bg-brand-purple text-white shadow-md'
+              : 'text-text-light hover:bg-brand-purple/10 hover:text-brand-purple'
+          }`}
+        >
+          {i}
+        </button>
+      );
     }
     return pageNumbers;
   };
 
   return (
-    <div className="flex items-center justify-between mt-6">
-      <span className="text-sm text-gray-500">
-        {t('pagination.showingPage', { currentPage, totalPages, recordsName: t(recordsNameKey) })}
-      </span>
-      <div className="flex items-center space-x-2">
-        <button
-          onClick={handlePrevious}
-          disabled={currentPage === 1}
-          className="p-2 rounded-md disabled:opacity-50 transition-colors duration-200 hover:bg-gray-200"
-        >
-          <ChevronLeft size={20} />
-        </button>
-        {getPageNumbers().map((page, index) =>
-          typeof page === 'number' ? (
-            <button
-              key={index}
-              onClick={() => onPageChange(page)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                currentPage === page ? 'bg-brand-primary text-white' : 'hover:bg-gray-200'
-              }`}
-            >
-              {page}
-            </button>
-          ) : (
-            <span key={index} className="px-4 py-2 text-sm">
-              {page}
-            </span>
-          )
-        )}
-        <button
-          onClick={handleNext}
-          disabled={currentPage === totalPages}
-          className="p-2 rounded-md disabled:opacity-50 transition-colors duration-200 hover:bg-gray-200"
-        >
-          <ChevronRight size={20} />
-        </button>
-      </div>
+    <div className="flex items-center justify-center space-x-2 py-4">
+      <button
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="flex h-9 w-9 items-center justify-center rounded-lg text-text-light transition-colors hover:bg-brand-purple/10 hover:text-brand-purple disabled:opacity-50 disabled:pointer-events-none"
+      >
+        <ChevronRight size={20} />
+      </button>
+
+      {renderPageNumbers()}
+
+      <button
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="flex h-9 w-9 items-center justify-center rounded-lg text-text-light transition-colors hover:bg-brand-purple/10 hover:text-brand-purple disabled:opacity-50 disabled:pointer-events-none"
+      >
+        <ChevronLeft size={20} />
+      </button>
     </div>
   );
 };

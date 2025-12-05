@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { apiService } from '../services/api';
+import { jwtDecode } from 'jwt-decode';
 
 export const DeliveryAuthContext = createContext();
 
@@ -11,8 +11,22 @@ export const DeliveryAuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('deliveryToken');
     if (token) {
-      setToken(token);
-      setIsAuthenticated(true);
+      try {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        if (decodedToken.exp > currentTime) {
+          setToken(token);
+          setIsAuthenticated(true);
+        } else {
+          localStorage.removeItem('deliveryToken');
+          setToken(null);
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        localStorage.removeItem('deliveryToken');
+        setToken(null);
+        setIsAuthenticated(false);
+      }
     }
     setLoading(false);
   }, []);
