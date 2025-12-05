@@ -16,11 +16,6 @@ import OrderManagement from './features/admin/pages/OrderManagement';
 import Settings from './features/admin/pages/Settings';
 import Translations from './features/admin/pages/Translations';
 import LoadingScreen from './components/common/LoadingScreen';
-import DeliveryLogin from './features/delivery/pages/LoginPage';
-import DeliveryLayout from './features/delivery/pages/DeliveryLayout';
-import DeliveryOrdersPage from './features/delivery/pages/OrdersPage';
-import { DeliveryAuthProvider } from './context/deliveryAuth';
-import DeliveryProtectedRoute from './components/common/DeliveryProtectedRoute';
 import { SearchProvider } from './context/SearchContext';
 
 const App = () => {
@@ -36,23 +31,13 @@ const App = () => {
     );
   }, [location.pathname]);
 
-  const isDeliverySite = React.useMemo(() => {
-    return (
-      window.location.hostname.startsWith('delivery') ||
-      (window.location.hostname.includes('localhost') && location.pathname.startsWith('/delivery')) ||
-      (window.location.hostname.includes('127.0.0.1') && location.pathname.startsWith('/delivery'))
-    );
-  }, [location.pathname]);
-
   useEffect(() => {
     if (isAdminSite) {
       document.title = 'AzharStore Admin';
-    } else if (isDeliverySite) {
-      document.title = 'AzharStore Delivery';
     } else {
       document.title = 'AzharStore';
     }
-  }, [location, isAdminSite, isDeliverySite]);
+  }, [location, isAdminSite]);
 
   if (isDataLoading) {
     return <LoadingScreen />;
@@ -92,26 +77,6 @@ const App = () => {
           <Route path="*" element={<Navigate to="/admin" />} />
         </Routes>
       </div>
-    );
-  }
-
-  if (isDeliverySite) {
-    return (
-      <DeliveryAuthProvider>
-        <SearchProvider>
-          <div className="min-h-screen bg-brand-background text-brand-primary flex flex-col">
-            <Routes>
-              <Route path="/login" element={<DeliveryLogin />} />
-              <Route path="/" element={<DeliveryProtectedRoute />}>
-                <Route element={<DeliveryLayout />}>
-                  <Route index element={<DeliveryOrdersPage />} />
-                </Route>
-              </Route>
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-          </div>
-        </SearchProvider>
-      </DeliveryAuthProvider>
     );
   }
 

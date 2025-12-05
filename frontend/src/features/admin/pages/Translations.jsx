@@ -78,11 +78,11 @@ const Translations = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-brand-primary">{t('admin.translations.title')}</h1>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-brand-primary">{t('admin.translations.title')}</h1>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2 bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
+          className="flex items-center justify-center gap-2 bg-brand-primary text-brand-background font-bold py-3 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
         >
           {t('admin.translations.add')}
         </button>

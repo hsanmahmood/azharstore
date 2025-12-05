@@ -27,7 +27,6 @@ const Settings = () => {
   const [freeDeliveryThreshold, setFreeDeliveryThreshold] = useState('');
   const [deliveryMessage, setDeliveryMessage] = useState('');
   const [pickupMessage, setPickupMessage] = useState('');
-  const [deliveryPassword, setDeliveryPassword] = useState('');
 
   useEffect(() => {
     if (appSettings) {
@@ -35,16 +34,7 @@ const Settings = () => {
       setDeliveryMessage(appSettings.delivery_message || '');
       setPickupMessage(appSettings.pickup_message || '');
     }
-    const fetchDeliveryPassword = async () => {
-      try {
-        const response = await apiService.getDeliveryPassword();
-        setDeliveryPassword(response.data.password);
-      } catch (error) {
-        notify(t('settings.deliveryPasswordFetchError'), 'error');
-      }
-    };
-    fetchDeliveryPassword();
-  }, [appSettings, notify, t]);
+  }, [appSettings]);
 
   const openModal = (area = null) => {
     setEditingArea(area);
@@ -83,17 +73,7 @@ const Settings = () => {
     }
   };
 
-  const handleSystemSettingsSave = async () => {
-    setIsSubmitting(true);
-    try {
-      await apiService.updateDeliveryPassword({ password: deliveryPassword });
-      notify(t('settings.deliveryPasswordUpdated'));
-    } catch (err) {
-      notify(t('settings.deliveryPasswordUpdateError'), 'error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+
 
   const openDeleteConfirm = (id) => {
     setDeletingAreaId(id);
@@ -152,7 +132,7 @@ const Settings = () => {
   const TabButton = ({ tabName, label }) => (
     <button
       onClick={() => setActiveTab(tabName)}
-      className={`py-2 px-4 text-lg font-semibold transition-colors duration-200 ${activeTab === tabName
+      className={`py-3 px-4 text-base md:text-lg font-semibold transition-colors duration-200 whitespace-nowrap ${activeTab === tabName
         ? 'text-brand-purple border-b-2 border-brand-purple'
         : 'text-text-light hover:text-brand-purple'
         }`}
@@ -162,59 +142,58 @@ const Settings = () => {
   );
 
   return (
-    <>
-      <h1 className="text-3xl font-bold text-text-dark mb-8">{t('settings.title')}</h1>
+    <div className="max-w-full overflow-x-hidden">
+      <h1 className="text-2xl md:text-3xl font-bold text-text-dark mb-6 md:mb-8">{t('settings.title')}</h1>
 
-      <div className="mb-8 border-b border-soft-border">
-        <nav className="flex space-x-4">
+      <div className="mb-6 md:mb-8 border-b border-soft-border -mx-4 px-4 md:mx-0 md:px-0 overflow-x-auto">
+        <nav className="flex space-x-4 min-w-max">
           <TabButton tabName="delivery" label={t('settings.delivery')} />
           <TabButton tabName="messages" label={t('settings.messages')} />
-          <TabButton tabName="system" label={t('settings.system')} />
         </nav>
       </div>
 
       {activeTab === 'delivery' && (
         <div>
-          <div className="bg-card-background border border-soft-border rounded-20 p-6 mb-8">
-            <h2 className="text-2xl font-bold text-text-dark mb-4">{t('settings.deliverySettings')}</h2>
-            <div className="flex items-center gap-4">
-              <label htmlFor="freeDeliveryThreshold" className="text-text-light">{t('settings.freeDeliveryThreshold')}</label>
+          <div className="bg-card-background border border-soft-border rounded-20 p-4 md:p-6 mb-6 md:mb-8">
+            <h2 className="text-xl md:text-2xl font-bold text-text-dark mb-4">{t('settings.deliverySettings')}</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 md:gap-4">
+              <label htmlFor="freeDeliveryThreshold" className="text-text-light font-medium">{t('settings.freeDeliveryThreshold')}</label>
               <input
                 id="freeDeliveryThreshold"
                 type="number"
                 value={freeDeliveryThreshold}
                 onChange={(e) => setFreeDeliveryThreshold(e.target.value)}
-                className="w-40 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
+                className="w-full sm:w-40 bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
               />
               <button
                 onClick={handleDeliverySettingsSave}
-                className="bg-brand-purple text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all duration-200"
+                className="w-full sm:w-auto bg-brand-purple text-white font-bold py-3 px-6 rounded-lg hover:bg-opacity-90 transition-all duration-200"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? <Loader2 className="animate-spin" /> : t('common.save')}
               </button>
             </div>
           </div>
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold text-text-dark">{t('settings.deliveryAreas')}</h2>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 md:mb-8">
+            <h2 className="text-xl md:text-2xl font-bold text-text-dark">{t('settings.deliveryAreas')}</h2>
             <button
               onClick={() => openModal()}
-              className="flex items-center gap-2 bg-brand-purple text-white font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
+              className="flex items-center justify-center gap-2 bg-brand-purple text-white font-bold py-3 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
             >
               <Plus size={20} /> {t('settings.addArea')}
             </button>
           </div>
           {dataError && !isModalOpen && <div className="text-red-500 mb-6">{dataError}</div>}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {deliveryAreas.map((area) => (
-              <div key={area.id} className="bg-card-background border border-soft-border rounded-20 p-5 flex justify-between items-center">
+              <div key={area.id} className="bg-card-background border border-soft-border rounded-20 p-4 md:p-5 flex justify-between items-center">
                 <div>
-                  <span className="text-lg font-semibold text-text-dark">{area.name}</span>
-                  <p className="text-text-light">{toArabicNumerals(area.price)} {t('common.currency')}</p>
+                  <span className="text-base md:text-lg font-semibold text-text-dark">{area.name}</span>
+                  <p className="text-sm md:text-base text-text-light">{toArabicNumerals(area.price)} {t('common.currency')}</p>
                 </div>
-                <div className="flex gap-3">
-                  <button onClick={() => openModal(area)} className="text-text-light hover:text-brand-purple"><Edit size={20} /></button>
-                  <button onClick={() => openDeleteConfirm(area.id)} className="text-text-light hover:text-stock-red"><Trash2 size={20} /></button>
+                <div className="flex gap-2 md:gap-3">
+                  <button onClick={() => openModal(area)} className="text-text-light hover:text-brand-purple p-2"><Edit size={20} /></button>
+                  <button onClick={() => openDeleteConfirm(area.id)} className="text-text-light hover:text-stock-red p-2"><Trash2 size={20} /></button>
                 </div>
               </div>
             ))}
@@ -223,16 +202,16 @@ const Settings = () => {
       )}
 
       {activeTab === 'messages' && (
-        <div className="space-y-8 overflow-visible">
+        <div className="space-y-6 md:space-y-8 overflow-visible">
           <div className="overflow-visible">
-            <h2 className="text-2xl font-bold text-text-dark mb-4">{t('settings.deliveryMessage')}</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-text-dark mb-4">{t('settings.deliveryMessage')}</h2>
             <SimpleRichTextEditor
               initialValue={deliveryMessage}
               onChange={(content) => setDeliveryMessage(content)}
             />
           </div>
           <div className="overflow-visible">
-            <h2 className="text-2xl font-bold text-text-dark mb-4">{t('settings.pickupMessage')}</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-text-dark mb-4">{t('settings.pickupMessage')}</h2>
             <SimpleRichTextEditor
               initialValue={pickupMessage}
               onChange={(content) => setPickupMessage(content)}
@@ -241,7 +220,7 @@ const Settings = () => {
           <div className="flex justify-end">
             <button
               onClick={handleMessagesSave}
-              className="bg-brand-purple text-white font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95 flex items-center"
+              className="w-full sm:w-auto bg-brand-purple text-white font-bold py-3 px-6 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95 flex items-center justify-center"
               disabled={isSubmitting}
             >
               {isSubmitting ? <Loader2 className="animate-spin" /> : t('common.saveChanges')}
@@ -250,30 +229,7 @@ const Settings = () => {
         </div>
       )}
 
-      {activeTab === 'system' && (
-        <div>
-          <div className="bg-card-background border border-soft-border rounded-20 p-6 mb-8">
-            <h2 className="text-2xl font-bold text-text-dark mb-4">{t('settings.deliveryPassword')}</h2>
-            <div className="flex items-center gap-4">
-              <label htmlFor="deliveryPassword" className="text-text-light">{t('settings.newPassword')}</label>
-              <input
-                id="deliveryPassword"
-                type="password"
-                value={deliveryPassword}
-                onChange={(e) => setDeliveryPassword(e.target.value)}
-                className="w-60 bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
-              />
-              <button
-                onClick={handleSystemSettingsSave}
-                className="bg-brand-purple text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all duration-200"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? <Loader2 className="animate-spin" /> : t('common.save')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       <Modal isOpen={isModalOpen} onClose={closeModal} title={editingArea ? t('settings.editArea') : t('settings.addArea')}>
         <form onSubmit={handleFormSubmit} className="space-y-4">
@@ -306,7 +262,7 @@ const Settings = () => {
         title={t('common.delete')}
         message={t('settings.confirmDeleteArea')}
       />
-    </>
+    </div>
   );
 };
 

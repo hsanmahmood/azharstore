@@ -453,11 +453,11 @@ const ProductManagement = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-brand-primary">{t('productManagement.title')}</h1>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-brand-primary">{t('productManagement.title')}</h1>
         <button
           onClick={() => openModal()}
-          className="flex items-center gap-2 bg-brand-primary text-brand-background font-bold py-2.5 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
+          className="flex items-center justify-center gap-2 bg-brand-primary text-brand-background font-bold py-3 px-5 rounded-lg hover:bg-opacity-90 transition-all duration-200 transform active:scale-95"
         >
           <Plus size={20} /> {t('productManagement.addProduct')}
         </button>
@@ -686,8 +686,8 @@ const ProductManagement = () => {
 
                 {/* Variant Rows */}
                 {variants.map((variant, index) => (
-                  <div key={index} className="variant-item flex-col md:flex-row bg-gray-50 p-3 rounded-lg border border-soft-border">
-                    <div className="w-full md:w-20 flex justify-center mb-2 md:mb-0">
+                  <div key={index} className="variant-item flex flex-col md:flex-row bg-gray-50 p-3 md:p-4 rounded-lg border border-soft-border gap-3 md:gap-0">
+                    <div className="w-full md:w-20 flex justify-center mb-0 md:mb-0">
                       <ImageUploader
                         onUpload={(e) => handleVariantImageUpload(index, e)}
                         preview={variant.image_url}
@@ -695,30 +695,32 @@ const ProductManagement = () => {
                         size="h-16 w-16"
                       />
                     </div>
-                    <div className="flex-1 w-full mb-2 md:mb-0">
+                    <div className="flex-1 w-full mb-0 md:mb-0">
+                      <label className="block md:hidden text-xs font-medium text-text-light mb-1">{t('productManagement.form.variantName')}</label>
                       <input
                         type="text"
                         placeholder={t('productManagement.form.variantName')}
                         value={variant.name}
                         onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
-                        className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
+                        className="w-full bg-brand-white border border-soft-border text-text-dark p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
                       />
                     </div>
-                    <div className="w-full md:w-32 mb-2 md:mb-0">
+                    <div className="w-full md:w-32 mb-0 md:mb-0">
+                      <label className="block md:hidden text-xs font-medium text-text-light mb-1">{t('productManagement.form.stock')}</label>
                       <input
                         type="number"
                         placeholder={t('productManagement.form.stock')}
                         value={variant.stock_quantity}
                         onChange={(e) => handleVariantChange(index, 'stock_quantity', e.target.value === '' ? '' : parseInt(e.target.value))}
-                        className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
+                        className="w-full bg-brand-white border border-soft-border text-text-dark p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
                       />
                     </div>
-                    <div className="w-full md:w-28 flex justify-center items-center gap-2">
-                      <button type="button" onClick={() => handleSaveVariant(index)} className="text-green-500 hover:text-green-400 bg-green-500/10 hover:bg-green-500/20 p-2 rounded-lg relative">
+                    <div className="w-full md:w-28 flex justify-center md:justify-center items-center gap-3">
+                      <button type="button" onClick={() => handleSaveVariant(index)} className="flex-1 md:flex-none text-green-500 hover:text-green-400 bg-green-500/10 hover:bg-green-500/20 p-2.5 rounded-lg relative">
                         {variant.id && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-green-500"></span>}
                         <Save size={18} />
                       </button>
-                      <button type="button" onClick={() => removeVariant(index)} className="text-red-500 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 p-2 rounded-lg">
+                      <button type="button" onClick={() => removeVariant(index)} className="flex-1 md:flex-none text-red-500 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 p-2.5 rounded-lg">
                         <Trash2 size={18} />
                       </button>
                     </div>
