@@ -87,9 +87,9 @@ const DeliveryMethodStep = ({ onNext, onBack, onSelect, selectedMethod }) => (
                 <span className="font-semibold text-sm sm:text-base">استلام من المتجر</span>
             </button>
         </div>
-        <div className="flex flex-col sm:flex-row justify-between gap-2 mt-6">
-            <button onClick={onBack} className="w-full sm:w-auto bg-gray-200 text-text-dark font-bold py-3 px-4 rounded-md">السابق</button>
-            <button onClick={onNext} disabled={!selectedMethod} className="w-full sm:w-auto bg-brand-primary text-brand-background font-bold py-3 px-4 rounded-md disabled:opacity-50">التالي</button>
+        <div className="flex flex-col-reverse sm:flex-row justify-between gap-2 mt-6">
+            <button onClick={onBack} className="w-full sm:w-auto bg-gray-200 text-text-dark font-bold py-2.5 px-4 rounded-md">السابق</button>
+            <button onClick={onNext} disabled={!selectedMethod} className="w-full sm:w-auto bg-brand-primary text-brand-background font-bold py-2.5 px-4 rounded-md disabled:opacity-50">التالي</button>
         </div>
     </div>
 );
@@ -116,9 +116,9 @@ const DeliveryAreaStep = ({ onNext, onBack, onSelect, selectedArea, deliveryArea
                 <p className="col-span-2 text-center text-text-light">لا توجد مناطق توصيل متاحة حالياً.</p>
             )}
         </div>
-        <div className="flex flex-col sm:flex-row justify-between gap-2 mt-6">
-            <button onClick={onBack} className="w-full sm:w-auto bg-gray-200 text-text-dark font-bold py-3 px-4 rounded-md">السابق</button>
-            <button onClick={onNext} disabled={!selectedArea} className="w-full sm:w-auto bg-brand-primary text-brand-background font-bold py-3 px-4 rounded-md disabled:opacity-50">التالي</button>
+        <div className="flex flex-col-reverse sm:flex-row justify-between gap-2 mt-6">
+            <button onClick={onBack} className="w-full sm:w-auto bg-gray-200 text-text-dark font-bold py-2.5 px-4 rounded-md">السابق</button>
+            <button onClick={onNext} disabled={!selectedArea} className="w-full sm:w-auto bg-brand-primary text-brand-background font-bold py-2.5 px-4 rounded-md disabled:opacity-50">التالي</button>
         </div>
     </div>
 );
@@ -166,9 +166,9 @@ const OrderSummaryStep = ({ onBack, onSubmit, data, cartItems, totalPrice, isSub
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col sm:flex-row justify-between gap-2 mt-6">
-                <button onClick={onBack} className="w-full sm:w-auto bg-gray-200 text-text-dark font-bold py-3 px-4 rounded-md">السابق</button>
-                <button onClick={onSubmit} disabled={isSubmitting} className="w-full sm:w-auto bg-brand-primary text-brand-background font-bold py-3 px-4 rounded-md">
+            <div className="flex flex-col-reverse sm:flex-row justify-between gap-2 mt-6">
+                <button onClick={onBack} className="w-full sm:w-auto bg-gray-200 text-text-dark font-bold py-2.5 px-4 rounded-md">السابق</button>
+                <button onClick={onSubmit} disabled={isSubmitting} className="w-full sm:w-auto bg-brand-primary text-brand-background font-bold py-2.5 px-4 rounded-md">
                     {isSubmitting ? <Loader2 className="animate-spin" /> : 'تأكيد الطلب'}
                 </button>
             </div>
