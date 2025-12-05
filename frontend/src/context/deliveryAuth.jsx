@@ -9,13 +9,11 @@ export const DeliveryAuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('deliveryToken');
     if (token) {
       try {
         const decodedToken = jwtDecode(token);
         const currentTime = Date.now() / 1000;
         if (decodedToken.exp > currentTime) {
-          setToken(token);
           setIsAuthenticated(true);
         } else {
           localStorage.removeItem('deliveryToken');
@@ -27,20 +25,20 @@ export const DeliveryAuthProvider = ({ children }) => {
         setToken(null);
         setIsAuthenticated(false);
       }
+    } else {
+      setIsAuthenticated(false);
     }
     setLoading(false);
-  }, []);
+  }, [token]);
 
   const login = (newToken) => {
     localStorage.setItem('deliveryToken', newToken);
     setToken(newToken);
-    setIsAuthenticated(true);
   };
 
   const logout = () => {
     localStorage.removeItem('deliveryToken');
     setToken(null);
-    setIsAuthenticated(false);
   };
 
   return (

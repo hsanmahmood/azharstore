@@ -19,7 +19,7 @@ const MobileAdminSidebar = ({ isOpen, onClose, navLinks, handleLogout }) => {
       />
 
       <aside
-        className={`fixed top-0 right-0 h-full w-64 bg-card-background border-l border-soft-border z-50 transition-transform duration-300 md:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 h-full w-64 bg-brand-white border-l border-soft-border z-50 transition-transform duration-300 md:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-4 mb-4 border-b border-soft-border">
