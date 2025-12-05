@@ -48,25 +48,27 @@ const CartView = ({ isOpen, onClose }) => {
                         {cartItems.map(item => {
                             const imageUrl = item.variant?.image_url || item.product.primary_image_url || item.product.product_images?.[0]?.image_url;
                             return (
-                                <div key={`${item.product.id}-${item.variant?.id}`} className="flex items-center gap-4 p-4 border rounded-lg">
-                                    <img src={imageUrl} alt={item.product.name} className="w-20 h-20 object-cover rounded-lg bg-gray-100" />
-                                    <div className="flex-grow">
+                                <div key={`${item.product.id}-${item.variant?.id}`} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border rounded-lg">
+                                    <img src={imageUrl} alt={item.product.name} className="w-full sm:w-20 h-auto sm:h-20 object-cover rounded-lg bg-gray-100" />
+                                    <div className="flex-grow w-full">
                                         <h3 className="font-semibold">{item.product.name}</h3>
                                         {item.variant && <p className="text-sm text-text-light">{item.variant.name}</p>}
-                                        <p className="font-bold text-brand-purple">{item.variant?.price || item.product.price} د.ب</p>
+                                        <p className="font-bold text-brand-purple mt-1">{item.variant?.price || item.product.price} د.ب</p>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <button onClick={() => updateQuantity(item.product.id, item.variant?.id, item.quantity - 1)} disabled={item.quantity <= 1} className="p-1 border rounded hover:bg-gray-100 disabled:opacity-50">
-                                            <Minus className="h-4 w-4" />
-                                        </button>
-                                        <span>{item.quantity}</span>
-                                        <button onClick={() => updateQuantity(item.product.id, item.variant?.id, item.quantity + 1)} className="p-1 border rounded hover:bg-gray-100">
-                                            <Plus className="h-4 w-4" />
+                                    <div className="flex items-center justify-between w-full sm:w-auto mt-2 sm:mt-0">
+                                        <div className="flex items-center gap-2">
+                                            <button onClick={() => updateQuantity(item.product.id, item.variant?.id, item.quantity - 1)} disabled={item.quantity <= 1} className="p-1 border rounded hover:bg-gray-100 disabled:opacity-50">
+                                                <Minus className="h-4 w-4" />
+                                            </button>
+                                            <span className="w-8 text-center">{item.quantity}</span>
+                                            <button onClick={() => updateQuantity(item.product.id, item.variant?.id, item.quantity + 1)} className="p-1 border rounded hover:bg-gray-100">
+                                                <Plus className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                        <button onClick={() => removeFromCart(item.product.id, item.variant?.id)} className="text-red-500 hover:text-red-700 sm:ml-4">
+                                            <Trash2 className="h-5 w-5" />
                                         </button>
                                     </div>
-                                    <button onClick={() => removeFromCart(item.product.id, item.variant?.id)} className="text-red-500 hover:text-red-700">
-                                        <Trash2 className="h-5 w-5" />
-                                    </button>
                                 </div>
                             )
                         })}
