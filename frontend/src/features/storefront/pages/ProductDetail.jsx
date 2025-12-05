@@ -8,8 +8,10 @@ import TransformedImage from '../../../components/product/TransformedImage';
 import AddToCartDialog from '../../../components/modals/AddToCartDialog';
 import LoadingScreen from '../../../components/common/LoadingScreen';
 import CartView from '../../../components/layout/CartView';
+import usePageTitle from '../../../hooks/usePageTitle';
 
 const ProductDetail = () => {
+    usePageTitle('المنتج - أزهار ستور');
     const { id } = useParams();
     const navigate = useNavigate();
     const { t } = useTranslation();

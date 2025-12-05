@@ -9,8 +9,10 @@ import { NotificationProvider } from '../../../context/NotificationContext';
 import { Toaster } from 'react-hot-toast';
 import { useLoading } from '../../../context/LoadingContext';
 import LoadingScreen from '../../../components/common/LoadingScreen';
+import usePageTitle from '../../../hooks/usePageTitle';
 
 const AdminLayoutContent = () => {
+  usePageTitle('الإدارة - أزهار ستور');
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();

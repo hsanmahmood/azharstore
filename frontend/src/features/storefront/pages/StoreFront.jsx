@@ -8,8 +8,10 @@ import { useLoading } from '../../../context/LoadingContext';
 import CartView from '../../../components/layout/CartView';
 import LoadingScreen from '../../../components/common/LoadingScreen';
 import { useTranslation } from 'react-i18next';
+import usePageTitle from '../../../hooks/usePageTitle';
 
 const StoreFront = () => {
+  usePageTitle('المتجر الإلكتروني - أزهار ستور');
   const { products, categories } = useContext(DataContext);
   const { isLoading } = useLoading();
   const [searchTerm, setSearchTerm] = useState('');
