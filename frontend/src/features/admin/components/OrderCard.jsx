@@ -4,10 +4,12 @@ import { Edit, Trash2, Eye, Calendar, Clock } from 'lucide-react';
 import Dropdown from '../../../components/common/Dropdown';
 import { apiService } from '../../../services/api';
 import { DataContext } from '../../../context/DataContext';
+import { useNotifier } from '../../../context/NotificationContext';
 import { formatDateGMT3, formatTimeGMT3 } from '../../../utils/dateUtils';
 
 const OrderCard = ({ order, onEdit, onDelete, onView }) => {
   const { t } = useTranslation();
+  const notify = useNotifier();
   const { updateOrder, products, appSettings } = useContext(DataContext);
 
   const handleStatusChange = async (option) => {
@@ -19,9 +21,10 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
 
     try {
       await apiService.updateOrder(order.id, { status: newStatus });
+      notify(t('orderManagement.notifications.statusUpdated'));
     } catch (error) {
       updateOrder(originalOrder);
-      // You might want to show an error message to the user
+      notify(t('orderManagement.errors.statusUpdate'), 'error');
     }
   };
 

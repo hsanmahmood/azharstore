@@ -51,7 +51,7 @@ const Dropdown = ({ options, value, onChange, placeholder }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-2 bg-primary-background border border-soft-border rounded-lg shadow-lg">
+        <div className="absolute z-50 w-full mt-2 bg-primary-background border border-soft-border rounded-lg shadow-lg">
           <div className="p-2">
             <input
               type="text"
