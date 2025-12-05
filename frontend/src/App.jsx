@@ -31,14 +31,6 @@ const App = () => {
     );
   }, [location.pathname]);
 
-  useEffect(() => {
-    if (isAdminSite) {
-      document.title = 'AzharStore Admin';
-    } else {
-      document.title = 'AzharStore';
-    }
-  }, [location, isAdminSite]);
-
   if (isDataLoading) {
     return <LoadingScreen />;
   }
