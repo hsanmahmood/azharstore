@@ -48,6 +48,7 @@ const ProductManagement = () => {
   const [lightboxImageUrl, setLightboxImageUrl] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
+  const [error, setError] = useState('');
 
 
   const initialFormState = {
@@ -675,54 +676,75 @@ const ProductManagement = () => {
                 </button>
               </div>
 
-              <div className="space-y-4">
-                {/* Header for larger screens */}
-                <div className="hidden md:flex variant-item header text-text-light">
-                  <div className="w-20 text-center">{t('productManagement.form.image')}</div>
-                  <div className="flex-1 px-2">{t('productManagement.form.variantName')}</div>
-                  <div className="w-32 px-2">{t('productManagement.form.stock')}</div>
-                  <div className="w-28 text-center">{t('common.actions')}</div>
-                </div>
-
-                {/* Variant Rows */}
+              <div className="space-y-3 md:space-y-4">
                 {variants.map((variant, index) => (
-                  <div key={index} className="variant-item flex flex-col md:flex-row bg-gray-50 p-3 md:p-4 rounded-lg border border-soft-border gap-3 md:gap-0">
-                    <div className="w-full md:w-20 flex justify-center mb-0 md:mb-0">
-                      <ImageUploader
-                        onUpload={(e) => handleVariantImageUpload(index, e)}
-                        preview={variant.image_url}
-                        uploading={uploadingImages}
-                        size="h-16 w-16"
-                      />
-                    </div>
-                    <div className="flex-1 w-full mb-0 md:mb-0">
-                      <label className="block md:hidden text-xs font-medium text-text-light mb-1">{t('productManagement.form.variantName')}</label>
-                      <input
-                        type="text"
-                        placeholder={t('productManagement.form.variantName')}
-                        value={variant.name}
-                        onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
-                        className="w-full bg-brand-white border border-soft-border text-text-dark p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
-                      />
-                    </div>
-                    <div className="w-full md:w-32 mb-0 md:mb-0">
-                      <label className="block md:hidden text-xs font-medium text-text-light mb-1">{t('productManagement.form.stock')}</label>
-                      <input
-                        type="number"
-                        placeholder={t('productManagement.form.stock')}
-                        value={variant.stock_quantity}
-                        onChange={(e) => handleVariantChange(index, 'stock_quantity', e.target.value === '' ? '' : parseInt(e.target.value))}
-                        className="w-full bg-brand-white border border-soft-border text-text-dark p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
-                      />
-                    </div>
-                    <div className="w-full md:w-28 flex justify-center md:justify-center items-center gap-3">
-                      <button type="button" onClick={() => handleSaveVariant(index)} className="flex-1 md:flex-none text-green-500 hover:text-green-400 bg-green-500/10 hover:bg-green-500/20 p-2.5 rounded-lg relative">
-                        {variant.id && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-green-500"></span>}
-                        <Save size={18} />
-                      </button>
-                      <button type="button" onClick={() => removeVariant(index)} className="flex-1 md:flex-none text-red-500 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 p-2.5 rounded-lg">
-                        <Trash2 size={18} />
-                      </button>
+                  <div key={index} className="bg-white md:bg-gray-50 border-2 md:border border-soft-border rounded-xl md:rounded-lg p-4 md:p-3 shadow-sm md:shadow-none">
+                    <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-3">
+                      <div className="flex items-start gap-3 md:gap-0 md:block md:w-20">
+                        <div className="flex-shrink-0">
+                          <ImageUploader
+                            onUpload={(e) => handleVariantImageUpload(index, e)}
+                            preview={variant.image_url}
+                            uploading={uploadingImages}
+                            size="h-20 w-20 md:h-16 md:w-16"
+                          />
+                        </div>
+                        <div className="flex-1 md:hidden">
+                          <label className="block text-xs font-semibold text-text-dark mb-1.5">
+                            {t('productManagement.form.variantName')}
+                          </label>
+                          <input
+                            type="text"
+                            placeholder={t('productManagement.form.variantName')}
+                            value={variant.name}
+                            onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
+                            className="w-full bg-brand-white border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 text-base"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="hidden md:block flex-1">
+                        <input
+                          type="text"
+                          placeholder={t('productManagement.form.variantName')}
+                          value={variant.name}
+                          onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
+                          className="w-full bg-brand-white border border-soft-border text-text-dark p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
+                        />
+                      </div>
+
+                      <div className="w-full md:w-32">
+                        <label className="block md:hidden text-xs font-semibold text-text-dark mb-1.5">
+                          {t('productManagement.form.stock')}
+                        </label>
+                        <input
+                          type="number"
+                          placeholder={t('productManagement.form.stock')}
+                          value={variant.stock_quantity}
+                          onChange={(e) => handleVariantChange(index, 'stock_quantity', e.target.value === '' ? '' : parseInt(e.target.value))}
+                          className="w-full bg-brand-white border border-soft-border text-text-dark p-3 md:p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 text-base md:text-sm"
+                        />
+                      </div>
+
+                      <div className="flex gap-2 md:w-28 md:justify-center">
+                        <button
+                          type="button"
+                          onClick={() => handleSaveVariant(index)}
+                          className="flex-1 md:flex-none flex items-center justify-center gap-2 text-green-600 bg-green-50 hover:bg-green-100 px-4 py-3 md:p-2.5 rounded-lg transition-colors relative font-medium md:font-normal"
+                        >
+                          {variant.id && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-green-500"></span>}
+                          <Save size={18} />
+                          <span className="md:hidden">حفظ</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeVariant(index)}
+                          className="flex-1 md:flex-none flex items-center justify-center gap-2 text-red-600 bg-red-50 hover:bg-red-100 px-4 py-3 md:p-2.5 rounded-lg transition-colors font-medium md:font-normal"
+                        >
+                          <Trash2 size={18} />
+                          <span className="md:hidden">حذف</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}

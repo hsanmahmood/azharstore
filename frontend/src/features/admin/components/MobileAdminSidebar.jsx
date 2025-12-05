@@ -7,19 +7,19 @@ const MobileAdminSidebar = ({ isOpen, onClose, navLinks, handleLogout }) => {
   const { t } = useTranslation();
 
   const getNavLinkClasses = ({ isActive }) =>
-    `flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 ${isActive ? 'bg-brand-purple/10 text-brand-purple' : 'text-text-light hover:bg-brand-purple/5 hover:text-brand-purple'
+    `flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-150 ${isActive ? 'bg-brand-purple/10 text-brand-purple' : 'text-text-light hover:bg-brand-purple/5 hover:text-brand-purple'
     }`;
 
   return (
     <>
       <div
-        className={`fixed inset-0 bg-black/60 z-40 md:hidden transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 bg-black/30 z-40 md:hidden transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={onClose}
       />
 
       <aside
-        className={`fixed top-0 right-0 h-full w-64 bg-card-background border-l border-soft-border z-50 transform transition-transform duration-300 ease-out md:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
-        style={{ willChange: 'transform' }}
+        className={`fixed top-0 right-0 h-full w-64 bg-white border-l border-soft-border z-50 transform transition-transform duration-200 ease-out md:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        style={{ willChange: 'transform', backfaceVisibility: 'hidden', perspective: 1000 }}
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-4 mb-4 border-b border-soft-border">
