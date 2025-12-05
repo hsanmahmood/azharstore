@@ -10,6 +10,7 @@ class OrderStatus(str, Enum):
     ready = 'ready'
     delivered = 'delivered'
     shipped = 'shipped'
+    cancelled = 'cancelled'
 
 class ShippingMethod(str, Enum):
     delivery = 'delivery'
