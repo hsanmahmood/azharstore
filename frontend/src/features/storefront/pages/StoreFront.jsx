@@ -60,24 +60,28 @@ const StoreFront = () => {
         <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center min-w-0 flex-1">
-            <img src="/logo.png" alt="AzharStore Logo" className="h-16" />
+            <img src="/logo.png" alt="AzharStore Logo" className="h-12 sm:h-16" />
           </div>
 
           {/* Buttons */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {/* Instagram */}
-            <a href="https://www.instagram.com/azharstore" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200">
-              <span className="text-sm font-medium">Instagram</span>
+            <a
+              href="https://www.instagram.com/azharstore"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 h-10 px-3 sm:px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200"
+            >
+              <span className="hidden sm:inline text-sm font-medium">Instagram</span>
               <Instagram className="h-4 w-4" />
             </a>
-
 
             {/* Cart */}
             <button
               onClick={() => setIsCartViewOpen(true)}
-              className="relative inline-flex items-center justify-center gap-2 h-10 px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200"
+              className="relative inline-flex items-center justify-center gap-2 h-10 px-3 sm:px-5 border border-border-gray bg-white text-text-gray rounded-md hover:bg-soft-hover hover:border-brand-purple transition-all duration-200"
             >
-              <span className="text-sm font-medium">{t('common.cart')}</span>
+              <span className="hidden sm:inline text-sm font-medium">{t('common.cart')}</span>
               <ShoppingCart className="h-4 w-4" />
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-1 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">

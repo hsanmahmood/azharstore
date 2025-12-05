@@ -37,7 +37,7 @@ const CustomerDetailsStep = ({ data, handleChange, onNext, error, deliveryMethod
                 <p className="text-xs text-text-light text-right mt-1">الرجاء إدخال 8 أرقام فقط</p>
             </div>
             <div className="text-right my-4"><span className="text-lg text-text-dark">العنوان</span></div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6">
                 <div className="space-y-2">
                     <label className="block text-xs font-medium text-text-light text-right">الشارع</label>
                     <input type="text" name="address_road" value={data.address_road} onChange={handleChange} required={deliveryMethod === 'delivery'} className="w-full bg-brand-white border border-soft-border text-text-dark p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-purple/50 text-right" />
@@ -65,7 +65,7 @@ const CustomerDetailsStep = ({ data, handleChange, onNext, error, deliveryMethod
 const DeliveryMethodStep = ({ onNext, onBack, onSelect, selectedMethod }) => (
     <div className="p-4" dir="rtl">
         <h2 className="text-xl font-semibold mb-4 text-right">اختر طريقة الاستلام</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button
                 onClick={() => onSelect('delivery')}
                 className={`p-6 border-2 rounded-lg flex flex-col items-center justify-center ${selectedMethod === 'delivery'
@@ -97,7 +97,7 @@ const DeliveryMethodStep = ({ onNext, onBack, onSelect, selectedMethod }) => (
 const DeliveryAreaStep = ({ onNext, onBack, onSelect, selectedArea, deliveryAreas }) => (
     <div className="p-4" dir="rtl">
         <h2 className="text-xl font-semibold mb-4 text-right">اختر منطقة التوصيل</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {deliveryAreas && deliveryAreas.length > 0 ? (
                 deliveryAreas.map(area => (
                     <button
