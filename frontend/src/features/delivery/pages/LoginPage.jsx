@@ -28,10 +28,9 @@ const DeliveryLogin = () => {
     try {
       const response = await apiService.deliveryLogin(password);
       login(response.data.access_token);
-    } catch (err) => {
+    } catch (err) {
       const errorMessage = err.response?.data?.detail || t('login.wrongPassword');
       setError(errorMessage);
-      return;
     } finally {
       setIsLoading(false);
     }
