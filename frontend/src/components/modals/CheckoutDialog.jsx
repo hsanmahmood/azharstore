@@ -25,7 +25,7 @@ const ProgressBar = ({ currentStep, totalSteps }) => {
 
 const CustomerDetailsStep = ({ data, handleChange, onNext, error, deliveryMethod }) => {
     return (
-        <form onSubmit={onNext} className="space-y-6 p-4" dir="rtl">
+        <form onSubmit={onNext} className="space-y-6 p-6" dir="rtl">
             <ErrorDisplay error={error} />
             <div className="space-y-2">
                 <label className="block text-sm font-medium text-text-light text-right">الاسم</label>
@@ -63,7 +63,7 @@ const CustomerDetailsStep = ({ data, handleChange, onNext, error, deliveryMethod
 };
 
 const DeliveryMethodStep = ({ onNext, onBack, onSelect, selectedMethod }) => (
-    <div className="p-4" dir="rtl">
+    <div className="p-6" dir="rtl">
         <h2 className="text-xl font-semibold mb-4 text-right">اختر طريقة الاستلام</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button
@@ -95,7 +95,7 @@ const DeliveryMethodStep = ({ onNext, onBack, onSelect, selectedMethod }) => (
 );
 
 const DeliveryAreaStep = ({ onNext, onBack, onSelect, selectedArea, deliveryAreas }) => (
-    <div className="p-4" dir="rtl">
+    <div className="p-6" dir="rtl">
         <h2 className="text-xl font-semibold mb-4 text-right">اختر منطقة التوصيل</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {deliveryAreas && deliveryAreas.length > 0 ? (
@@ -124,14 +124,18 @@ const DeliveryAreaStep = ({ onNext, onBack, onSelect, selectedArea, deliveryArea
 );
 
 const OrderSummaryStep = ({ onBack, onSubmit, data, cartItems, totalPrice, isSubmitting, error }) => {
+    const { t } = useTranslation();
     const deliveryCost = data.deliveryMethod === 'delivery' ? data.deliveryArea?.price || 0 : 0;
     const finalTotal = totalPrice + deliveryCost;
 
     return (
-        <div className="p-4" dir="rtl">
+        <div className="p-6" dir="rtl">
             <h2 className="text-xl font-semibold mb-4 text-right">ملخص الطلب</h2>
             <ErrorDisplay error={error} />
             <div className="space-y-4">
+                <div className="bg-yellow-100/50 border-r-4 border-yellow-500 text-yellow-800 p-4 text-sm rounded-lg">
+                    {t('orderManagement.paymentNotice')}
+                </div>
                 <div>
                     <h3 className="font-semibold">المنتجات</h3>
                     {cartItems.map(item => (
@@ -302,8 +306,12 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="إتمام الطلب" maxWidth="max-w-2xl">
-            <div className="p-6">
-                {step < 5 && <ProgressBar currentStep={step} totalSteps={4} />}
+            <div>
+                {step < 5 && (
+                    <div className="p-6">
+                        <ProgressBar currentStep={step} totalSteps={4} />
+                    </div>
+                )}
                 <div className={step === 5 ? '' : 'min-h-[400px]'}>
                     {renderStep()}
                 </div>

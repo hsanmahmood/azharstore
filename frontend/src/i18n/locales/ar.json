@@ -245,6 +245,7 @@
       "unitPrice": "سعر الوحدة",
       "quantity": "الكمية"
     },
+    "paymentNotice": "الدفع عند الاستلام فقط",
     "freeDeliveryApplied": "تم تطبيق التوصيل المجاني",
     "status": {
       "processing": "قيد المعالجة",
