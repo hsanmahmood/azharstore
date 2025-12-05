@@ -2,20 +2,30 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-const Dropdown = ({ options, value, onChange, placeholder }) => {
+const Dropdown = ({ options, value, onChange, placeholder, onToggle }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  const toggleDropdown = () => {
+    const newState = !isOpen;
+    setIsOpen(newState);
+    if (onToggle) {
+      onToggle(newState);
+    }
+  };
+
   const handleSelect = (option) => {
     onChange(option);
-    setIsOpen(false);
+    toggleDropdown();
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
+        if (isOpen) {
+          toggleDropdown();
+        }
       }
     };
 
@@ -23,7 +33,7 @@ const Dropdown = ({ options, value, onChange, placeholder }) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [isOpen, onToggle]);
 
   const validOptions = options.filter(Boolean);
 
@@ -40,7 +50,7 @@ const Dropdown = ({ options, value, onChange, placeholder }) => {
       <button
         type="button"
         className="w-full bg-card-background border border-soft-border text-text-dark p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50 flex justify-between items-center"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggleDropdown}
       >
         <span>{selectedOption ? selectedOption.label : placeholder}</span>
         <ChevronDown

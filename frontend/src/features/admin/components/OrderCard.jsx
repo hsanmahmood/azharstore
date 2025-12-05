@@ -11,6 +11,7 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
   const { t } = useTranslation();
   const notify = useNotifier();
   const { updateOrder, products, appSettings } = useContext(DataContext);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleStatusChange = async (option) => {
     const newStatus = option.value;
@@ -35,6 +36,7 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
   const cardClasses = `
     bg-card-background border border-soft-border rounded-2xl p-4 flex flex-col
     transition-all duration-300 hover:border-brand-purple/50 hover:-translate-y-1
+    ${isDropdownOpen ? 'z-20' : 'z-0'}
   `;
 
   const subtotal = useMemo(() => {
@@ -103,6 +105,7 @@ const OrderCard = ({ order, onEdit, onDelete, onView }) => {
               ]}
               value={order.status}
               onChange={handleStatusChange}
+              onToggle={setIsDropdownOpen}
             />
           </div>
           <div className="flex items-center gap-2 text-text-light">
