@@ -306,7 +306,7 @@ const CheckoutDialog = ({ isOpen, onClose, onSubmit, cartItems, totalPrice }) =>
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="إتمام الطلب" maxWidth="max-w-2xl">
-            <div className="w-[90%] mx-auto">
+            <div>
                 {step < 5 && (
                     <div className="p-6">
                         <ProgressBar currentStep={step} totalSteps={4} />
