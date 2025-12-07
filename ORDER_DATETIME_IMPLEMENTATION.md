@@ -6,7 +6,7 @@ Added order date and time display throughout the application using GMT+3 (Arabia
 ## Changes Made
 
 ### 1. Database (db.sql)
-```sql
+```sqlf
 -- Set database timezone to GMT+3 (Arabia Standard Time)
 ALTER DATABASE postgres SET timezone TO 'Asia/Riyadh';
 
