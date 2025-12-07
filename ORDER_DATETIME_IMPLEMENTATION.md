@@ -45,7 +45,7 @@ All functions use:
 - Calendar and Clock icons
 - Date display with purple Calendar icon
 - Time display with purple Clock icon
-- Positioned after Order ID
+- Positioned after Order IDfad
 - Styled with brand-purple icons and semibold text
 
 ## Backend
